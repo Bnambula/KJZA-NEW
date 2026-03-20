@@ -42,6 +42,11 @@
           <button class="btn-hero-p" onclick="document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">Shop Fresh Now 🛒</button>
           <button class="btn-hero-o" onclick="openModal('modal-signup')">Create Free Account</button>
         </div>
+        <div class="hero-slideshow-ctrl">
+          <button class="hero-arrow" onclick="heroPrev();resetHeroTimer()">&#8592;</button>
+          <div id="hero-dots" class="hero-dots"></div>
+          <button class="hero-arrow" onclick="heroNext();resetHeroTimer()">&#8594;</button>
+        </div>
       </div>
       <div class="hero-right">
         <div class="hsc oc"><div class="hsc-icon">🍊</div><div class="hsc-num">22+</div><div class="hsc-lbl">Fresh Products</div></div>
@@ -85,13 +90,13 @@
     <div class="filter-inner">
       <div class="filter-label">🔧 Filter by:</div>
       <div class="filter-chips">
-        <button class="fchip active" onclick="setFilter('all',this)">All Products</button>
-        <button class="fchip" onclick="setFilter('discount',this)">🏷 On Sale</button>
-        <button class="fchip" onclick="setFilter('organic',this)">🌱 Organic</button>
-        <button class="fchip" onclick="setFilter('fresh',this)">⚡ Fresh Today</button>
-        <button class="fchip" onclick="setFilter('seasonal',this)">🌿 Seasonal</button>
-        <button class="fchip" onclick="setFilter('premium',this)">⭐ Premium</button>
-        <button class="fchip" onclick="setFilter('instock',this)">✅ In Stock</button>
+        <button class="fchip active" data-filter="all" onclick="setFilter('all',this)">All Products</button>
+        <button class="fchip" data-filter="discount" onclick="setFilter('discount',this)">🏷 On Sale</button>
+        <button class="fchip" data-filter="organic" onclick="setFilter('organic',this)">🌱 Organic</button>
+        <button class="fchip" data-filter="fresh" onclick="setFilter('fresh',this)">⚡ Fresh Today</button>
+        <button class="fchip" data-filter="seasonal" onclick="setFilter('seasonal',this)">🌿 Seasonal</button>
+        <button class="fchip" data-filter="premium" onclick="setFilter('premium',this)">⭐ Premium</button>
+        <button class="fchip" data-filter="instock" onclick="setFilter('instock',this)">✅ In Stock</button>
       </div>
       <div class="filter-sort">
         <label style="font-size:12px;font-weight:700;color:var(--muted)">Sort:</label>
@@ -147,6 +152,144 @@
       <div class="sec-eye g">Saving Corner</div>
       <div class="sec-title">Basket Combos & Specials</div>
       <div class="product-grid" id="combos-grid" style="margin-top:20px"></div>
+    </div>
+  </section>
+
+  <!-- ═══ RECIPE OF THE DAY ═══════════════════════════════════════ -->
+  <section class="recipe-sec" id="recipe-section">
+    <div class="recipe-inner">
+      <div class="recipe-header">
+        <div>
+          <div class="sec-eye o">Ugandan Kitchen</div>
+          <h2 class="recipe-main-title">Recipe of the Day</h2>
+          <p class="recipe-subtitle">Cook authentic Ugandan dishes — all ingredients available on Kujaza Fresh.</p>
+        </div>
+        <div class="recipe-tabs-wrap">
+          <button class="recipe-tab active" onclick="switchRecipe('luwombo',this)">🍃 Luwombo</button>
+          <button class="recipe-tab" onclick="switchRecipe('nsenene',this)">🦗 Nsenene</button>
+          <button class="recipe-tab" onclick="switchRecipe('bilungo',this)">🍆 Bilungo</button>
+        </div>
+      </div>
+
+      <!-- LUWOMBO -->
+      <div class="recipe-card show" id="recipe-luwombo">
+        <div class="recipe-visual">
+          <div class="recipe-banner rbn-luwombo">
+            <div class="recipe-banner-emoji">🍃</div>
+            <div class="recipe-banner-name">Luwombo</div>
+            <div class="recipe-banner-sub">Uganda&rsquo;s Royal Steam Stew</div>
+            <div class="recipe-leaf-deco">🍃 🍃 🍃 🍃 🍃</div>
+          </div>
+          <div class="recipe-info-strip">
+            <div class="recipe-stat"><div class="rs-icon">⏱</div><div class="rs-val">2–3 hrs</div><div class="rs-lbl">Cook time</div></div>
+            <div class="recipe-stat"><div class="rs-icon">👥</div><div class="rs-val">4–6</div><div class="rs-lbl">Serves</div></div>
+            <div class="recipe-stat"><div class="rs-icon">🌶</div><div class="rs-val">Mild</div><div class="rs-lbl">Heat level</div></div>
+            <div class="recipe-stat"><div class="rs-icon">🏅</div><div class="rs-val">Traditional</div><div class="rs-lbl">Ugandan</div></div>
+          </div>
+        </div>
+        <div class="recipe-content">
+          <p class="recipe-desc">Luwombo is one of Uganda&rsquo;s most treasured dishes — tender meat or chicken slow-steamed inside banana leaves with a rich groundnut sauce. Originally prepared for the Buganda royal courts, it is today a centrepiece at celebrations, weddings and Sunday family meals. The banana leaf wrapping seals in every flavour and gives an unmistakeable earthy aroma.</p>
+          <div class="recipe-two-col">
+            <div>
+              <div class="recipe-section-label">🛒 Ingredients <small style="font-weight:500;color:var(--muted)">— all on Kujaza</small></div>
+              <div class="ingredients-list" id="luwombo-ingredients"></div>
+              <button class="add-all-btn" onclick="addRecipeToCart('luwombo')">🛒 Add All to Cart</button>
+            </div>
+            <div>
+              <div class="recipe-section-label">📋 Method</div>
+              <ol class="recipe-steps">
+                <li><strong>Prepare leaves:</strong> Wilt plantain leaves over a flame for 30 secs until pliable. Wipe clean and set aside.</li>
+                <li><strong>Marinate:</strong> Cut chicken or beef into pieces. Season with onions, garlic, ginger, salt and bilungo paste. Rest 30 minutes.</li>
+                <li><strong>Make the sauce:</strong> Mix ebinyebwa (groundnut paste) with warm water to a thick consistency. Add spring onions, tomatoes, curry powder.</li>
+                <li><strong>Wrap:</strong> Lay a banana leaf flat. Add meat and spoon sauce over it. Fold into a sealed parcel, tie with a leaf strip.</li>
+                <li><strong>Steam:</strong> Stack parcels in a pot over boiling water. Cover tightly. Steam 1.5–2 hours.</li>
+                <li><strong>Serve:</strong> Open at the table for the full aroma. Serve with matooke, rice or sweet potatoes.</li>
+              </ol>
+              <div class="recipe-tip"><span>💡</span><span><strong>Kujaza Tip:</strong> Use fresh plantain leaves from our store — they are the secret to authentic flavour. Order extra leaves for serving too!</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NSENENE -->
+      <div class="recipe-card" id="recipe-nsenene">
+        <div class="recipe-visual">
+          <div class="recipe-banner rbn-nsenene">
+            <div class="recipe-banner-emoji">🦗</div>
+            <div class="recipe-banner-name">Nsenene</div>
+            <div class="recipe-banner-sub">Fried Grasshopper Delicacy</div>
+            <div class="recipe-leaf-deco">🌿 🌾 🌿 🌾 🌿</div>
+          </div>
+          <div class="recipe-info-strip">
+            <div class="recipe-stat"><div class="rs-icon">⏱</div><div class="rs-val">30 min</div><div class="rs-lbl">Cook time</div></div>
+            <div class="recipe-stat"><div class="rs-icon">👥</div><div class="rs-val">4</div><div class="rs-lbl">Serves</div></div>
+            <div class="recipe-stat"><div class="rs-icon">🌶</div><div class="rs-val">Medium</div><div class="rs-lbl">Heat level</div></div>
+            <div class="recipe-stat"><div class="rs-icon">📅</div><div class="rs-val">Seasonal</div><div class="rs-lbl">Ugandan</div></div>
+          </div>
+        </div>
+        <div class="recipe-content">
+          <p class="recipe-desc">Nsenene (long-horned grasshoppers) are a seasonal Ugandan delicacy anticipated twice a year — November and April. Crispy, salty and packed with protein, they are eaten as a snack or cooked into a full dish with onions and chilli. A true taste of Uganda that surprises and delights every visitor.</p>
+          <div class="recipe-two-col">
+            <div>
+              <div class="recipe-section-label">🛒 Ingredients <small style="font-weight:500;color:var(--muted)">— all on Kujaza</small></div>
+              <div class="ingredients-list" id="nsenene-ingredients"></div>
+              <button class="add-all-btn" onclick="addRecipeToCart('nsenene')">🛒 Add All to Cart</button>
+            </div>
+            <div>
+              <div class="recipe-section-label">📋 Method</div>
+              <ol class="recipe-steps">
+                <li><strong>Clean:</strong> Remove wings and hind legs. Rinse in salted water and drain. Pat dry thoroughly.</li>
+                <li><strong>Dry roast:</strong> Heat a dry pan on medium. Add nsenene, stir constantly for 5 minutes until golden and moisture is released.</li>
+                <li><strong>Fry with flavour:</strong> Add a splash of oil, sliced onions, garlic, chilli and salt. Stir-fry 8–10 minutes until crisp and golden brown.</li>
+                <li><strong>Finish:</strong> Remove from heat. Squeeze lemon juice over and toss with fresh spring onions.</li>
+                <li><strong>Serve:</strong> Eat warm as a snack, or serve alongside matooke and groundnut sauce.</li>
+              </ol>
+              <div class="recipe-tip"><span>💡</span><span><strong>Kujaza Tip:</strong> Nsenene are seasonal and sell out fast — order early in November and April. We sell them pre-cleaned and ready to cook!</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BILUNGO -->
+      <div class="recipe-card" id="recipe-bilungo">
+        <div class="recipe-visual">
+          <div class="recipe-banner rbn-bilungo">
+            <div class="recipe-banner-emoji">🍆</div>
+            <div class="recipe-banner-name">Bilungo Stew</div>
+            <div class="recipe-banner-sub">Smoked Eggplant Sauce</div>
+            <div class="recipe-leaf-deco">🌿 🍅 🌿 🧅 🌿</div>
+          </div>
+          <div class="recipe-info-strip">
+            <div class="recipe-stat"><div class="rs-icon">⏱</div><div class="rs-val">45 min</div><div class="rs-lbl">Cook time</div></div>
+            <div class="recipe-stat"><div class="rs-icon">👥</div><div class="rs-val">4–5</div><div class="rs-lbl">Serves</div></div>
+            <div class="recipe-stat"><div class="rs-icon">🌶</div><div class="rs-val">Mild–Med</div><div class="rs-lbl">Heat level</div></div>
+            <div class="recipe-stat"><div class="rs-icon">🌱</div><div class="rs-val">Veg option</div><div class="rs-lbl">Flexible</div></div>
+          </div>
+        </div>
+        <div class="recipe-content">
+          <p class="recipe-desc">Bilungo is a rich Ugandan stew built on smoked, dried eggplant as its flavour base. The eggplant is charred over fire, peeled and pounded into a paste that gives the sauce a deep, smoky earthiness unlike anything else. Combined with tomatoes, onions, groundnut paste and dodo, it creates one of Uganda&rsquo;s most distinctive sauces.</p>
+          <div class="recipe-two-col">
+            <div>
+              <div class="recipe-section-label">🛒 Ingredients <small style="font-weight:500;color:var(--muted)">— all on Kujaza</small></div>
+              <div class="ingredients-list" id="bilungo-ingredients"></div>
+              <button class="add-all-btn" onclick="addRecipeToCart('bilungo')">🛒 Add All to Cart</button>
+            </div>
+            <div>
+              <div class="recipe-section-label">📋 Method</div>
+              <ol class="recipe-steps">
+                <li><strong>Char eggplant:</strong> Place whole eggplants on open flame. Char until blackened all over. Cool then peel off charred skin to reveal smoky flesh.</li>
+                <li><strong>Make bilungo paste:</strong> Mash charred eggplant with salt, garlic and chilli into a smooth paste. Or use our ready-made bilungo paste!</li>
+                <li><strong>Build the sauce:</strong> Fry onions and spring onions in oil until golden. Add tomatoes, cook down 8 minutes. Stir in bilungo paste.</li>
+                <li><strong>Add greens:</strong> Stir in dodo or spinach. Add groundnut paste dissolved in water. Add chicken or keep vegetarian.</li>
+                <li><strong>Simmer:</strong> Cook on low heat 20 minutes, stirring occasionally, until thick and fragrant.</li>
+                <li><strong>Serve:</strong> Over matooke, rice, cassava or sweet potatoes. Garnish with spring onions.</li>
+              </ol>
+              <div class="recipe-tip"><span>💡</span><span><strong>Kujaza Tip:</strong> We stock pre-prepared bilungo paste — skip the charring step and get straight to cooking! Same authentic smoky flavour.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -394,6 +537,9 @@
       <div class="side-item" data-sec="vouchers"   onclick="showSec('vouchers')"><span class="side-icon">🎟</span> Vouchers</div>
       <div class="side-item" data-sec="loyalty"    onclick="showSec('loyalty')"><span class="side-icon">🏅</span> Loyalty / Rewards</div>
       <div class="side-item" data-sec="newsletter" onclick="showSec('newsletter')"><span class="side-icon">📧</span> Newsletter</div>
+      <div class="side-lbl">Content</div>
+      <div class="side-item" data-sec="recipes"   onclick="showSec('recipes')"><span class="side-icon">🍃</span> Recipes</div>
+      <div class="side-item" data-sec="heromgmt"  onclick="showSec('heromgmt')"><span class="side-icon">🖼️</span> Hero Slides</div>
     </aside>
 
     <main class="admin-main">
@@ -606,6 +752,31 @@
         <div class="a-card">
           <div class="a-card-hd"><h4>✅ Approved Reviews</h4></div>
           <div id="fb-approved"></div>
+        </div>
+      </div>
+
+
+      <!-- RECIPES ADMIN -->
+      <div class="admin-section" id="asec-recipes">
+        <div class="page-hd"><h2>Recipe Management</h2><p>Add, edit and manage homepage recipes — with photos, captions and preparation text</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>All Recipes</h4><button class="btn btn-primary btn-sm" onclick="openAddRecipeAdmin()">+ Add Recipe</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Title</th><th>Description</th><th>Photo</th><th>Caption</th><th>Status</th><th>Actions</th></tr></thead><tbody id="recipe-admin-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- HERO SLIDES ADMIN -->
+      <div class="admin-section" id="asec-heromgmt">
+        <div class="page-hd"><h2>Hero Slideshow</h2><p>Manage homepage hero slides — upload photos with effects, headings and captions</p></div>
+        <div class="a-card">
+          <div class="a-card-hd">
+            <h4>Hero Slides</h4>
+            <button class="btn btn-primary btn-sm" onclick="openAddHeroSlide()">+ Add Slide</button>
+          </div>
+          <div style="background:var(--o5);border:1.5px solid var(--o4);border-radius:var(--r);padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--o1);font-weight:600">
+            💡 Slides auto-rotate every 5 seconds on the homepage. You can upload a photo or set a gradient background colour. Changes apply immediately.
+          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>#</th><th>Heading</th><th>Subtitle</th><th>Photo</th><th>Actions</th></tr></thead><tbody id="hero-slides-tbody"></tbody></table></div>
         </div>
       </div>
 
@@ -843,18 +1014,6 @@
       <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--muted)">
         Are you a customer? <a onclick="closeModal('modal-admin-login');openModal('modal-login')" style="color:var(--o2);font-weight:700;cursor:pointer">Sign in here instead</a>
       </div>
-    </div>
-  </div>
-</div>
-  <div class="modal-box">
-    <div class="modal-hd"><h3>Sign In</h3><button class="modal-x" onclick="closeModal('modal-login')">✕</button></div>
-    <div class="modal-body">
-      <div class="demo-hint">Demo — Admin: admin@kujaza.com / admin123 &nbsp;|&nbsp; Customer: sarah@email.com / pass123</div>
-      <div id="login-msg"></div>
-      <div class="form-group"><label>Email</label><input id="l-email" type="email" placeholder="you@email.com"></div>
-      <div class="form-group"><label>Password</label><input id="l-pass" type="password" placeholder="••••••••"></div>
-      <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
-      <div class="modal-switch">No account? <a onclick="closeModal('modal-login');openModal('modal-signup')">Register free</a></div>
     </div>
   </div>
 </div>
@@ -1130,10 +1289,12 @@
 <script src="js/admin.js"></script>
 <script src="js/extended.js"></script>
 <script src="js/staff.js"></script>
+<script src="js/fixes.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   renderShop();
   renderFeedbackReviews();
+  renderAllRecipeIngredients();
   updateCartUI();
   buildCombos();
   startCountdown();
@@ -1153,30 +1314,108 @@ function startCountdown() {
 }
 function buildCombos() {
   const combos = [
-    {name:'Weekly Veggie Box',emoji:'🥗',price:28000,desc:'Tomatoes, onions, kale, carrots, cabbage',badge:'Best Value'},
-    {name:'Fruit Basket',emoji:'🧺',price:35000,desc:'Mangoes, avocados, pineapple, passion fruit',badge:'Popular'},
-    {name:'Grains Bundle (5kg)',emoji:'🌾',price:45000,desc:'Beans, rice, maize flour, groundnuts',badge:'Family Pack'},
-    {name:'Student Deal',emoji:'🎓',price:15000,desc:'3 veg items + 1 fruit + posho 1kg',badge:'Student Offer'},
+    { name:'Ugandan Veggie Box',    emoji:'🥗', img:null,                    price:28000, origPrice:35000, desc:'Tomatoes, onions, dodo, nakati, pumpkin, carrots',     badge:'Best Value',   savePct:20 },
+    { name:'Tropical Fruit Basket', emoji:'🧺', img:'images/market.jpg',     price:38000, origPrice:50000, desc:'Mangoes, pineapple, passion fruit, bananas, pawpaw',   badge:'Popular',      savePct:24 },
+    { name:'Ugandan Staples Bundle',emoji:'🌾', img:null,                    price:45000, origPrice:55000, desc:'Beans, maize flour, millet, groundnuts, sorghum',     badge:'Family Pack',  savePct:18 },
+    { name:'Student Essentials',    emoji:'🎓', img:null,                    price:18000, origPrice:22000, desc:'Matooke, tomatoes, onions, dodo, maize flour 1kg',     badge:'Student Deal', savePct:18 },
+    { name:'Spice & Flavour Box',   emoji:'🌶️', img:null,                    price:20000, origPrice:25000, desc:'Ginger, chilli peppers, simsim, fresh herbs',         badge:'New',          savePct:20 },
+    { name:'Farm Fresh Breakfast',  emoji:'🥚', img:'images/eggs.jpg',       price:32000, origPrice:38000, desc:'Eggs (tray), bananas, pawpaw, honey, fresh ginger',    badge:'Fan Favourite',savePct:16 },
   ];
   const grid = document.getElementById('combos-grid');
-  if(!grid) return;
-  grid.innerHTML = combos.map((c,i) => `
-    <div class="pcard">
-      <div class="pcard-img bg${i%4}">
-        <span>${c.emoji}</span>
-        <div class="fresh-tag in">${c.badge}</div>
+  if (!grid) return;
+  grid.innerHTML = combos.map((c, i) => `
+    <div class="pcard" style="cursor:default">
+      <div class="pcard-box">
+        <div class="box-frame">
+          <div class="box-top-strip">
+            <span class="box-logo">Kujaza Fresh</span>
+            <span class="box-organic">🌱 Organic</span>
+          </div>
+          <div class="box-image-area ${c.img ? 'has-photo' : 'no-photo'}" style="height:140px">
+            ${c.img ? `<img src="${c.img}" alt="${c.name}" class="box-photo" loading="lazy">` : `<div class="box-emoji-display" style="font-size:52px">${c.emoji}</div>`}
+            <div class="discount-ribbon">Save ${c.savePct}%</div>
+          </div>
+          <div class="box-wood-grain"></div>
+          <div class="box-side-left"></div>
+          <div class="box-side-right"></div>
+        </div>
       </div>
       <div class="pcard-body">
         <div class="pcard-name">${c.name}</div>
-        <div class="pcard-cat">Basket Combo</div>
-        <div class="pcard-price">${KF.fmt(c.price)} <small>/ box</small></div>
+        <div class="pcard-cat">🧺 Basket Combo</div>
+        <div class="pcard-price-row">
+          <div class="pcard-price">UGX ${c.price.toLocaleString()} <small>/ box</small></div>
+          <div class="pcard-orig">UGX ${c.origPrice.toLocaleString()}</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">${c.desc}</div>
       </div>
       <div class="pcard-foot">
-        <span class="pcard-stock in">✓ Available</span>
-        <button class="add-btn" onclick="toast('${c.emoji} ${c.name} added!','✅')">+ Add</button>
+        <span class="badge badge-green">${c.badge}</span>
+        <button class="add-btn" onclick="toast('${c.emoji} ${c.name} added to cart!','✅')">+ Add</button>
       </div>
     </div>`).join('');
 }
+
 </script>
+
+<!-- Recipe Admin Modal -->
+<div class="modal-bd" id="modal-recipe-admin">
+  <div class="modal-box" style="max-width:580px;border-top:4px solid var(--g2)">
+    <div class="modal-hd">
+      <h3 id="recipe-admin-form-title">Add Recipe</h3>
+      <button class="modal-x" onclick="closeModal('modal-recipe-admin')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Recipe Title *</label><input id="ra-title" placeholder="e.g. Luwombo"></div>
+      <div class="form-group"><label>Short Description *</label><input id="ra-desc" placeholder="One-line description of the dish"></div>
+      <div class="form-group">
+        <label>Recipe Photo</label>
+        <input type="file" id="ra-img-file" accept="image/*" onchange="previewImg('ra-img-file','ra-img-preview')" style="font-size:13px">
+        <div id="ra-img-preview"></div>
+      </div>
+      <div class="form-group"><label>Photo Caption</label><input id="ra-caption" placeholder="e.g. Luwombo ready to steam in banana leaves"></div>
+      <div class="form-group">
+        <label>Preparation Steps * <span style="font-size:11px;color:var(--muted);font-weight:400">(paste or type — one step per line)</span></label>
+        <textarea id="ra-steps" rows="8" placeholder="1. Prepare banana leaves over flame&#10;2. Marinate chicken with spices&#10;3. Add groundnut sauce&#10;4. Wrap tightly in banana leaf&#10;5. Steam for 2 hours"></textarea>
+      </div>
+      <button class="btn btn-green btn-full" onclick="saveRecipeAdmin()">Save Recipe</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hero Slide Admin Modal -->
+<div class="modal-bd" id="modal-hero-slide">
+  <div class="modal-box" style="max-width:520px;border-top:4px solid var(--o2)">
+    <div class="modal-hd">
+      <h3>Hero Slide</h3>
+      <button class="modal-x" onclick="closeModal('modal-hero-slide')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Heading *</label><input id="hs-heading" placeholder="Fresh Picked. Delivered Today."></div>
+      <div class="form-group"><label>Subtitle *</label><input id="hs-sub" placeholder="Farm-fresh produce delivered to your door"></div>
+      <div class="form-group"><label>Button Label</label><input id="hs-btn" placeholder="Shop Fresh Now 🛒"></div>
+      <div class="form-group">
+        <label>Upload Photo <span style="font-size:11px;color:var(--muted);font-weight:400">(full-width background image)</span></label>
+        <input type="file" id="hs-img-file" accept="image/*" onchange="previewImg('hs-img-file','hs-img-preview')" style="font-size:13px">
+        <div id="hs-img-preview"></div>
+      </div>
+      <div class="form-group">
+        <label>Background Gradient CSS <span style="font-size:11px;color:var(--muted)">(used if no photo)</span></label>
+        <input id="hs-bg" placeholder="linear-gradient(135deg,#0F2910 0%,#1A3F1C 100%)">
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveHeroSlide()">Save Slide</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+  <button onclick="showPage('page-shop')" class="mbn-btn"><span>🛒</span><span>Shop</span></button>
+  <button onclick="navToOffers()" class="mbn-btn"><span>🏷️</span><span>Offers</span></button>
+  <button onclick="openCart()" class="mbn-btn"><span>🛒</span><span>Cart <span id="mbn-cart-count" class="mbn-badge">0</span></span></button>
+  <button onclick="openModal('modal-login')" class="mbn-btn"><span>👤</span><span>Sign In</span></button>
+  <button onclick="showPage('page-checkout')" class="mbn-btn"><span>💳</span><span>Checkout</span></button>
+</nav>
+
 </body>
 </html>

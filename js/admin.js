@@ -37,14 +37,14 @@ function renderDashboard() {
     { label:'Total Orders',    val: KF.data.orders.length, sub: KF.data.orders.filter(o=>o.date===today).length+' today', icon:'🛒' },
     { label:'Active Riders',   val: KF.data.riders.filter(r=>r.status!=='Off Duty').length, sub: 'of '+KF.data.riders.length+' total', icon:'🏍️' },
     { label:'Active Products', val: KF.data.products.filter(p=>p.status==='Active').length, sub: KF.data.products.filter(p=>p.stock===0).length+' out of stock', icon:'🥬' },
-  ].map(s => `<div class="stat-box">
-    <div class="stat-box-icon">${s.icon}</div>
-    <div class="stat-box-label">${s.label}</div>
-    <div class="stat-box-val">${s.val}</div>
-    <div class="stat-box-sub">${s.sub}</div>
+  ].map(s => `<div class="stat-card">
+    <div class="sc-icon">${s.icon}</div>
+    <div class="sc-lbl">${s.label}</div>
+    <div class="sc-val">${s.val}</div>
+    <div class="sc-sub">${s.sub}</div>
   </div>`).join('');
 
-  document.getElementById('dash-recent-orders').innerHTML = KF.data.orders.slice(0,6).map(o =>
+  document.getElementById('dash-orders').innerHTML = KF.data.orders.slice(0,6).map(o =>
     `<div class="fin-row">
       <div><strong style="font-size:14px">${o.id}</strong><br><span style="font-size:12px;color:var(--muted)">${o.customer} · ${o.zone}</span></div>
       <div style="text-align:right">${KF.fmt(o.total)}<br><span class="badge ${statusBadge(o.status)}">${o.status}</span></div>
@@ -52,7 +52,7 @@ function renderDashboard() {
   ).join('');
 
   const lowStock = KF.data.products.filter(p => p.stock <= 12 && p.status === 'Active');
-  document.getElementById('dash-low-stock').innerHTML = lowStock.length
+  document.getElementById('dash-stock').innerHTML = lowStock.length
     ? lowStock.map(p => `<div class="fin-row"><span>${p.emoji} ${p.name}</span><span class="badge ${p.stock===0?'badge-red':'badge-amber'}">${p.stock===0?'Out of Stock':p.stock+' left'}</span></div>`).join('')
     : '<div style="color:var(--muted);font-size:13px;padding:12px 0">✓ All products well stocked</div>';
 }
@@ -68,7 +68,7 @@ function statusBadge(s) {
 // ─── PRODUCTS ───────────────────────────────────────────────────────────────
 function renderProducts() {
   populateCatSelect('p-cat');
-  document.getElementById('products-tbody').innerHTML = KF.data.products.map(p =>
+  document.getElementById('prod-tbody').innerHTML = KF.data.products.map(p =>
     `<tr>
       <td><span style="font-size:22px;margin-right:8px">${p.emoji}</span><strong>${p.name}</strong><br><small class="text-muted">${p.desc.substring(0,50)}…</small></td>
       <td>${KF.catEmoji(p.catId)} ${KF.catName(p.catId)}</td>
@@ -82,7 +82,7 @@ function renderProducts() {
 
 function openAddProduct() {
   KF.state.editingProduct = null;
-  document.getElementById('prod-modal-title').textContent = 'Add Product';
+  document.getElementById('pm-title').textContent = 'Add Product';
   clearForm(['p-name','p-emoji','p-price','p-stock','p-desc']);
   document.getElementById('p-status').value = 'Active';
   openModal('modal-product');
@@ -92,7 +92,7 @@ function editProduct(id) {
   const p = KF.data.products.find(x => x.id === id);
   if (!p) return;
   KF.state.editingProduct = id;
-  document.getElementById('prod-modal-title').textContent = 'Edit Product';
+  document.getElementById('pm-title').textContent = 'Edit Product';
   document.getElementById('p-name').value   = p.name;
   document.getElementById('p-emoji').value  = p.emoji;
   document.getElementById('p-cat').value    = p.catId;
@@ -139,7 +139,7 @@ function delProduct(id) {
 
 // ─── CATEGORIES ─────────────────────────────────────────────────────────────
 function renderCategories() {
-  document.getElementById('cats-tbody').innerHTML = KF.data.categories.map(c => {
+  document.getElementById('cat-tbody').innerHTML = KF.data.categories.map(c => {
     const count = KF.data.products.filter(p => p.catId === c.id).length;
     return `<tr>
       <td style="font-size:32px;line-height:1">${c.emoji}</td>
@@ -194,7 +194,7 @@ function delCat(id) {
 function renderInventory() {
   document.getElementById('inv-tbody').innerHTML = KF.data.products.map(p => {
     const pct = Math.min(100, Math.round((p.stock / 200) * 100));
-    const col  = p.stock === 0 ? 'var(--red)' : p.stock <= 12 ? 'var(--amber)' : 'var(--g2)';
+    const col  = p.stock === 0 ? 'var(--t2)' : p.stock <= 12 ? 'var(--y2)' : 'var(--g2)';
     const status = p.stock === 0 ? 'badge-red' : p.stock <= 12 ? 'badge-amber' : 'badge-green';
     const statusText = p.stock === 0 ? 'Out of Stock' : p.stock <= 12 ? 'Low Stock' : 'In Stock';
     return `<tr>
@@ -244,7 +244,7 @@ function updateOrderStatus(id, status) {
 // ─── RIDERS ─────────────────────────────────────────────────────────────────
 function renderRiders() {
   populateZoneSelect('r-zone');
-  document.getElementById('rider-cards').innerHTML = KF.data.riders.map(r =>
+  document.getElementById('rider-grid').innerHTML = KF.data.riders.map(r =>
     `<div class="rider-card">
       <div class="rider-avatar">🏍️</div>
       <div class="rider-name">${r.name}</div>
@@ -264,7 +264,7 @@ function renderRiders() {
 
 function openAddRider() {
   KF.state.editingRider = null;
-  document.getElementById('rider-modal-title').textContent = 'Add Rider';
+  document.getElementById('rm-title').textContent = 'Add Rider';
   clearForm(['r-name','r-phone','r-plate']);
   openModal('modal-rider');
 }
@@ -273,7 +273,7 @@ function editRider(id) {
   const r = KF.data.riders.find(x => x.id === id);
   if (!r) return;
   KF.state.editingRider = id;
-  document.getElementById('rider-modal-title').textContent = 'Edit Rider';
+  document.getElementById('rm-title').textContent = 'Edit Rider';
   document.getElementById('r-name').value   = r.name;
   document.getElementById('r-phone').value  = r.phone;
   document.getElementById('r-type').value   = r.type;
@@ -314,7 +314,7 @@ function delRider(id) {
 // ─── DELIVERY ALLOCATION ────────────────────────────────────────────────────
 function renderDelivery() {
   const pending = KF.data.orders.filter(o => o.status === 'Pending' || o.status === 'Processing');
-  const el = document.getElementById('delivery-alloc-list');
+  const el = document.getElementById('alloc-list');
   if (!pending.length) {
     el.innerHTML = '<div style="padding:24px;color:var(--muted);text-align:center;font-size:14px">🎉 No pending deliveries to allocate right now.</div>';
     return;
@@ -361,10 +361,10 @@ function renderFinance() {
 
   document.getElementById('fin-stats').innerHTML = [
     { label:'Total Income', val:KF.fmt(totalInc), icon:'📈', col:'var(--g2)' },
-    { label:'Total Expenses', val:KF.fmt(totalExp), icon:'📉', col:'var(--red)' },
-    { label:'Net Profit', val:KF.fmt(profit), icon:'💰', col:profit>=0?'var(--g1)':'var(--red)' },
-    { label:'Profit Margin', val:margin+'%', icon:'📊', col:'var(--amber)' },
-  ].map(s => `<div class="stat-box"><div class="stat-box-icon">${s.icon}</div><div class="stat-box-label">${s.label}</div><div class="stat-box-val" style="color:${s.col};font-size:22px">${s.val}</div></div>`).join('');
+    { label:'Total Expenses', val:KF.fmt(totalExp), icon:'📉', col:'var(--t2)' },
+    { label:'Net Profit', val:KF.fmt(profit), icon:'💰', col:profit>=0?'var(--g1)':'var(--t2)' },
+    { label:'Profit Margin', val:margin+'%', icon:'📊', col:'var(--y2)' },
+  ].map(s => `<div class="stat-card"><div class="sc-icon">${s.icon}</div><div class="sc-lbl">${s.label}</div><div class="sc-val" style="color:${s.col};font-size:22px">${s.val}</div></div>`).join('');
 
   document.getElementById('income-list').innerHTML = KF.data.income.map(i =>
     `<div class="fin-row">
@@ -392,11 +392,11 @@ function renderFinance() {
   document.getElementById('pnl-body').innerHTML =
     `<div class="fin-row"><span class="fin-label">Gross Revenue</span><span class="fin-val income">${KF.fmt(totalInc)}</span></div>` +
     Object.entries(byCat).map(([k,v]) =>
-      `<div class="fin-row" style="padding-left:16px"><span class="fin-label">Less: ${k}</span><span class="fin-val" style="color:var(--red)">(${KF.fmt(v)})</span></div>`
+      `<div class="fin-row" style="padding-left:16px"><span class="fin-label">Less: ${k}</span><span class="fin-val" style="color:var(--t2)">(${KF.fmt(v)})</span></div>`
     ).join('') +
     `<div class="fin-row" style="border-top:2px solid var(--g4);margin-top:8px;padding-top:14px">
       <span><strong>Net Profit / (Loss)</strong></span>
-      <span class="fin-val" style="font-size:18px;color:${profit>=0?'var(--g2)':'var(--red)'}">${KF.fmt(profit)}</span>
+      <span class="fin-val" style="font-size:18px;color:${profit>=0?'var(--g2)':'var(--t2)'}">${KF.fmt(profit)}</span>
     </div>
     <div class="fin-row"><span class="fin-label">Gross Margin</span><span class="fin-val">${margin}%</span></div>`;
 }
@@ -429,7 +429,7 @@ function delExpense(id) { if(confirm('Delete this expense entry?')){ KF.data.exp
 // ─── REPORTS ────────────────────────────────────────────────────────────────
 function renderReport(type) {
   KF.state.activeReport = type;
-  document.querySelectorAll('.report-tab').forEach(t => t.classList.toggle('active', t.dataset.rep === type));
+  document.querySelectorAll('.rep-tab').forEach(t => t.classList.toggle('active', t.dataset.rep === type));
   const container = document.getElementById('report-content');
 
   if (type === 'sales') {
@@ -438,9 +438,9 @@ function renderReport(type) {
     const totalOrders = KF.data.orders.length;
     const totalRev    = KF.data.orders.reduce((s,o)=>s+o.total,0);
     container.innerHTML = `
-      <h4 style="font-family:var(--font-head);font-size:20px;color:var(--g1);margin-bottom:20px">Sales Report — March 2026</h4>
+      <h4 style="font-family:var(--font-h);font-size:20px;color:var(--g1);margin-bottom:20px">Sales Report — March 2026</h4>
       <div class="stats-row" style="margin-bottom:24px">
-        ${[{l:'Total Orders',v:totalOrders},{l:'Gross Revenue',v:KF.fmt(totalRev)},{l:'Avg. Order Value',v:KF.fmt(Math.round(totalRev/totalOrders))},{l:'Delivered',v:KF.data.orders.filter(o=>o.status==='Delivered').length}].map(s=>`<div class="stat-box"><div class="stat-box-label">${s.l}</div><div class="stat-box-val" style="font-size:22px">${s.v}</div></div>`).join('')}
+        ${[{l:'Total Orders',v:totalOrders},{l:'Gross Revenue',v:KF.fmt(totalRev)},{l:'Avg. Order Value',v:KF.fmt(Math.round(totalRev/totalOrders))},{l:'Delivered',v:KF.data.orders.filter(o=>o.status==='Delivered').length}].map(s=>`<div class="stat-card"><div class="sc-lbl">${s.l}</div><div class="sc-val" style="font-size:22px">${s.v}</div></div>`).join('')}
       </div>
       <h5 style="font-weight:700;color:var(--g1);margin-bottom:12px">Revenue by Zone</h5>
       ${Object.entries(byZone).sort((a,b)=>b[1]-a[1]).map(([z,v])=>`<div class="fin-row"><span>📍 ${z}</span><span class="fin-val income">${KF.fmt(v)}</span></div>`).join('')}
@@ -450,16 +450,16 @@ function renderReport(type) {
   } else if (type === 'inventory') {
     const low = KF.data.products.filter(p => p.stock <= 12);
     container.innerHTML = `
-      <h4 style="font-family:var(--font-head);font-size:20px;color:var(--g1);margin-bottom:20px">Inventory Report</h4>
+      <h4 style="font-family:var(--font-h);font-size:20px;color:var(--g1);margin-bottom:20px">Inventory Report</h4>
       <div class="stats-row" style="margin-bottom:24px">
-        ${[{l:'Total Products',v:KF.data.products.length},{l:'In Stock',v:KF.data.products.filter(p=>p.stock>12).length,c:'var(--g2)'},{l:'Low Stock',v:KF.data.products.filter(p=>p.stock>0&&p.stock<=12).length,c:'var(--amber)'},{l:'Out of Stock',v:KF.data.products.filter(p=>p.stock===0).length,c:'var(--red)'}].map(s=>`<div class="stat-box"><div class="stat-box-label">${s.l}</div><div class="stat-box-val" style="font-size:22px;color:${s.c||'var(--g1)'}">${s.v}</div></div>`).join('')}
+        ${[{l:'Total Products',v:KF.data.products.length},{l:'In Stock',v:KF.data.products.filter(p=>p.stock>12).length,c:'var(--g2)'},{l:'Low Stock',v:KF.data.products.filter(p=>p.stock>0&&p.stock<=12).length,c:'var(--y2)'},{l:'Out of Stock',v:KF.data.products.filter(p=>p.stock===0).length,c:'var(--t2)'}].map(s=>`<div class="stat-card"><div class="sc-lbl">${s.l}</div><div class="sc-val" style="font-size:22px;color:${s.c||'var(--g1)'}">${s.v}</div></div>`).join('')}
       </div>
       <h5 style="font-weight:700;color:var(--g1);margin-bottom:12px">Products Requiring Restock</h5>
       ${low.map(p=>`<div class="fin-row"><span>${p.emoji} ${p.name}</span><span class="badge ${p.stock===0?'badge-red':'badge-amber'}">${p.stock===0?'Out of Stock':p.stock+' remaining'}</span></div>`).join('') || '<p class="text-muted" style="padding:12px 0">All products well stocked ✓</p>'}`;
 
   } else if (type === 'riders') {
     container.innerHTML = `
-      <h4 style="font-family:var(--font-head);font-size:20px;color:var(--g1);margin-bottom:20px">Rider Performance Report</h4>
+      <h4 style="font-family:var(--font-h);font-size:20px;color:var(--g1);margin-bottom:20px">Rider Performance Report</h4>
       <div class="admin-table-wrap">
       <table><thead><tr><th>Rider</th><th>Type</th><th>Zone</th><th>Deliveries</th><th>Rating</th><th>Status</th></tr></thead><tbody>
       ${KF.data.riders.sort((a,b)=>b.deliveries-a.deliveries).map(r=>`<tr>
@@ -478,7 +478,7 @@ function renderReport(type) {
     const byCat    = {};
     KF.data.expenses.forEach(e => { byCat[e.cat] = (byCat[e.cat]||0)+e.amt; });
     container.innerHTML = `
-      <h4 style="font-family:var(--font-head);font-size:20px;color:var(--g1);margin-bottom:20px">Financial Summary — March 2026</h4>
+      <h4 style="font-family:var(--font-h);font-size:20px;color:var(--g1);margin-bottom:20px">Financial Summary — March 2026</h4>
       <div class="fin-row"><span class="fin-label" style="font-size:15px;font-weight:700">INCOME</span><span></span></div>
       ${KF.data.income.map(i=>`<div class="fin-row" style="padding-left:16px"><span class="fin-label">${i.desc} <em style="font-size:11px">(${i.cat})</em></span><span class="fin-val income">${KF.fmt(i.amt)}</span></div>`).join('')}
       <div class="fin-row" style="font-weight:700"><span>Total Income</span><span class="fin-val income">${KF.fmt(totalInc)}</span></div>
@@ -487,7 +487,7 @@ function renderReport(type) {
       <div class="fin-row" style="font-weight:700"><span>Total Expenses</span><span class="fin-val expense">(${KF.fmt(totalExp)})</span></div>
       <div class="fin-row" style="border-top:3px solid var(--g4);margin-top:12px;padding-top:16px;font-size:17px">
         <span><strong>Net Profit</strong></span>
-        <span class="fin-val" style="font-size:20px;color:${profit>=0?'var(--g2)':'var(--red)'}">${KF.fmt(profit)}</span>
+        <span class="fin-val" style="font-size:20px;color:${profit>=0?'var(--g2)':'var(--t2)'}">${KF.fmt(profit)}</span>
       </div>
       <div class="fin-row"><span class="fin-label">Gross Margin</span><span class="fin-val">${totalInc?((profit/totalInc)*100).toFixed(1):'0'}%</span></div>`;
   }
@@ -496,7 +496,7 @@ function renderReport(type) {
 // ─── CUSTOMERS ──────────────────────────────────────────────────────────────
 function renderCustomers() {
   const customers = KF.data.users.filter(u => u.role === 'customer');
-  document.getElementById('customers-tbody').innerHTML = customers.length
+  document.getElementById('cust-tbody').innerHTML = customers.length
     ? customers.map(u => `<tr>
         <td><strong>${u.name}</strong></td>
         <td>${u.email}</td>

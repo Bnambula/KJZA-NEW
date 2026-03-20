@@ -200,7 +200,7 @@ function buildProductCard(p) {
   const low = p.stock > 0 && p.stock <= 12;
   const hasDiscount = p.origPrice && p.origPrice > p.price;
   const discPct = hasDiscount ? Math.round((1 - p.price/p.origPrice)*100) : 0;
-  const badgeMap = {'Best Seller':'badge-orange','Fresh Today':'badge-green','Organic':'badge-green','Low Stock':'badge-yellow','Premium':'badge-blue','Imported':'badge-blue','Farm Fresh':'badge-green','28% Off':'badge-orange','20% Off':'badge-orange','14% Off':'badge-orange','18% Off':'badge-orange'};
+  const badgeMap = {'Best Seller':'badge-orange','Fresh Today':'badge-green','Organic':'badge-green','Low Stock':'badge-yellow','Premium':'badge-blue','Imported':'badge-blue','Farm Fresh':'badge-green','Local':'badge-local','Staple':'badge-local','28% Off':'badge-orange','20% Off':'badge-orange','17% Off':'badge-orange','14% Off':'badge-orange','18% Off':'badge-orange'};
   const badgeClass = p.badge ? (badgeMap[p.badge]||'badge-orange') : '';
   return '<div class="pcard" onclick="openQuickView('+p.id+')">' +
     '<div class="pcard-box"><div class="box-frame">' +
@@ -504,3 +504,111 @@ function continueShopping() {
   KF.state.selectedZone = null;
   showPage('page-shop');
 }
+
+// ─── RECIPES ────────────────────────────────────────────────────
+
+// Recipe ingredient definitions — each id matches a product in data.js
+const RECIPES = {
+  luwombo: {
+    name: 'Luwombo',
+    ingredients: [
+      { id:43, qty:1, note:'1 whole chicken or 1kg beef' },
+      { id:38, qty:2, note:'for wrapping (2 bunches)' },
+      { id:45, qty:1, note:'ebinyebwa sauce base' },
+      { id:11, qty:1, note:'2 large onions' },
+      { id:10, qty:1, note:'3 ripe tomatoes' },
+      { id:39, qty:1, note:'1 bunch' },
+      { id:31, qty:1, note:'1 thumb fresh ginger' },
+      { id:41, qty:1, note:'bilungo paste for flavour' },
+      { id:32, qty:1, note:'to taste' },
+      { id:46, qty:1, note:'1 teaspoon' },
+      { id:47, qty:1, note:'for frying' },
+      { id:21, qty:1, note:'to serve' },
+    ]
+  },
+  nsenene: {
+    name: 'Nsenene',
+    ingredients: [
+      { id:42, qty:1, note:'500g pre-cleaned nsenene' },
+      { id:11, qty:1, note:'2 medium onions' },
+      { id:39, qty:1, note:'1 bunch spring onions' },
+      { id:32, qty:1, note:'2 fresh chilli peppers' },
+      { id:7,  qty:1, note:'1 lemon, juice only' },
+      { id:47, qty:1, note:'2 tablespoons' },
+    ]
+  },
+  bilungo: {
+    name: 'Bilungo Stew',
+    ingredients: [
+      { id:15, qty:1, note:'the eggplant / bilungo base — or use fresh' },
+      { id:41, qty:1, note:'pre-made bilungo paste' },
+      { id:10, qty:1, note:'4 large ripe tomatoes' },
+      { id:11, qty:1, note:'2 onions' },
+      { id:39, qty:1, note:'1 bunch spring onions' },
+      { id:18, qty:1, note:'fresh dodo / African nightshade' },
+      { id:45, qty:1, note:'ebinyebwa for richness' },
+      { id:43, qty:1, note:'optional — chicken pieces' },
+      { id:32, qty:1, note:'to taste' },
+      { id:47, qty:1, note:'3 tablespoons cooking oil' },
+      { id:21, qty:1, note:'matooke to serve' },
+    ]
+  }
+};
+
+function renderAllRecipeIngredients() {
+  Object.keys(RECIPES).forEach(function(key) {
+    renderRecipeIngredients(key);
+  });
+}
+
+function renderRecipeIngredients(key) {
+  var recipe = RECIPES[key];
+  var el = document.getElementById(key + '-ingredients');
+  if (!el) return;
+  el.innerHTML = recipe.ingredients.map(function(ing) {
+    var p = KF.data.products.find(function(x){ return x.id === ing.id; });
+    if (!p) return '';
+    var inStock = p.stock > 0;
+    return '<div class="ingredient-row' + (inStock ? '' : ' ingredient-oos') + '">' +
+      '<div class="ing-emoji">' + p.emoji + '</div>' +
+      '<div class="ing-info">' +
+        '<div class="ing-name">' + p.name + '</div>' +
+        '<div class="ing-note">' + ing.note + '</div>' +
+      '</div>' +
+      '<div class="ing-right">' +
+        '<div class="ing-price">' + KF.fmt(p.price) + '</div>' +
+        (inStock
+          ? '<button class="ing-add-btn" onclick="addToCart(' + p.id + ');this.textContent=\'✓\';this.style.background=\'var(--g3)\'" >+ Add</button>'
+          : '<span class="ing-oos-tag">Soon</span>') +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function switchRecipe(key, btn) {
+  // hide all recipe cards
+  document.querySelectorAll('.recipe-card').forEach(function(c){ c.classList.remove('show'); });
+  // deactivate all tabs
+  document.querySelectorAll('.recipe-tab').forEach(function(t){ t.classList.remove('active'); });
+  // show selected
+  var card = document.getElementById('recipe-' + key);
+  if (card) card.classList.add('show');
+  if (btn) btn.classList.add('active');
+}
+
+function addRecipeToCart(key) {
+  var recipe = RECIPES[key];
+  var added = 0;
+  recipe.ingredients.forEach(function(ing) {
+    var p = KF.data.products.find(function(x){ return x.id === ing.id; });
+    if (p && p.stock > 0) {
+      var ex = KF.state.cart.find(function(i){ return i.pid === p.id; });
+      if (ex) { ex.qty = Math.min(ex.qty + 1, p.stock); }
+      else { KF.state.cart.push({ pid: p.id, qty: 1 }); }
+      added++;
+    }
+  });
+  updateCartUI();
+  toast(added + ' ingredients from ' + recipe.name + ' added to cart! 🛒', '🍃');
+}
+

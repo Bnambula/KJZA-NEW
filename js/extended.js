@@ -150,23 +150,7 @@ function saveSacco() {
   closeModal('modal-sacco'); renderHR(); toast('SACCO entry saved!','💰');
 }
 
-// ── OVERRIDE showSec to handle new sections ──────────────────────
-const _origShowSec = typeof showAdminSection !== 'undefined' ? showAdminSection : null;
-function showSec(id) {
-  KF.state.activeAdminSection = id;
-  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('show'));
-  document.getElementById('asec-'+id).classList.add('show');
-  document.querySelectorAll('.side-item[data-sec]').forEach(i=>i.classList.toggle('active',i.dataset.sec===id));
-  const map = {
-    dashboard:renderDashboard, products:renderProducts, categories:renderCategories,
-    inventory:renderInventory, orders:renderOrders, riders:renderRiders,
-    delivery:renderDelivery,   finance:renderFinance,  customers:renderCustomers,
-    tickets:renderTickets, procurement:renderProcurement, vendors:renderVendors,
-    hr:renderHR, feedback:renderAdminFeedback,
-    reports:()=>renderReport(KF.state.activeReport, document.querySelector('.rep-tab.active')),
-  };
-  if(map[id]) map[id]();
-}
+// showSec is now managed by fixes.js
 
 // ── FEEDBACK ADMIN ───────────────────────────────────────────────
 function renderAdminFeedback() {
@@ -374,11 +358,4 @@ function removeSubscriber(email) {
   toast('Subscriber removed', '🗑');
 }
 
-// ── PATCH showSec for new sections ───────────────────────────────
-var _baseShowSec = showSec;
-showSec = function(id) {
-  if (id === 'vouchers')   { KF.state.activeAdminSection=id; document.querySelectorAll('.admin-section').forEach(function(s){s.classList.remove('show');}); document.getElementById('asec-vouchers').classList.add('show'); document.querySelectorAll('.side-item[data-sec]').forEach(function(i){i.classList.toggle('active',i.dataset.sec===id);}); renderVouchers(); return; }
-  if (id === 'loyalty')    { KF.state.activeAdminSection=id; document.querySelectorAll('.admin-section').forEach(function(s){s.classList.remove('show');}); document.getElementById('asec-loyalty').classList.add('show'); document.querySelectorAll('.side-item[data-sec]').forEach(function(i){i.classList.toggle('active',i.dataset.sec===id);}); renderLoyalty(); return; }
-  if (id === 'newsletter') { KF.state.activeAdminSection=id; document.querySelectorAll('.admin-section').forEach(function(s){s.classList.remove('show');}); document.getElementById('asec-newsletter').classList.add('show'); document.querySelectorAll('.side-item[data-sec]').forEach(function(i){i.classList.toggle('active',i.dataset.sec===id);}); renderNewsletterAdmin(); return; }
-  _baseShowSec(id);
-};
+// showSec patch moved to fixes.js
