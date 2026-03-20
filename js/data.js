@@ -60,8 +60,13 @@ const KF = {
       { name:'Lubowa',     fee:10000 },
     ],
     users: [
-      { email:'admin@kujaza.com', pass:'admin123', name:'Admin', role:'admin' },
-      { email:'sarah@email.com',  pass:'pass123',  name:'Sarah Nakato', role:'customer', phone:'+256 701 111 222', orders:3, spent:89500, joined:'Jan 2026' },
+      { email:'admin@kujaza.com',    pass:'admin123',  name:'Admin',           role:'admin' },
+      { email:'sarah@email.com',     pass:'pass123',   name:'Sarah Nakato',    role:'customer',  phone:'+256 701 111 222', orders:3, spent:89500, joined:'Jan 2026' },
+      { email:'hr@kujaza.com',       pass:'hr1234',    name:'Grace Namutebi',  role:'hr',        dept:'HR',        title:'HR Manager',       empId:'EMP-004' },
+      { email:'accounts@kujaza.com', pass:'acc1234',   name:'Paul Kigongo',    role:'accounts',  dept:'Finance',   title:'Finance Officer',  empId:'EMP-005' },
+      { email:'alex@kujaza.com',     pass:'staff123',  name:'Alex Mugisha',    role:'staff',     dept:'Operations',title:'Senior Driver',     empId:'EMP-001' },
+      { email:'brian@kujaza.com',    pass:'staff123',  name:'Brian Ssali',     role:'staff',     dept:'Operations',title:'Driver',            empId:'EMP-002' },
+      { email:'agnes@kujaza.com',    pass:'staff123',  name:'Agnes Nakamya',   role:'staff',     dept:'Operations',title:'Customer Care',     empId:'EMP-003' },
     ],
     income: [
       { id:1, desc:'Online B2C sales — March week 1', amt:1250000, date:'2026-03-08', cat:'Product Sales'  },
@@ -78,7 +83,31 @@ const KF = {
       { id:5, desc:'Cold storage electricity',           amt:60000,  date:'2026-03-14', cat:'Storage'        },
       { id:6, desc:'Admin & mobile data',                amt:35000,  date:'2026-03-15', cat:'Admin'          },
     ],
-    nextIds: { order:45, product:23, cat:5, rider:6, income:6, expense:7 }
+    feedback: [
+      { id:1, name:'James Okello',   email:'james@email.com',  rating:5, msg:'Absolutely fresh avocados — best I have ever ordered online in Kampala!', date:'2026-03-10', status:'Approved',  featured:true  },
+      { id:2, name:'Mary Atim',      email:'mary@email.com',   rating:4, msg:'Fast delivery to Najjera. The tomatoes were really fresh. Will order again.', date:'2026-03-12', status:'Approved',  featured:true  },
+      { id:3, name:'Robert Mutebi',  email:'robert@email.com', rating:5, msg:'The weekly veggie box is great value. My family loves it!', date:'2026-03-14', status:'Approved',  featured:false },
+      { id:4, name:'Annet Nambi',    email:'annet@email.com',  rating:3, msg:'Delivery was a bit late but produce quality was good. Hope timing improves.', date:'2026-03-15', status:'Pending', featured:false },
+      { id:5, name:'Peter Ssenyonga',email:'peter@email.com',  rating:5, msg:'I supply a restaurant and Kujaza Fresh has been incredibly reliable for our weekly orders.', date:'2026-03-16', status:'Pending', featured:false },
+    ],
+    notices: [
+      { id:1, title:'March Payroll Processed',        body:'Salaries for March 2026 have been processed and will reflect by 25th March. Check your payslip on the staff portal.', dept:'All Staff',   date:'2026-03-18', postedBy:'HR Manager',      priority:'high'   },
+      { id:2, title:'New Delivery Route Guidelines',  body:'Riders please review the updated route map for Entebbe and Kitende zones. New protocols are effective 20th March.', dept:'Operations',   date:'2026-03-17', postedBy:'Operations Manager',priority:'normal' },
+      { id:3, title:'SACCO Loan Applications Open',   body:'SACCO loan applications for Q2 2026 are now open. Maximum loan is UGX 2,000,000. Apply via the staff portal by 30th March.', dept:'All Staff', date:'2026-03-16', postedBy:'HR Manager', priority:'normal' },
+    ],
+    hrInbox: [
+      { id:1, from:'HR Manager',       to:'Alex Mugisha',   subject:'Leave Application Approved',          body:'Your annual leave from 20–27 March has been approved. Enjoy your time off!',  date:'2026-03-18', read:false },
+      { id:2, from:'Operations Manager',to:'Brian Ssali',   subject:'New Delivery Zone Assignment',         body:'You have been assigned Bugolobi zone effective from Monday 23rd March.',      date:'2026-03-17', read:true  },
+      { id:3, from:'HR Manager',       to:'Agnes Nakamya',  subject:'Customer Ticket TKT-002 — Action Required', body:'Please follow up on the avocado quality complaint from James Kato. Resolve by EOD.',date:'2026-03-16', read:false },
+    ],
+    payslips: [
+      { id:1, empId:'EMP-001', name:'Alex Mugisha',  month:'March 2026', basic:850000, allowances:120000, deductions:85000,  sacco:50000, net:835000  },
+      { id:2, empId:'EMP-002', name:'Brian Ssali',   month:'March 2026', basic:750000, allowances:100000, deductions:75000,  sacco:40000, net:735000  },
+      { id:3, empId:'EMP-003', name:'Agnes Nakamya', month:'March 2026', basic:650000, allowances:80000,  deductions:65000,  sacco:30000, net:635000  },
+      { id:4, empId:'EMP-004', name:'Grace Namutebi',month:'March 2026', basic:1200000,allowances:200000, deductions:120000, sacco:80000, net:1200000 },
+      { id:5, empId:'EMP-005', name:'Paul Kigongo',  month:'March 2026', basic:1000000,allowances:150000, deductions:100000, sacco:60000, net:990000  },
+    ],
+    nextIds: { order:45, product:23, cat:5, rider:6, income:6, expense:7, feedback:4, notice:4, inbox:4, payslip:4 }
   },
 
   // ── STATE ─────────────────────────────────────

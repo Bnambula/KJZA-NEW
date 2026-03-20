@@ -156,15 +156,75 @@ function showSec(id) {
   KF.state.activeAdminSection = id;
   document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('show'));
   document.getElementById('asec-'+id).classList.add('show');
-  document.querySelectorAll('.side-item').forEach(i=>i.classList.toggle('active',i.dataset.sec===id));
+  document.querySelectorAll('.side-item[data-sec]').forEach(i=>i.classList.toggle('active',i.dataset.sec===id));
   const map = {
     dashboard:renderDashboard, products:renderProducts, categories:renderCategories,
     inventory:renderInventory, orders:renderOrders, riders:renderRiders,
     delivery:renderDelivery,   finance:renderFinance,  customers:renderCustomers,
     tickets:renderTickets, procurement:renderProcurement, vendors:renderVendors,
-    hr:renderHR, reports:()=>renderReport(KF.state.activeReport,document.querySelector('.rep-tab.active')),
+    hr:renderHR, feedback:renderAdminFeedback,
+    reports:()=>renderReport(KF.state.activeReport, document.querySelector('.rep-tab.active')),
   };
   if(map[id]) map[id]();
+}
+
+// ── FEEDBACK ADMIN ───────────────────────────────────────────────
+function renderAdminFeedback() {
+  const pending  = (KF.data.feedback||[]).filter(f => f.status === 'Pending');
+  const approved = (KF.data.feedback||[]).filter(f => f.status === 'Approved');
+  const rejected = (KF.data.feedback||[]).filter(f => f.status === 'Rejected');
+  // Stats
+  document.getElementById('fb-stats').innerHTML = [
+    { label:'Total Submissions', val: KF.data.feedback.length, icon:'⭐', col:'var(--o2)' },
+    { label:'Pending Review',    val: pending.length,           icon:'⏳', col:'var(--y2)' },
+    { label:'Approved',          val: approved.length,          icon:'✅', col:'var(--g3)' },
+    { label:'Featured',          val: (KF.data.feedback||[]).filter(f=>f.featured).length, icon:'🌟', col:'var(--o1)' },
+  ].map(s=>`<div class="stat-card"><div class="sc-icon">${s.icon}</div><div class="sc-lbl">${s.label}</div><div class="sc-val" style="color:${s.col}">${s.val}</div></div>`).join('');
+  // Pending
+  document.getElementById('fb-pending').innerHTML = pending.length
+    ? pending.map(f => `
+        <div class="fb-review-row">
+          <div class="fb-stars">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</div>
+          <div class="fb-info">
+            <div class="fb-name">${f.name} <span class="fb-email">&lt;${f.email}&gt;</span> · <span style="color:var(--muted);font-size:12px">${f.date}</span></div>
+            <div class="fb-msg">"${f.msg}"</div>
+          </div>
+          <div class="fb-actions">
+            <button class="btn-edit" onclick="moderateFeedback(${f.id},'Approved',false)">✓ Approve</button>
+            <button class="btn-edit" style="background:var(--y5);color:var(--y1);border-color:var(--y4)" onclick="moderateFeedback(${f.id},'Approved',true)">🌟 Feature</button>
+            <button class="btn-del"  onclick="moderateFeedback(${f.id},'Rejected',false)">✕ Reject</button>
+          </div>
+        </div>`).join('')
+    : '<div class="empty-state">⏳ No pending reviews — you are all caught up!</div>';
+  // Approved
+  document.getElementById('fb-approved').innerHTML = approved.length
+    ? approved.map(f => `
+        <div class="fb-review-row">
+          <div class="fb-stars approved-stars">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</div>
+          <div class="fb-info">
+            <div class="fb-name">${f.name} · <span style="color:var(--muted);font-size:12px">${f.date}</span> ${f.featured?'<span class="badge badge-orange" style="margin-left:6px">🌟 Featured</span>':''}</div>
+            <div class="fb-msg">"${f.msg}"</div>
+          </div>
+          <div class="fb-actions">
+            <button class="btn-edit" style="font-size:11px" onclick="toggleFeatured(${f.id})">${f.featured?'Unfeature':'Feature'}</button>
+            <button class="btn-del"  style="font-size:11px" onclick="moderateFeedback(${f.id},'Rejected',false)">Remove</button>
+          </div>
+        </div>`).join('')
+    : '<div class="empty-state">No approved reviews yet.</div>';
+}
+
+function moderateFeedback(id, status, featured) {
+  const f = (KF.data.feedback||[]).find(x => x.id === id);
+  if (!f) return;
+  f.status   = status;
+  f.featured = featured;
+  renderAdminFeedback();
+  renderFeedbackReviews();
+  toast(status === 'Approved' ? (featured ? 'Review featured on homepage! 🌟' : 'Review approved ✅') : 'Review rejected', status==='Approved'?'✅':'❌');
+}
+function toggleFeatured(id) {
+  const f = (KF.data.feedback||[]).find(x => x.id === id);
+  if (f) { f.featured = !f.featured; renderAdminFeedback(); renderFeedbackReviews(); toast(f.featured ? 'Review featured! 🌟' : 'Feature removed', '⭐'); }
 }
 
 // ── PATCH DASHBOARD to include tickets & procurement ────────────
