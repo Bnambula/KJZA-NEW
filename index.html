@@ -80,6 +80,43 @@
     </div>
   </div>
 
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="filter-inner">
+      <div class="filter-label">🔧 Filter by:</div>
+      <div class="filter-chips">
+        <button class="fchip active" onclick="setFilter('all',this)">All Products</button>
+        <button class="fchip" onclick="setFilter('discount',this)">🏷 On Sale</button>
+        <button class="fchip" onclick="setFilter('organic',this)">🌱 Organic</button>
+        <button class="fchip" onclick="setFilter('fresh',this)">⚡ Fresh Today</button>
+        <button class="fchip" onclick="setFilter('seasonal',this)">🌿 Seasonal</button>
+        <button class="fchip" onclick="setFilter('premium',this)">⭐ Premium</button>
+        <button class="fchip" onclick="setFilter('instock',this)">✅ In Stock</button>
+      </div>
+      <div class="filter-sort">
+        <label style="font-size:12px;font-weight:700;color:var(--muted)">Sort:</label>
+        <select onchange="setSort(this.value)" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1.5px solid var(--c3);background:#fff;font-weight:600">
+          <option value="default">Default</option>
+          <option value="price-low">Price: Low → High</option>
+          <option value="price-high">Price: High → Low</option>
+          <option value="discount">Biggest Discount</option>
+          <option value="name">Name A–Z</option>
+        </select>
+      </div>
+      <div class="filter-price">
+        <label style="font-size:12px;font-weight:700;color:var(--muted)">Max Price:</label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="range" min="1000" max="40000" step="1000" value="40000" id="price-range"
+            oninput="setPriceFilter(this.value)" style="width:100px;accent-color:var(--o2)">
+          <span id="price-label" style="font-size:12px;font-weight:700;color:var(--o1);min-width:60px">Any</span>
+        </div>
+      </div>
+      <div class="filter-results">
+        <span id="filter-count" style="font-size:12px;color:var(--muted);font-weight:600">25 products</span>
+      </div>
+    </div>
+  </div>
+
   <!-- SHOP GRID — white bg (product focus) -->
   <section class="shop-sec">
     <div class="shop-inner">
@@ -113,6 +150,29 @@
     </div>
   </section>
 
+  <!-- LOYALTY & REWARDS SECTION -->
+  <section class="rewards-sec">
+    <div class="rewards-inner">
+      <div class="rewards-left">
+        <div class="sec-eye o">Kujaza Rewards</div>
+        <h2 style="font-family:var(--font-h);font-size:32px;color:#fff;margin-bottom:12px">Earn Points.<br>Get Rewarded.</h2>
+        <p style="color:rgba(255,255,255,.78);font-size:15px;margin-bottom:24px">Every order earns you Kujaza Points. Redeem them for discounts, free delivery, and exclusive offers.</p>
+        <div class="tier-cards">
+          <div class="tier-card bronze"><div class="tier-icon">🥉</div><div class="tier-name">Bronze</div><div class="tier-pts">0–299 pts</div></div>
+          <div class="tier-card silver"><div class="tier-icon">🥈</div><div class="tier-name">Silver</div><div class="tier-pts">300–599 pts</div></div>
+          <div class="tier-card gold"><div class="tier-icon">🥇</div><div class="tier-name">Gold</div><div class="tier-pts">600+ pts</div></div>
+        </div>
+        <button class="btn-promo" style="margin-top:24px;background:#fff;color:var(--g2)" onclick="openModal('modal-signup')">Join & Start Earning →</button>
+      </div>
+      <div class="rewards-right">
+        <div class="voucher-display">
+          <div class="vd-title">🎟 Available Vouchers</div>
+          <div id="public-vouchers"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- CUSTOMER FEEDBACK SECTION — cream bg -->
   <section class="feedback-sec" id="feedback-section">
     <div class="feedback-inner">
@@ -121,9 +181,7 @@
         <h2 class="sec-title" style="font-size:32px;text-align:center">Real Reviews from Real Customers</h2>
         <p style="color:var(--muted);font-size:15px;margin-top:8px">Fresh produce, honest opinions.</p>
       </div>
-      <!-- Approved reviews display -->
       <div class="reviews-grid" id="reviews-grid"></div>
-      <!-- Leave a review form -->
       <div class="review-form-wrap">
         <div class="review-form-card">
           <h4 class="rfc-title">Leave Your Review</h4>
@@ -151,33 +209,99 @@
     </div>
   </section>
 
+  <!-- NEWSLETTER SECTION -->
+  <section class="newsletter-sec">
+    <div class="newsletter-inner">
+      <div class="nl-left">
+        <div class="sec-eye o" style="color:var(--y3)">Stay in the loop</div>
+        <h2 style="font-family:var(--font-h);font-size:28px;color:#fff;margin:8px 0">Get Fresh Deals in Your Inbox</h2>
+        <p style="color:rgba(255,255,255,.7);font-size:14px">Weekly offers, seasonal produce alerts, and exclusive subscriber discounts. No spam — ever.</p>
+      </div>
+      <div class="nl-right">
+        <div id="nl-msg"></div>
+        <div class="nl-form">
+          <input id="nl-email" type="email" placeholder="your@email.com" style="flex:1;border-radius:10px 0 0 10px;border-right:none">
+          <button class="nl-btn" onclick="subscribeNewsletter()">Subscribe →</button>
+        </div>
+        <p style="font-size:11px;color:rgba(255,255,255,.5);margin-top:8px">By subscribing you agree to receive marketing emails. Unsubscribe anytime.</p>
+      </div>
+    </div>
+  </section>
 
+  <!-- FOOTER — near-black bg (anchor) -->
   <footer class="site-footer">
+    <!-- Social bar -->
+    <div class="social-bar">
+      <div class="social-inner">
+        <span style="font-size:13px;color:rgba(255,255,255,.5);font-weight:600">Follow us:</span>
+        <a class="social-btn" href="#" title="Facebook">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          Facebook
+        </a>
+        <a class="social-btn" href="#" title="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          Instagram
+        </a>
+        <a class="social-btn" href="#" title="WhatsApp">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          WhatsApp
+        </a>
+        <a class="social-btn" href="#" title="TikTok">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.67a8.27 8.27 0 004.83 1.55V6.77a4.85 4.85 0 01-1.06-.08z"/></svg>
+          TikTok
+        </a>
+        <a class="social-btn" href="#" title="Twitter/X">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          X (Twitter)
+        </a>
+      </div>
+    </div>
     <div class="footer-grid">
       <div class="f-brand">
         <div class="logo">Kujaza <span>Fresh</span></div>
         <p>Filling homes & businesses with the freshest produce Uganda's farms offer. Farm-sourced, quality-graded, reliably delivered across Greater Kampala.</p>
+        <div class="footer-badges">
+          <div class="f-badge">🌱 Organic</div>
+          <div class="f-badge">🚚 Same Day</div>
+          <div class="f-badge">📱 Mobile Money</div>
+        </div>
       </div>
       <div class="f-col">
         <h5>Shop</h5>
-        <a href="#">Fresh Fruits</a><a href="#">Fresh Vegetables</a>
-        <a href="#">Dried Grains</a><a href="#">Other Produce</a>
-        <a href="#">Basket Combos</a><a href="#">Student Offers</a>
+        <a href="#" onclick="setCat('all');document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">All Products</a>
+        <a href="#" onclick="setCat(1);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">Fresh Fruits</a>
+        <a href="#" onclick="setCat(2);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">Fresh Vegetables</a>
+        <a href="#" onclick="setCat(3);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">Dried Grains</a>
+        <a href="#" onclick="setFilter('discount',null)">On Sale</a>
+        <a href="#" onclick="document.querySelector('.specials').scrollIntoView({behavior:'smooth'})">Basket Combos</a>
       </div>
       <div class="f-col">
         <h5>Company</h5>
-        <a href="#">About Us</a><a href="#">Our Farmers</a>
-        <a href="#">Quality Promise</a><a href="#">Careers</a>
+        <a href="#">About Us</a>
+        <a href="#">Our Farmers</a>
+        <a href="#">Quality Promise</a>
+        <a href="#">Careers</a>
         <a href="#">Vendor Partner</a>
       </div>
       <div class="f-col">
         <h5 class="help-trigger" onclick="openModal('modal-admin-login')" title="Staff & Admin Access">Help<span class="help-dot">.</span></h5>
-        <a href="#">Delivery Zones</a><a href="#">Track Order</a>
-        <a href="#">Returns Policy</a><a href="#">Raise a Ticket</a>
+        <a href="#">Delivery Zones</a>
+        <a href="#">Track Order</a>
+        <a href="#">Returns Policy</a>
+        <a href="#" onclick="openModal('modal-ticket')">Raise a Ticket</a>
         <a href="#">Contact Us</a>
       </div>
     </div>
-    <div class="f-bottom">© 2026 Kujaza Fresh Ltd · Kampala, Uganda · All rights reserved</div>
+    <div class="f-divider"></div>
+    <div class="f-bottom-row">
+      <div class="f-bottom">© 2026 Kujaza Fresh Ltd · Kampala, Uganda · All rights reserved</div>
+      <div class="f-payment-icons">
+        <span class="pay-icon-chip">📱 MTN Money</span>
+        <span class="pay-icon-chip">📱 Airtel Money</span>
+        <span class="pay-icon-chip">💵 Cash on Delivery</span>
+        <span class="pay-icon-chip">🏦 Bank Transfer</span>
+      </div>
+    </div>
   </footer>
 </div>
 
@@ -267,6 +391,9 @@
       <div class="side-lbl">People</div>
       <div class="side-item" data-sec="customers"  onclick="showSec('customers')"><span class="side-icon">👥</span> Customers</div>
       <div class="side-item" data-sec="feedback"   onclick="showSec('feedback')"><span class="side-icon">⭐</span> Feedback</div>
+      <div class="side-item" data-sec="vouchers"   onclick="showSec('vouchers')"><span class="side-icon">🎟</span> Vouchers</div>
+      <div class="side-item" data-sec="loyalty"    onclick="showSec('loyalty')"><span class="side-icon">🏅</span> Loyalty / Rewards</div>
+      <div class="side-item" data-sec="newsletter" onclick="showSec('newsletter')"><span class="side-icon">📧</span> Newsletter</div>
     </aside>
 
     <main class="admin-main">
@@ -436,6 +563,35 @@
         <div class="a-card">
           <div class="a-card-hd"><h4>All Customers</h4></div>
           <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Orders</th><th>Total Spent</th><th>Joined</th></tr></thead><tbody id="cust-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- VOUCHERS -->
+      <div class="admin-section" id="asec-vouchers">
+        <div class="page-hd"><h2>Vouchers & Promo Codes</h2><p>Create and manage discount vouchers, promo codes and flash offers</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>All Vouchers</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-voucher')">+ Create Voucher</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Description</th><th>Type</th><th>Value</th><th>Min Order</th><th>Used / Max</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead><tbody id="voucher-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- LOYALTY -->
+      <div class="admin-section" id="asec-loyalty">
+        <div class="page-hd"><h2>Loyalty & Rewards</h2><p>Track customer points, tiers, and redemptions</p></div>
+        <div class="stats-row" id="loyalty-stats"></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Loyalty Members</h4></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Customer</th><th>Tier</th><th>Points</th><th>Redeemed</th><th>Total Spent</th><th>Action</th></tr></thead><tbody id="loyalty-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- NEWSLETTER -->
+      <div class="admin-section" id="asec-newsletter">
+        <div class="page-hd"><h2>Newsletter Subscribers</h2><p>Manage email subscribers and send campaigns</p></div>
+        <div class="stats-row" id="nl-stats"></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Subscribers</h4></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Email</th><th>Date Subscribed</th><th>Status</th><th>Action</th></tr></thead><tbody id="nl-tbody"></tbody></table></div>
         </div>
       </div>
 
@@ -907,6 +1063,28 @@
     </div>
   </div>
 </div>
+<!-- Voucher modal -->
+<div class="modal-bd" id="modal-voucher">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-hd"><h3>Create Voucher</h3><button class="modal-x" onclick="closeModal('modal-voucher')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Promo Code *</label><input id="vc-code" placeholder="e.g. SAVE20" style="text-transform:uppercase"></div>
+        <div class="form-group"><label>Type</label><select id="vc-type"><option value="percent">Percentage %</option><option value="fixed">Fixed Amount (UGX)</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Value *</label><input id="vc-val" type="number" min="1" placeholder="e.g. 15 or 20000"></div>
+        <div class="form-group"><label>Min Order (UGX)</label><input id="vc-min" type="number" min="0" placeholder="20000"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Max Uses</label><input id="vc-max" type="number" min="1" placeholder="100"></div>
+        <div class="form-group"><label>Expiry Date</label><input id="vc-exp" type="date"></div>
+      </div>
+      <div class="form-group"><label>Description *</label><input id="vc-desc" placeholder="e.g. 15% off your first order"></div>
+      <button class="btn btn-primary btn-full" onclick="saveVoucher()">Create Voucher</button>
+    </div>
+  </div>
+</div>
 <!-- Notice modal (HR) -->
 <div class="modal-bd" id="modal-notice">
   <div class="modal-box" style="max-width:460px">
@@ -919,6 +1097,28 @@
         <div class="form-group"><label>Priority</label><select id="nt-pri"><option value="normal">Normal</option><option value="high">High</option></select></div>
       </div>
       <button class="btn btn-green btn-full" onclick="postNotice()">Post Notice</button>
+    </div>
+  </div>
+</div>
+
+<!-- Quick View Modal -->
+<div class="modal-bd" id="modal-quickview">
+  <div class="modal-box" style="max-width:680px;border-top:4px solid var(--o2)">
+    <div class="modal-hd"><h3>Product Details</h3><button class="modal-x" onclick="closeModal('modal-quickview')">✕</button></div>
+    <div class="modal-body" id="qv-content"></div>
+  </div>
+</div>
+
+<!-- Customer Login Modal -->
+<div class="modal-bd" id="modal-login">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-hd"><h3>Sign In</h3><button class="modal-x" onclick="closeModal('modal-login')">✕</button></div>
+    <div class="modal-body">
+      <div id="login-msg"></div>
+      <div class="form-group"><label>Email Address</label><input id="l-email" type="email" placeholder="you@email.com"></div>
+      <div class="form-group"><label>Password</label><input id="l-pass" type="password" placeholder="••••••••"></div>
+      <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
+      <div class="modal-switch">Don't have an account? <a onclick="closeModal('modal-login');openModal('modal-signup')">Register free</a></div>
     </div>
   </div>
 </div>

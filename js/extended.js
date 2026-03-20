@@ -266,3 +266,119 @@ function renderReport(type, btn) {
     _origRenderReport(type);
   }
 }
+
+// ── VOUCHERS ADMIN ───────────────────────────────────────────────
+function renderVouchers() {
+  document.getElementById('voucher-tbody').innerHTML = (KF.data.vouchers||[]).map(function(v) {
+    var disc = v.type === 'percent' ? v.value + '%' : KF.fmt(v.value);
+    return '<tr>' +
+      '<td><strong style="font-family:monospace;letter-spacing:1px;font-size:14px;color:var(--g2)">' + v.code + '</strong></td>' +
+      '<td style="font-size:13px">' + v.desc + '</td>' +
+      '<td><span class="badge ' + (v.type==='percent'?'badge-green':'badge-orange') + '">' + (v.type==='percent'?'Percent':'Fixed') + '</span></td>' +
+      '<td><strong>' + disc + '</strong></td>' +
+      '<td>' + KF.fmt(v.minOrder) + '</td>' +
+      '<td>' + v.uses + ' / ' + v.maxUses + '</td>' +
+      '<td>' + v.expiry + '</td>' +
+      '<td><span class="badge ' + (v.active?'badge-green':'badge-terra') + '">' + (v.active?'Active':'Inactive') + '</span></td>' +
+      '<td><div class="tbl-actions">' +
+      '<button class="btn-edit" onclick="toggleVoucher(' + v.id + ')">' + (v.active?'Deactivate':'Activate') + '</button>' +
+      '<button class="btn-del" onclick="delVoucher(' + v.id + ')">Delete</button>' +
+      '</div></td>' +
+      '</tr>';
+  }).join('');
+}
+
+function saveVoucher() {
+  var code = (document.getElementById('vc-code').value || '').trim().toUpperCase();
+  var val  = parseFloat(document.getElementById('vc-val').value);
+  var desc = (document.getElementById('vc-desc').value || '').trim();
+  if (!code || !val || !desc) { toast('Fill all required fields', '⚠️'); return; }
+  KF.data.vouchers = KF.data.vouchers || [];
+  KF.data.vouchers.push({
+    id: KF.data.nextIds.voucher++, code: code, desc: desc,
+    type: document.getElementById('vc-type').value,
+    value: val, minOrder: parseInt(document.getElementById('vc-min').value)||0,
+    uses: 0, maxUses: parseInt(document.getElementById('vc-max').value)||100,
+    active: true, expiry: document.getElementById('vc-exp').value || '2026-12-31'
+  });
+  closeModal('modal-voucher');
+  renderVouchers();
+  if (typeof renderPublicVouchers === 'function') renderPublicVouchers();
+  toast('Voucher ' + code + ' created! 🎟');
+}
+
+function toggleVoucher(id) {
+  var v = (KF.data.vouchers||[]).find(function(x){return x.id===id;});
+  if (v) { v.active = !v.active; renderVouchers(); if(typeof renderPublicVouchers==='function') renderPublicVouchers(); toast(v.code + ' ' + (v.active?'activated':'deactivated')); }
+}
+
+function delVoucher(id) {
+  if (!confirm('Delete this voucher?')) return;
+  KF.data.vouchers = (KF.data.vouchers||[]).filter(function(v){return v.id!==id;});
+  renderVouchers();
+  if (typeof renderPublicVouchers === 'function') renderPublicVouchers();
+  toast('Voucher deleted', '🗑');
+}
+
+// ── LOYALTY ADMIN ────────────────────────────────────────────────
+function renderLoyalty() {
+  var members = KF.data.loyaltyMembers || [];
+  var totalPts = members.reduce(function(s,m){return s+m.points;},0);
+  var goldCount = members.filter(function(m){return m.tier==='Gold';}).length;
+  document.getElementById('loyalty-stats').innerHTML = [
+    {label:'Total Members',val:members.length,icon:'🏅',col:'var(--o2)'},
+    {label:'Gold Tier',val:goldCount,icon:'🥇',col:'var(--y2)'},
+    {label:'Total Points Active',val:totalPts,icon:'⭐',col:'var(--g3)'},
+    {label:'Points Redeemed',val:members.reduce(function(s,m){return s+m.redeemed;},0),icon:'🎁',col:'var(--t2)'},
+  ].map(function(s){return '<div class="stat-card"><div class="sc-icon">'+s.icon+'</div><div class="sc-lbl">'+s.label+'</div><div class="sc-val" style="color:'+s.col+';font-size:22px">'+s.val+'</div></div>';}).join('');
+
+  document.getElementById('loyalty-tbody').innerHTML = members.map(function(m) {
+    var tierBadge = m.tier==='Gold'?'badge-yellow':m.tier==='Silver'?'badge-blue':'badge-terra';
+    return '<tr>' +
+      '<td><strong>' + m.name + '</strong><br><small style="color:var(--muted)">' + m.email + '</small></td>' +
+      '<td><span class="badge ' + tierBadge + '">' + (m.tier==='Gold'?'🥇 ':m.tier==='Silver'?'🥈 ':'🥉 ') + m.tier + '</span></td>' +
+      '<td><strong style="color:var(--o2)">' + m.points + ' pts</strong></td>' +
+      '<td>' + m.redeemed + ' pts</td>' +
+      '<td>' + KF.fmt(m.totalSpent) + '</td>' +
+      '<td><button class="btn-edit" onclick="addPoints(\'' + m.email + '\', 50)">+50 pts</button></td>' +
+      '</tr>';
+  }).join('');
+}
+
+function addPoints(email, pts) {
+  var m = (KF.data.loyaltyMembers||[]).find(function(x){return x.email===email;});
+  if (!m) return;
+  m.points += pts;
+  m.tier = m.points >= 600 ? 'Gold' : m.points >= 300 ? 'Silver' : 'Bronze';
+  renderLoyalty();
+  toast(pts + ' points added to ' + m.name, '⭐');
+}
+
+// ── NEWSLETTER ADMIN ─────────────────────────────────────────────
+function renderNewsletterAdmin() {
+  var subs = KF.data.newsletter || [];
+  document.getElementById('nl-stats').innerHTML = [
+    {label:'Total Subscribers',val:subs.length,icon:'📧',col:'var(--g2)'},
+    {label:'Active',val:subs.filter(function(s){return s.status==='Active';}).length,icon:'✅',col:'var(--g3)'},
+  ].map(function(s){return '<div class="stat-card"><div class="sc-icon">'+s.icon+'</div><div class="sc-lbl">'+s.label+'</div><div class="sc-val" style="color:'+s.col+'">' +s.val+'</div></div>';}).join('');
+  document.getElementById('nl-tbody').innerHTML = subs.length
+    ? subs.map(function(s){
+        return '<tr><td>'+s.email+'</td><td>'+s.date+'</td><td><span class="badge badge-green">'+s.status+'</span></td><td><button class="btn-del" onclick="removeSubscriber(\''+s.email+'\')">Remove</button></td></tr>';
+      }).join('')
+    : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px">No subscribers yet. Share the website!</td></tr>';
+}
+
+function removeSubscriber(email) {
+  KF.data.newsletter = (KF.data.newsletter||[]).filter(function(s){return s.email!==email;});
+  renderNewsletterAdmin();
+  toast('Subscriber removed', '🗑');
+}
+
+// ── PATCH showSec for new sections ───────────────────────────────
+var _baseShowSec = showSec;
+showSec = function(id) {
+  if (id === 'vouchers')   { KF.state.activeAdminSection=id; document.querySelectorAll('.admin-section').forEach(function(s){s.classList.remove('show');}); document.getElementById('asec-vouchers').classList.add('show'); document.querySelectorAll('.side-item[data-sec]').forEach(function(i){i.classList.toggle('active',i.dataset.sec===id);}); renderVouchers(); return; }
+  if (id === 'loyalty')    { KF.state.activeAdminSection=id; document.querySelectorAll('.admin-section').forEach(function(s){s.classList.remove('show');}); document.getElementById('asec-loyalty').classList.add('show'); document.querySelectorAll('.side-item[data-sec]').forEach(function(i){i.classList.toggle('active',i.dataset.sec===id);}); renderLoyalty(); return; }
+  if (id === 'newsletter') { KF.state.activeAdminSection=id; document.querySelectorAll('.admin-section').forEach(function(s){s.classList.remove('show');}); document.getElementById('asec-newsletter').classList.add('show'); document.querySelectorAll('.side-item[data-sec]').forEach(function(i){i.classList.toggle('active',i.dataset.sec===id);}); renderNewsletterAdmin(); return; }
+  _baseShowSec(id);
+};

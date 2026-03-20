@@ -148,56 +148,148 @@ function renderFeedbackReviews() {
 function renderShop() {
   renderCatPills();
   renderProductGrid();
+  renderPublicVouchers();
 }
 
 function renderCatPills() {
   const el = document.getElementById('cat-pills');
+  if (!el) return;
   const { activeCat } = KF.state;
-  el.innerHTML = `<button class="cat-pill ${activeCat === 'all' ? 'active' : ''}" onclick="setCat('all')">🛒 All</button>` +
+  el.innerHTML = `<button class="cat-pill ${activeCat==='all'?'active':''}" onclick="setCat('all')">🛒 All</button>` +
     KF.data.categories.map(c =>
-      `<button class="cat-pill ${activeCat === c.id ? 'active' : ''}" onclick="setCat(${c.id})">${c.emoji} ${c.name}</button>`
+      `<button class="cat-pill ${activeCat===c.id?'active':''}" onclick="setCat(${c.id})">${c.emoji} ${c.name}</button>`
     ).join('');
 }
 
 function renderProductGrid() {
-  const { activeCat, searchQ } = KF.state;
-  const prods = KF.data.products.filter(p => {
-    const catOk   = activeCat === 'all' || p.catId === activeCat;
-    const searchOk = !searchQ || p.name.toLowerCase().includes(searchQ.toLowerCase()) || KF.catName(p.catId).toLowerCase().includes(searchQ.toLowerCase());
-    return catOk && searchOk && p.status === 'Active';
+  const { activeCat, searchQ, activeFilter, activeSort, maxPrice } = KF.state;
+  let prods = KF.data.products.filter(p => {
+    if (p.status !== 'Active') return false;
+    if (activeCat !== 'all' && p.catId !== activeCat) return false;
+    if (searchQ && !p.name.toLowerCase().includes(searchQ.toLowerCase()) && !KF.catName(p.catId).toLowerCase().includes(searchQ.toLowerCase())) return false;
+    if (activeFilter === 'discount' && !(p.origPrice && p.origPrice > p.price)) return false;
+    if (activeFilter === 'organic'  && !(p.tags||[]).includes('organic'))  return false;
+    if (activeFilter === 'fresh'    && p.badge !== 'Fresh Today') return false;
+    if (activeFilter === 'seasonal' && !(p.tags||[]).includes('seasonal')) return false;
+    if (activeFilter === 'premium'  && !(p.tags||[]).includes('premium'))  return false;
+    if (activeFilter === 'instock'  && p.stock <= 0) return false;
+    if (maxPrice && p.price > maxPrice) return false;
+    return true;
   });
+  if (activeSort === 'price-low')  prods = prods.slice().sort((a,b) => a.price - b.price);
+  if (activeSort === 'price-high') prods = prods.slice().sort((a,b) => b.price - a.price);
+  if (activeSort === 'discount')   prods = prods.slice().sort((a,b) => {
+    const da = a.origPrice ? (a.origPrice-a.price)/a.origPrice : 0;
+    const db = b.origPrice ? (b.origPrice-b.price)/b.origPrice : 0;
+    return db - da;
+  });
+  if (activeSort === 'name') prods = prods.slice().sort((a,b) => a.name.localeCompare(b.name));
+  const cntEl = document.getElementById('filter-count');
+  if (cntEl) cntEl.textContent = prods.length + ' product' + (prods.length!==1?'s':'');
   const grid = document.getElementById('product-grid');
   if (!grid) return;
   if (!prods.length) {
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)"><div style="font-size:48px;margin-bottom:12px">🔍</div><p>No products found. Try a different search.</p></div>`;
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)"><div style="font-size:48px;margin-bottom:12px">🔍</div><p>No products match your filters.</p></div>';
     return;
   }
-  const bgs = ['bg0','bg1','bg2','bg3'];
-  grid.innerHTML = prods.map((p, idx) => {
-    const out = p.stock === 0;
-    const low = p.stock > 0 && p.stock <= 12;
-    return `<div class="pcard">
-      <div class="pcard-img ${bgs[idx % 4]}">
-        <span>${p.emoji}</span>
-        <div class="fresh-tag ${out ? 'out' : low ? 'low' : 'in'}">${out ? 'Out of Stock' : low ? 'Low Stock' : 'Fresh'}</div>
-      </div>
-      <div class="pcard-body">
-        <div class="pcard-name">${p.name}</div>
-        <div class="pcard-cat">${KF.catEmoji(p.catId)} ${KF.catName(p.catId)}</div>
-        <div class="pcard-price">${KF.fmt(p.price)} <small>/ ${p.unit}</small></div>
-      </div>
-      <div class="pcard-foot">
-        <span class="pcard-stock ${out ? 'out' : low ? 'low' : 'in'}">
-          ${out ? '✕ Out of stock' : low ? '⚠ Only ' + p.stock + ' left' : '✓ In stock'}
-        </span>
-        <button class="add-btn" ${out ? 'disabled' : ''} onclick="addToCart(${p.id})">+ Add</button>
-      </div>
-    </div>`;
-  }).join('');
+  grid.innerHTML = prods.map(p => buildProductCard(p)).join('');
 }
 
-function setCat(c) { KF.state.activeCat = c; renderShop(); }
+function buildProductCard(p) {
+  const out = p.stock === 0;
+  const low = p.stock > 0 && p.stock <= 12;
+  const hasDiscount = p.origPrice && p.origPrice > p.price;
+  const discPct = hasDiscount ? Math.round((1 - p.price/p.origPrice)*100) : 0;
+  const badgeMap = {'Best Seller':'badge-orange','Fresh Today':'badge-green','Organic':'badge-green','Low Stock':'badge-yellow','Premium':'badge-blue','Imported':'badge-blue','Farm Fresh':'badge-green','28% Off':'badge-orange','20% Off':'badge-orange','14% Off':'badge-orange','18% Off':'badge-orange'};
+  const badgeClass = p.badge ? (badgeMap[p.badge]||'badge-orange') : '';
+  return '<div class="pcard" onclick="openQuickView('+p.id+')">' +
+    '<div class="pcard-box"><div class="box-frame">' +
+    '<div class="box-top-strip"><span class="box-logo">Kujaza Fresh</span><span class="box-organic">🌱 Organic</span></div>' +
+    '<div class="box-image-area ' + (p.img?'has-photo':'no-photo') + '">' +
+    (p.img ? '<img src="'+p.img+'" alt="'+p.name+'" class="box-photo" loading="lazy">' : '<div class="box-emoji-display">'+p.emoji+'</div>') +
+    (out ? '<div class="box-overlay-out">Out of Stock</div>' : '') +
+    (hasDiscount ? '<div class="discount-ribbon">-'+discPct+'%</div>' : '') +
+    (p.badge && !hasDiscount ? '<div class="prod-badge '+badgeClass+'">'+p.badge+'</div>' : '') +
+    '</div><div class="box-wood-grain"></div><div class="box-side-left"></div><div class="box-side-right"></div>' +
+    '</div></div>' +
+    '<div class="pcard-body">' +
+    '<div class="pcard-name">'+p.name+'</div>' +
+    '<div class="pcard-cat">'+KF.catEmoji(p.catId)+' '+KF.catName(p.catId)+'</div>' +
+    '<div class="pcard-price-row"><div class="pcard-price">'+KF.fmt(p.price)+' <small>/ '+p.unit+'</small></div>' +
+    (hasDiscount ? '<div class="pcard-orig">'+KF.fmt(p.origPrice)+'</div>' : '') + '</div>' +
+    '<div class="pcard-tags">'+(p.tags||[]).slice(0,2).map(function(t){return '<span class="ptag ptag-'+t+'">'+t+'</span>';}).join('')+'</div>' +
+    '</div>' +
+    '<div class="pcard-foot">' +
+    '<span class="pcard-stock '+(out?'out':low?'low':'in')+'">'+(out?'✕ Out of stock':low?'⚠ '+p.stock+' left':'✓ In stock')+'</span>' +
+    '<button class="add-btn" '+(out?'disabled':'')+' onclick="event.stopPropagation();addToCart('+p.id+')">+ Add</button>' +
+    '</div></div>';
+}
+
+function setCat(c) { KF.state.activeCat = c; renderShop(); renderCatPills(); }
 function filterSearch(q) { KF.state.searchQ = q; renderProductGrid(); }
+function setFilter(f, btn) {
+  KF.state.activeFilter = f;
+  document.querySelectorAll('.fchip').forEach(function(c){ c.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  renderProductGrid();
+}
+function setSort(v) { KF.state.activeSort = v; renderProductGrid(); }
+function setPriceFilter(v) {
+  const val = parseInt(v);
+  KF.state.maxPrice = val >= 40000 ? null : val;
+  const lbl = document.getElementById('price-label');
+  if (lbl) lbl.textContent = val >= 40000 ? 'Any' : KF.fmt(val);
+  renderProductGrid();
+}
+function openQuickView(pid) {
+  const p = KF.data.products.find(function(x){ return x.id === pid; });
+  if (!p) return;
+  const hasD = p.origPrice && p.origPrice > p.price;
+  const disc = hasD ? Math.round((1-p.price/p.origPrice)*100) : 0;
+  const out = p.stock === 0; const low = p.stock > 0 && p.stock <= 12;
+  document.getElementById('qv-content').innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">' +
+    '<div class="box-frame" style="max-width:220px;margin:0 auto">' +
+    '<div class="box-top-strip"><span class="box-logo">Kujaza Fresh</span><span class="box-organic">🌱 Organic</span></div>' +
+    '<div class="box-image-area '+(p.img?'has-photo':'no-photo')+'" style="height:190px">' +
+    (p.img?'<img src="'+p.img+'" alt="'+p.name+'" class="box-photo">'+'</img>':'<div class="box-emoji-display" style="font-size:80px">'+p.emoji+'</div>') +
+    (hasD?'<div class="discount-ribbon">-'+disc+'%</div>':'') +
+    '</div><div class="box-wood-grain"></div><div class="box-side-left"></div><div class="box-side-right"></div></div>' +
+    '<div>' +
+    '<div style="font-size:11px;font-weight:800;color:var(--o2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">'+KF.catEmoji(p.catId)+' '+KF.catName(p.catId)+'</div>' +
+    '<h3 style="font-family:var(--font-h);font-size:22px;color:var(--g2);margin-bottom:8px">'+p.name+'</h3>' +
+    '<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:10px;flex-wrap:wrap">' +
+    '<div style="font-family:var(--font-h);font-size:26px;color:var(--o1)">'+KF.fmt(p.price)+'<span style="font-size:13px;font-family:var(--font-b);color:var(--muted);font-weight:400"> / '+p.unit+'</span></div>' +
+    (hasD?'<div style="font-size:14px;color:var(--muted);text-decoration:line-through">'+KF.fmt(p.origPrice)+'</div><span class="badge badge-orange">Save '+disc+'%</span>':'') +
+    '</div><p style="font-size:14px;color:var(--txt2);line-height:1.7;margin-bottom:14px">'+p.desc+'</p>' +
+    '<div style="margin-bottom:14px">'+(p.tags||[]).map(function(t){return '<span class="ptag ptag-'+t+'" style="margin-right:6px">'+t+'</span>';}).join('')+'</div>' +
+    '<div class="pcard-stock '+(out?'out':low?'low':'in')+'" style="margin-bottom:16px;font-size:14px">'+(out?'✕ Out of stock':low?'⚠ Only '+p.stock+' remaining':'✓ In stock')+'</div>' +
+    '<button class="btn btn-primary btn-lg" style="width:100%" '+(out?'disabled':'')+' onclick="addToCart('+p.id+');closeModal('modal-quickview')">🛒 Add to Cart — '+KF.fmt(p.price)+'</button>' +
+    '</div></div>';
+  openModal('modal-quickview');
+}
+function subscribeNewsletter() {
+  const email = document.getElementById('nl-email').value.trim();
+  const out = document.getElementById('nl-msg');
+  if (!email || !email.includes('@')) { out.innerHTML = '<div class="alert alert-err" style="font-size:13px">Please enter a valid email.</div>'; return; }
+  KF.data.newsletter = KF.data.newsletter || [];
+  if (KF.data.newsletter.find(function(n){return n.email===email;})) { out.innerHTML = '<div class="alert alert-ok" style="font-size:13px">Already subscribed! 🌿</div>'; return; }
+  KF.data.newsletter.push({ email: email, date: new Date().toISOString().split('T')[0], status: 'Active' });
+  document.getElementById('nl-email').value = '';
+  out.innerHTML = '<div class="alert alert-ok" style="font-size:13px">✅ Subscribed! Fresh deals coming your way.</div>';
+  setTimeout(function(){ out.innerHTML = ''; }, 4000);
+}
+function renderPublicVouchers() {
+  const el = document.getElementById('public-vouchers');
+  if (!el) return;
+  el.innerHTML = (KF.data.vouchers||[]).filter(function(v){return v.active;}).map(function(v){
+    return '<div class="voucher-card" onclick="copyVoucher(''+v.code+'')"><div class="vc-code">'+v.code+'</div><div class="vc-desc">'+v.desc+'</div><div class="vc-detail">Min order '+KF.fmt(v.minOrder)+' · Expires '+v.expiry+'</div><div class="vc-copy">📋 Tap to copy</div></div>';
+  }).join('');
+}
+function copyVoucher(code) {
+  if (navigator.clipboard) navigator.clipboard.writeText(code).catch(function(){});
+  toast('Code ' + code + ' copied! 🎟', '🎉');
+}
 
 // ─── CART ───────────────────────────────────────────────────────────────────
 function addToCart(pid) {
