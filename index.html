@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kujaza Fresh — Farm to Door, Kampala</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ═══ NAVBAR ═══════════════════════════════════════════════════ -->
+<nav class="navbar">
+  <div class="nav-logo" onclick="showPage('page-shop')">Kujaza <span>Fresh</span><sup>UG</sup></div>
+  <div class="nav-center">
+    <button id="nav-shop"     class="nav-link active" onclick="showPage('page-shop')">Shop</button>
+    <button id="nav-specials" class="nav-link"        onclick="showPage('page-shop');scrollTo('flash-bar')">Offers</button>
+    <button id="nav-checkout" class="nav-link"        onclick="showPage('page-checkout')">Checkout</button>
+    <button id="nav-admin"    class="nav-link hidden" onclick="showPage('page-admin')">Admin ⚙</button>
+  </div>
+  <div class="nav-right">
+    <button id="auth-btn" class="nav-auth" onclick="openModal('modal-login')">Sign In / Register</button>
+    <div id="user-pill" class="user-pill hidden" onclick="logout()">
+      <span>👤</span><span id="user-name">User</span><span style="opacity:.5;font-size:11px"> · out</span>
+    </div>
+    <button class="nav-cart" onclick="openCart()">
+      🛒 Cart <span class="cart-badge" id="cart-count">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════ SHOP PAGE ════════════════════════════════════════════ -->
+<div id="page-shop" class="page show">
+
+  <!-- HERO — deep forest green bg -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-eyebrow">🌿 Uganda's Farm-Fresh Marketplace</div>
+        <h1>Fresh Picked.<br><em>Delivered Today.</em></h1>
+        <p>Fruits, vegetables, grains & more — sourced direct from Ugandan farms. Same-day delivery across Kampala & 13 zones.</p>
+        <div class="hero-btns">
+          <button class="btn-hero-p" onclick="document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">Shop Fresh Now 🛒</button>
+          <button class="btn-hero-o" onclick="openModal('modal-signup')">Create Free Account</button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hsc oc"><div class="hsc-icon">🍊</div><div class="hsc-num">22+</div><div class="hsc-lbl">Fresh Products</div></div>
+        <div class="hsc gc"><div class="hsc-icon">🚚</div><div class="hsc-num">Same Day</div><div class="hsc-lbl">Delivery</div></div>
+        <div class="hsc yc"><div class="hsc-icon">📍</div><div class="hsc-num">13</div><div class="hsc-lbl">Zones Covered</div></div>
+        <div class="hsc"><div class="hsc-icon">📱</div><div class="hsc-num">MTN/Airtel</div><div class="hsc-lbl">Mobile Money</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES — cream linen bg -->
+  <div class="features">
+    <div class="features-inner">
+      <div class="fi"><div class="fi-icon o">🌱</div> Farm-direct sourcing</div>
+      <div class="fi"><div class="fi-icon g">✅</div> Quality guaranteed</div>
+      <div class="fi"><div class="fi-icon y">⚡</div> Same-day delivery</div>
+      <div class="fi"><div class="fi-icon t">📱</div> Pay with Mobile Money</div>
+      <div class="fi"><div class="fi-icon o">🔄</div> Replace if not fresh</div>
+      <div class="fi"><div class="fi-icon g">🧺</div> Basket combo deals</div>
+    </div>
+  </div>
+
+  <!-- FLASH SALE BAR — banana yellow bg -->
+  <div class="flash-bar" id="flash-bar">
+    ⚡ Flash Sale — Student & Weekend Offers active now!
+    <span class="flash-countdown" id="countdown">02:47:33</span>
+    &nbsp;·&nbsp; Use code <strong>KUJAZA10</strong> for 10% off
+  </div>
+
+  <!-- CATEGORIES — pale orange bg (warm welcome) -->
+  <div class="cat-strip" id="shop-anchor">
+    <div class="cat-inner">
+      <div class="sec-eye o">Browse by category</div>
+      <div class="sec-title">What are you looking for?</div>
+      <div class="cat-row" id="cat-pills"></div>
+    </div>
+  </div>
+
+  <!-- SHOP GRID — white bg (product focus) -->
+  <section class="shop-sec">
+    <div class="shop-inner">
+      <div class="shop-bar">
+        <div>
+          <div class="sec-eye g">Kujaza Fresh</div>
+          <div class="sec-title" style="font-size:24px">Fresh Produce</div>
+        </div>
+        <div class="search-box">
+          <span class="si">🔍</span>
+          <input type="text" placeholder="Search products…" oninput="filterSearch(this.value)">
+        </div>
+      </div>
+      <div class="product-grid" id="product-grid"></div>
+    </div>
+  </section>
+
+  <!-- PROMO BAND — tangerine bg (energy) -->
+  <div class="promo">
+    <h2>Order Before Noon — Delivered Today</h2>
+    <p>Basket combos, subscription orders & bulk B2B supply available. Fresh produce, guaranteed.</p>
+    <button class="btn-promo" onclick="openModal('modal-signup')">Join Kujaza Fresh Free →</button>
+  </div>
+
+  <!-- SPECIALS / BASKET COMBOS — pale green bg -->
+  <section class="specials">
+    <div class="specials-inner">
+      <div class="sec-eye g">Saving Corner</div>
+      <div class="sec-title">Basket Combos & Specials</div>
+      <div class="product-grid" id="combos-grid" style="margin-top:20px"></div>
+    </div>
+  </section>
+
+  <!-- FOOTER — near-black bg (anchor) -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="f-brand">
+        <div class="logo">Kujaza <span>Fresh</span></div>
+        <p>Filling homes & businesses with the freshest produce Uganda's farms offer. Farm-sourced, quality-graded, reliably delivered across Greater Kampala.</p>
+      </div>
+      <div class="f-col">
+        <h5>Shop</h5>
+        <a href="#">Fresh Fruits</a><a href="#">Fresh Vegetables</a>
+        <a href="#">Dried Grains</a><a href="#">Other Produce</a>
+        <a href="#">Basket Combos</a><a href="#">Student Offers</a>
+      </div>
+      <div class="f-col">
+        <h5>Company</h5>
+        <a href="#">About Us</a><a href="#">Our Farmers</a>
+        <a href="#">Quality Promise</a><a href="#">Careers</a>
+        <a href="#">Vendor Partner</a>
+      </div>
+      <div class="f-col">
+        <h5>Help</h5>
+        <a href="#">Delivery Zones</a><a href="#">Track Order</a>
+        <a href="#">Returns Policy</a><a href="#">Raise a Ticket</a>
+        <a href="#">Contact Us</a>
+      </div>
+    </div>
+    <div class="f-bottom">© 2026 Kujaza Fresh Ltd · Kampala, Uganda · All rights reserved</div>
+  </footer>
+</div>
+
+<!-- ═══════ CHECKOUT PAGE ══════════════════════════════════════ -->
+<div id="page-checkout" class="page">
+  <div class="co-page">
+    <div class="co-steps">
+      <div class="co-step active" id="step-1"><span class="sn">1</span>Delivery</div>
+      <div class="co-step"        id="step-2"><span class="sn">2</span>Payment</div>
+      <div class="co-step"        id="step-3"><span class="sn">3</span>Confirm</div>
+    </div>
+    <!-- Step 1 -->
+    <div id="co-s1">
+      <div class="co-card">
+        <h4>Delivery Details</h4>
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input id="co-fn" placeholder="Sarah"></div>
+          <div class="form-group"><label>Last Name</label><input id="co-ln" placeholder="Nakato"></div>
+        </div>
+        <div class="form-group"><label>Phone Number *</label><input id="co-ph" type="tel" placeholder="+256 700 000 000"></div>
+        <div class="form-group"><label>Address / Estate</label><input id="co-addr" placeholder="e.g. Plot 22, Najjera Road, near Shell station"></div>
+        <div class="form-group"><label>Delivery Notes</label><input id="co-notes" placeholder="e.g. Blue gate, call on arrival"></div>
+      </div>
+      <div class="co-card">
+        <h4>Select Delivery Zone</h4>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Orders above UGX 60,000 qualify for free delivery in most zones.</p>
+        <div class="zone-grid" id="zone-grid"></div>
+      </div>
+      <button class="btn btn-primary btn-full btn-lg" onclick="coNext()">Continue to Payment →</button>
+    </div>
+    <!-- Step 2 -->
+    <div id="co-s2" class="hidden">
+      <div class="co-card"><h4>Order Summary</h4><div id="order-lines"></div></div>
+      <div class="co-card">
+        <h4>Payment Method</h4>
+        <div class="pay-grid" id="pay-grid"></div>
+        <div id="pay-detail" style="margin-top:14px"></div>
+      </div>
+      <div style="display:flex;gap:12px">
+        <button class="btn btn-ghost btn-lg" style="min-width:120px" onclick="coPrev()">← Back</button>
+        <button class="btn btn-primary btn-full btn-lg" onclick="coNext()">Place Order →</button>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div id="co-s3" class="hidden">
+      <div class="co-card">
+        <div class="order-success">
+          <div class="big-check">✅</div>
+          <h2 style="color:var(--g2);margin-bottom:8px">Order Placed!</h2>
+          <p style="font-size:16px">Thank you for shopping with Kujaza Fresh.</p>
+          <p style="font-size:14px;color:var(--muted);margin-top:4px">We'll confirm via WhatsApp or SMS shortly.</p>
+          <div class="order-id-box">
+            <strong style="font-size:18px;color:var(--g2)">Order #<span id="placed-id">KF-0045</span></strong><br>
+            <span style="font-size:13px;color:var(--muted)">📍 <span id="placed-zone">—</span> · <span id="placed-total">—</span></span>
+          </div>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-primary btn-lg" onclick="continueShopping()">Continue Shopping</button>
+            <button class="btn btn-green btn-lg" onclick="openModal('modal-ticket')">Track / Raise Ticket</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ ADMIN PAGE ═════════════════════════════════════════ -->
+<div id="page-admin" class="page">
+  <div class="admin-wrap">
+    <aside class="admin-side">
+      <div class="side-lbl">Overview</div>
+      <div class="side-item active" data-sec="dashboard" onclick="showSec('dashboard')"><span class="side-icon">📊</span> Dashboard</div>
+      <div class="side-lbl">Catalogue</div>
+      <div class="side-item" data-sec="products"   onclick="showSec('products')"><span class="side-icon">🥬</span> Products</div>
+      <div class="side-item" data-sec="categories" onclick="showSec('categories')"><span class="side-icon">🏷️</span> Categories</div>
+      <div class="side-item" data-sec="inventory"  onclick="showSec('inventory')"><span class="side-icon">📦</span> Inventory</div>
+      <div class="side-lbl">Operations</div>
+      <div class="side-item" data-sec="orders"     onclick="showSec('orders')"><span class="side-icon">🛒</span> Orders</div>
+      <div class="side-item" data-sec="tickets"    onclick="showSec('tickets')"><span class="side-icon">🎫</span> Tickets</div>
+      <div class="side-item" data-sec="riders"     onclick="showSec('riders')"><span class="side-icon">🏍️</span> Riders / Fleet</div>
+      <div class="side-item" data-sec="delivery"   onclick="showSec('delivery')"><span class="side-icon">📍</span> Delivery Allocation</div>
+      <div class="side-item" data-sec="vendors"    onclick="showSec('vendors')"><span class="side-icon">🤝</span> Vendors</div>
+      <div class="side-lbl">Finance & HR</div>
+      <div class="side-item" data-sec="finance"    onclick="showSec('finance')"><span class="side-icon">💰</span> Finance</div>
+      <div class="side-item" data-sec="procurement" onclick="showSec('procurement')"><span class="side-icon">📋</span> Procurement</div>
+      <div class="side-item" data-sec="hr"         onclick="showSec('hr')"><span class="side-icon">👔</span> HR & Payroll</div>
+      <div class="side-item" data-sec="reports"    onclick="showSec('reports')"><span class="side-icon">📈</span> Reports</div>
+      <div class="side-lbl">People</div>
+      <div class="side-item" data-sec="customers"  onclick="showSec('customers')"><span class="side-icon">👥</span> Customers</div>
+    </aside>
+
+    <main class="admin-main">
+      <!-- DASHBOARD -->
+      <div class="admin-section show" id="asec-dashboard">
+        <div class="page-hd"><h2>Dashboard</h2><p>Kujaza Fresh — live overview for March 2026</p></div>
+        <div class="stats-row" id="dash-stats"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="a-card"><div class="a-card-hd"><h4>Recent Orders</h4></div><div class="a-card-body" id="dash-orders"></div></div>
+          <div class="a-card"><div class="a-card-hd"><h4>⚠ Low Stock Alert</h4></div><div class="a-card-body" id="dash-stock"></div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px">
+          <div class="a-card"><div class="a-card-hd"><h4>Open Tickets</h4></div><div class="a-card-body" id="dash-tickets"></div></div>
+          <div class="a-card"><div class="a-card-hd"><h4>Pending Procurement</h4></div><div class="a-card-body" id="dash-proc"></div></div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS -->
+      <div class="admin-section" id="asec-products">
+        <div class="page-hd"><h2>Products</h2><p>Manage the full product catalogue</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>All Products</h4><button class="btn btn-primary btn-sm" onclick="openAddProduct()">+ Add Product</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead><tbody id="prod-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- CATEGORIES -->
+      <div class="admin-section" id="asec-categories">
+        <div class="page-hd"><h2>Categories</h2><p>Manage product categories</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>All Categories</h4><button class="btn btn-primary btn-sm" onclick="openAddCat()">+ Add Category</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Icon</th><th>Name</th><th>Products</th><th>Actions</th></tr></thead><tbody id="cat-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- INVENTORY -->
+      <div class="admin-section" id="asec-inventory">
+        <div class="page-hd"><h2>Inventory</h2><p>Monitor and update stock levels in real time</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Stock Levels</h4></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Product</th><th>Category</th><th>Stock</th><th>Level</th><th>Status</th><th>Update</th></tr></thead><tbody id="inv-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="admin-section" id="asec-orders">
+        <div class="page-hd"><h2>Orders</h2><p>View and manage all customer orders</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>All Orders</h4></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Zone</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Rider</th></tr></thead><tbody id="orders-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- TICKETS -->
+      <div class="admin-section" id="asec-tickets">
+        <div class="page-hd"><h2>Ticketing System</h2><p>Customer & staff issue management</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>All Tickets</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-ticket')">+ New Ticket</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Ticket #</th><th>Raised By</th><th>Category</th><th>Subject</th><th>Status</th><th>Assigned</th><th>Actions</th></tr></thead><tbody id="ticket-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- RIDERS / FLEET -->
+      <div class="admin-section" id="asec-riders">
+        <div class="page-hd"><h2>Riders & Fleet</h2><p>Company drivers, outsourced riders, vehicles & motorcycles</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Rider Fleet</h4><button class="btn btn-primary btn-sm" onclick="openAddRider()">+ Add Rider</button></div>
+          <div class="rider-grid" id="rider-grid"></div>
+        </div>
+      </div>
+
+      <!-- DELIVERY ALLOCATION -->
+      <div class="admin-section" id="asec-delivery">
+        <div class="page-hd"><h2>Delivery Allocation</h2><p>Assign riders to pending orders</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Pending Assignments</h4></div>
+          <div id="alloc-list" style="padding:16px 24px"></div>
+        </div>
+      </div>
+
+      <!-- VENDORS -->
+      <div class="admin-section" id="asec-vendors">
+        <div class="page-hd"><h2>Vendor Management</h2><p>Onboarding, commissions & payouts</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Registered Vendors</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-vendor')">+ Add Vendor</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Vendor</th><th>Contact</th><th>Products</th><th>Commission %</th><th>Total Payout</th><th>Status</th><th>Actions</th></tr></thead><tbody id="vendor-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- FINANCE -->
+      <div class="admin-section" id="asec-finance">
+        <div class="page-hd"><h2>Finance</h2><p>Income, expenses, P&amp;L — QuickBooks-style interface</p></div>
+        <div class="stats-row" id="fin-stats"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div class="a-card"><div class="a-card-hd"><h4>📈 Income</h4><button class="btn btn-green btn-sm" onclick="openModal('modal-income')">+ Add</button></div><div class="a-card-body" id="income-list"></div></div>
+          <div class="a-card"><div class="a-card-hd"><h4>📉 Expenses</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-expense')">+ Add</button></div><div class="a-card-body" id="expense-list"></div></div>
+        </div>
+        <div class="a-card"><div class="a-card-hd"><h4>Profit & Loss Statement</h4></div><div class="a-card-body" id="pnl-body"></div></div>
+      </div>
+
+      <!-- PROCUREMENT -->
+      <div class="admin-section" id="asec-procurement">
+        <div class="page-hd"><h2>Procurement & Requisitions</h2><p>Requisition → Dept Head → Finance → Purchase Order workflow</p></div>
+        <div class="a-card" style="margin-bottom:20px">
+          <div class="a-card-hd"><h4>Procurement Workflow</h4></div>
+          <div class="a-card-body">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+              <div style="background:var(--o5);border:2px solid var(--o2);border-radius:12px;padding:14px 20px;text-align:center;min-width:140px">
+                <div style="font-size:22px">📝</div><div style="font-weight:800;font-size:13px;color:var(--o1);margin-top:4px">Staff Raises<br>Requisition</div>
+              </div>
+              <div style="font-size:24px;color:var(--muted)">→</div>
+              <div style="background:var(--y5);border:2px solid var(--y2);border-radius:12px;padding:14px 20px;text-align:center;min-width:140px">
+                <div style="font-size:22px">👔</div><div style="font-weight:800;font-size:13px;color:var(--y1);margin-top:4px">Dept Head<br>Approval</div>
+              </div>
+              <div style="font-size:24px;color:var(--muted)">→</div>
+              <div style="background:var(--g7);border:2px solid var(--g5);border-radius:12px;padding:14px 20px;text-align:center;min-width:140px">
+                <div style="font-size:22px">💰</div><div style="font-weight:800;font-size:13px;color:var(--g2);margin-top:4px">Finance Head<br>Approval</div>
+              </div>
+              <div style="font-size:24px;color:var(--muted)">→</div>
+              <div style="background:var(--g6);border:2px solid var(--g4);border-radius:12px;padding:14px 20px;text-align:center;min-width:140px">
+                <div style="font-size:22px">📦</div><div style="font-weight:800;font-size:13px;color:var(--g2);margin-top:4px">Auto Purchase<br>Order Generated</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Requisitions</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-req')">+ New Requisition</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Ref #</th><th>Item / Description</th><th>Raised By</th><th>Amount (UGX)</th><th>Dept Head</th><th>Finance</th><th>PO Status</th></tr></thead><tbody id="req-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- HR -->
+      <div class="admin-section" id="asec-hr">
+        <div class="page-hd"><h2>HR & Payroll</h2><p>Employee records, payroll, leave & SACCO</p></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div class="a-card">
+            <div class="a-card-hd"><h4>Employees</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-emp')">+ Add Employee</button></div>
+            <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Dept</th><th>Salary</th><th>Status</th></tr></thead><tbody id="emp-tbody"></tbody></table></div>
+          </div>
+          <div class="a-card">
+            <div class="a-card-hd"><h4>Leave Applications</h4><button class="btn btn-green btn-sm" onclick="openModal('modal-leave')">+ Apply Leave</button></div>
+            <div class="tbl-wrap"><table><thead><tr><th>Employee</th><th>Type</th><th>From</th><th>To</th><th>Status</th></tr></thead><tbody id="leave-tbody"></tbody></table></div>
+          </div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>SACCO — Savings & Loans</h4><button class="btn btn-yellow btn-sm" onclick="openModal('modal-sacco')">+ New Entry</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Employee</th><th>Savings (UGX)</th><th>Loan Amount</th><th>Repaid</th><th>Balance</th><th>Status</th></tr></thead><tbody id="sacco-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="admin-section" id="asec-reports">
+        <div class="page-hd"><h2>Reports</h2><p>Sales, inventory, rider performance & financial summaries</p></div>
+        <div class="rep-tabs">
+          <button class="rep-tab active" data-rep="sales"     onclick="renderReport('sales',this)">Sales Report</button>
+          <button class="rep-tab"        data-rep="inventory" onclick="renderReport('inventory',this)">Inventory</button>
+          <button class="rep-tab"        data-rep="riders"    onclick="renderReport('riders',this)">Riders</button>
+          <button class="rep-tab"        data-rep="financial" onclick="renderReport('financial',this)">Financial</button>
+          <button class="rep-tab"        data-rep="tickets"   onclick="renderReport('tickets',this)">Tickets</button>
+        </div>
+        <div class="a-card"><div class="a-card-body" id="report-content"></div></div>
+      </div>
+
+      <!-- CUSTOMERS -->
+      <div class="admin-section" id="asec-customers">
+        <div class="page-hd"><h2>Customers</h2><p>Registered customer accounts</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>All Customers</h4></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Orders</th><th>Total Spent</th><th>Joined</th></tr></thead><tbody id="cust-tbody"></tbody></table></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══ CART DRAWER ══════════════════════════════════════════════ -->
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-head"><h3>Your Cart</h3><button class="cart-close" onclick="closeCart()">✕</button></div>
+  <div class="cart-body" id="cart-items"></div>
+  <div class="cart-foot">
+    <div class="cart-tot"><span>Total</span><span id="cart-total">UGX 0</span></div>
+    <button class="checkout-btn" onclick="closeCart();showPage('page-checkout')">Checkout →</button>
+  </div>
+</div>
+
+<!-- ═══ MODALS ════════════════════════════════════════════════════ -->
+<!-- Login -->
+<div class="modal-bd" id="modal-login">
+  <div class="modal-box">
+    <div class="modal-hd"><h3>Sign In</h3><button class="modal-x" onclick="closeModal('modal-login')">✕</button></div>
+    <div class="modal-body">
+      <div class="demo-hint">Demo — Admin: admin@kujaza.com / admin123 &nbsp;|&nbsp; Customer: sarah@email.com / pass123</div>
+      <div id="login-msg"></div>
+      <div class="form-group"><label>Email</label><input id="l-email" type="email" placeholder="you@email.com"></div>
+      <div class="form-group"><label>Password</label><input id="l-pass" type="password" placeholder="••••••••"></div>
+      <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
+      <div class="modal-switch">No account? <a onclick="closeModal('modal-login');openModal('modal-signup')">Register free</a></div>
+    </div>
+  </div>
+</div>
+<!-- Signup -->
+<div class="modal-bd" id="modal-signup">
+  <div class="modal-box">
+    <div class="modal-hd"><h3>Create Account</h3><button class="modal-x" onclick="closeModal('modal-signup')">✕</button></div>
+    <div class="modal-body">
+      <div id="su-msg"></div>
+      <div class="form-row">
+        <div class="form-group"><label>First Name *</label><input id="su-fn" placeholder="Sarah"></div>
+        <div class="form-group"><label>Last Name *</label><input id="su-ln" placeholder="Nakato"></div>
+      </div>
+      <div class="form-group"><label>Email *</label><input id="su-em" type="email" placeholder="you@email.com"></div>
+      <div class="form-group"><label>Phone</label><input id="su-ph" type="tel" placeholder="+256 700 000 000"></div>
+      <div class="form-group"><label>Password * (min 6 chars)</label><input id="su-pw" type="password" placeholder="••••••••"></div>
+      <button class="btn btn-primary btn-full" onclick="doSignup()">Create Account</button>
+      <div class="modal-switch">Have an account? <a onclick="closeModal('modal-signup');openModal('modal-login')">Sign in</a></div>
+    </div>
+  </div>
+</div>
+<!-- Product modal -->
+<div class="modal-bd" id="modal-product">
+  <div class="modal-box">
+    <div class="modal-hd"><h3 id="pm-title">Add Product</h3><button class="modal-x" onclick="closeModal('modal-product')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Product Name *</label><input id="p-name" placeholder="e.g. Ripe Mangoes"></div>
+        <div class="form-group"><label>Emoji Icon</label><input id="p-emoji" placeholder="🥭" style="font-size:20px"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Category *</label><select id="p-cat"></select></div>
+        <div class="form-group"><label>Unit</label><select id="p-unit"><option>kg</option><option>bunch</option><option>bunch (3)</option><option>piece</option><option>dozen</option><option>tray (30)</option><option>litre</option><option>bag (1kg)</option><option>bag (5kg)</option><option>bag (25kg)</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Price (UGX) *</label><input id="p-price" type="number" min="0" placeholder="5000"></div>
+        <div class="form-group"><label>Stock Qty *</label><input id="p-stock" type="number" min="0" placeholder="100"></div>
+      </div>
+      <div class="form-group"><label>Description</label><textarea id="p-desc" rows="2" placeholder="Short description…"></textarea></div>
+      <div class="form-group"><label>Status</label><select id="p-status"><option>Active</option><option>Inactive</option></select></div>
+      <button class="btn btn-primary btn-full" onclick="saveProduct()">Save Product</button>
+    </div>
+  </div>
+</div>
+<!-- Category modal -->
+<div class="modal-bd" id="modal-cat">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-hd"><h3>Category</h3><button class="modal-x" onclick="closeModal('modal-cat')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Name *</label><input id="c-name" placeholder="e.g. Root Tubers"></div>
+        <div class="form-group"><label>Emoji</label><input id="c-emoji" placeholder="🍠" style="font-size:20px"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveCat()">Save Category</button>
+    </div>
+  </div>
+</div>
+<!-- Rider modal -->
+<div class="modal-bd" id="modal-rider">
+  <div class="modal-box">
+    <div class="modal-hd"><h3 id="rm-title">Add Rider</h3><button class="modal-x" onclick="closeModal('modal-rider')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Full Name *</label><input id="r-name" placeholder="David Kato"></div>
+        <div class="form-group"><label>Phone</label><input id="r-phone" placeholder="+256 700 000 000"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Type</label><select id="r-type"><option>Company Driver</option><option>Outsourced Rider</option></select></div>
+        <div class="form-group"><label>Zone</label><select id="r-zone"></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Plate / ID</label><input id="r-plate" placeholder="UBC 123X"></div>
+        <div class="form-group"><label>Status</label><select id="r-status"><option>Available</option><option>On Delivery</option><option>Off Duty</option></select></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveRider()">Save Rider</button>
+    </div>
+  </div>
+</div>
+<!-- Income modal -->
+<div class="modal-bd" id="modal-income">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-hd"><h3>Add Income</h3><button class="modal-x" onclick="closeModal('modal-income')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Description *</label><input id="inc-desc" placeholder="e.g. Hotel Entebbe — weekly supply"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Amount (UGX) *</label><input id="inc-amt" type="number" min="0" placeholder="500000"></div>
+        <div class="form-group"><label>Date</label><input id="inc-date" type="date"></div>
+      </div>
+      <div class="form-group"><label>Category</label><select id="inc-cat"><option>Product Sales</option><option>Delivery Fees</option><option>B2B Wholesale</option><option>Subscription</option><option>Other</option></select></div>
+      <button class="btn btn-green btn-full" onclick="saveIncome()">Add Income</button>
+    </div>
+  </div>
+</div>
+<!-- Expense modal -->
+<div class="modal-bd" id="modal-expense">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-hd"><h3>Add Expense</h3><button class="modal-x" onclick="closeModal('modal-expense')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Description *</label><input id="exp-desc" placeholder="e.g. Farmer payment — tomatoes, Wakiso"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Amount (UGX) *</label><input id="exp-amt" type="number" min="0" placeholder="200000"></div>
+        <div class="form-group"><label>Date</label><input id="exp-date" type="date"></div>
+      </div>
+      <div class="form-group"><label>Category</label><select id="exp-cat"><option>Produce (COGS)</option><option>Delivery</option><option>Packaging</option><option>Marketing</option><option>Staff/Riders</option><option>Storage</option><option>Admin</option><option>Other</option></select></div>
+      <button class="btn btn-primary btn-full" onclick="saveExpense()">Add Expense</button>
+    </div>
+  </div>
+</div>
+<!-- Ticket modal -->
+<div class="modal-bd" id="modal-ticket">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-hd"><h3>Raise a Ticket</h3><button class="modal-x" onclick="closeModal('modal-ticket')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Your Name / Order ID</label><input id="tk-name" placeholder="Sarah Nakato / KF-0042"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Category</label><select id="tk-cat"><option>Order Issue</option><option>Payment</option><option>Delivery</option><option>Product Quality</option><option>Staff Request</option><option>Other</option></select></div>
+        <div class="form-group"><label>Priority</label><select id="tk-pri"><option>Normal</option><option>Urgent</option><option>Low</option></select></div>
+      </div>
+      <div class="form-group"><label>Subject *</label><input id="tk-subj" placeholder="Brief description of your issue"></div>
+      <div class="form-group"><label>Details</label><textarea id="tk-detail" rows="3" placeholder="Describe the issue in detail…"></textarea></div>
+      <button class="btn btn-primary btn-full" onclick="saveTicket()">Submit Ticket</button>
+    </div>
+  </div>
+</div>
+<!-- Requisition modal -->
+<div class="modal-bd" id="modal-req">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-hd"><h3>New Requisition</h3><button class="modal-x" onclick="closeModal('modal-req')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Item / Description *</label><input id="rq-item" placeholder="e.g. 500kg Tomatoes from Wakiso"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Amount (UGX) *</label><input id="rq-amt" type="number" min="0" placeholder="300000"></div>
+        <div class="form-group"><label>Department</label><select id="rq-dept"><option>Operations</option><option>Procurement</option><option>Finance</option><option>HR</option><option>Marketing</option></select></div>
+      </div>
+      <div class="form-group"><label>Raised By</label><input id="rq-by" placeholder="Staff name"></div>
+      <div class="form-group"><label>Justification</label><textarea id="rq-just" rows="2" placeholder="Why is this needed?"></textarea></div>
+      <button class="btn btn-primary btn-full" onclick="saveReq()">Submit Requisition</button>
+    </div>
+  </div>
+</div>
+<!-- Vendor modal -->
+<div class="modal-bd" id="modal-vendor">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-hd"><h3>Add Vendor</h3><button class="modal-x" onclick="closeModal('modal-vendor')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Vendor / Farm Name *</label><input id="vn-name" placeholder="e.g. Wakiso Fresh Farms"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Contact Person</label><input id="vn-contact" placeholder="Name"></div>
+        <div class="form-group"><label>Phone</label><input id="vn-phone" placeholder="+256 700 000 000"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Commission %</label><input id="vn-comm" type="number" min="0" max="50" placeholder="8"></div>
+        <div class="form-group"><label>Status</label><select id="vn-status"><option>Active</option><option>Pending Review</option><option>Suspended</option></select></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveVendor()">Save Vendor</button>
+    </div>
+  </div>
+</div>
+<!-- Employee modal -->
+<div class="modal-bd" id="modal-emp">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-hd"><h3>Add Employee</h3><button class="modal-x" onclick="closeModal('modal-emp')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Full Name *</label><input id="em-name" placeholder="John Doe"></div>
+        <div class="form-group"><label>Role</label><input id="em-role" placeholder="e.g. Driver"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Department</label><select id="em-dept"><option>Operations</option><option>Finance</option><option>HR</option><option>Procurement</option><option>Marketing</option></select></div>
+        <div class="form-group"><label>Salary (UGX)</label><input id="em-sal" type="number" min="0" placeholder="600000"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveEmployee()">Save Employee</button>
+    </div>
+  </div>
+</div>
+<!-- Leave modal -->
+<div class="modal-bd" id="modal-leave">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-hd"><h3>Apply for Leave</h3><button class="modal-x" onclick="closeModal('modal-leave')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Employee Name *</label><input id="lv-name" placeholder="Staff name"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Leave Type</label><select id="lv-type"><option>Annual</option><option>Sick</option><option>Maternity</option><option>Paternity</option><option>Emergency</option></select></div>
+        <div class="form-group"><label>Days</label><input id="lv-days" type="number" min="1" placeholder="5"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>From</label><input id="lv-from" type="date"></div>
+        <div class="form-group"><label>To</label><input id="lv-to" type="date"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveLeave()">Submit Application</button>
+    </div>
+  </div>
+</div>
+<!-- SACCO modal -->
+<div class="modal-bd" id="modal-sacco">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-hd"><h3>SACCO Entry</h3><button class="modal-x" onclick="closeModal('modal-sacco')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Employee *</label><input id="sc-emp" placeholder="Employee name"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Savings (UGX)</label><input id="sc-sav" type="number" min="0" placeholder="100000"></div>
+        <div class="form-group"><label>Loan Amount (UGX)</label><input id="sc-loan" type="number" min="0" placeholder="0"></div>
+      </div>
+      <div class="form-group"><label>Notes</label><input id="sc-notes" placeholder="Monthly deduction, loan purpose, etc."></div>
+      <button class="btn btn-primary btn-full" onclick="saveSacco()">Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/extended.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  renderShop();
+  updateCartUI();
+  buildCombos();
+  startCountdown();
+  const t = new Date().toISOString().split('T')[0];
+  ['inc-date','exp-date','lv-from','lv-to'].forEach(id => { const e = document.getElementById(id); if(e) e.value = t; });
+});
+function startCountdown() {
+  let s = 9953;
+  setInterval(() => {
+    s = s > 0 ? s-1 : 86399;
+    const h = String(Math.floor(s/3600)).padStart(2,'0');
+    const m = String(Math.floor((s%3600)/60)).padStart(2,'0');
+    const sec = String(s%60).padStart(2,'0');
+    const el = document.getElementById('countdown');
+    if(el) el.textContent = `${h}:${m}:${sec}`;
+  }, 1000);
+}
+function buildCombos() {
+  const combos = [
+    {name:'Weekly Veggie Box',emoji:'🥗',price:28000,desc:'Tomatoes, onions, kale, carrots, cabbage',badge:'Best Value'},
+    {name:'Fruit Basket',emoji:'🧺',price:35000,desc:'Mangoes, avocados, pineapple, passion fruit',badge:'Popular'},
+    {name:'Grains Bundle (5kg)',emoji:'🌾',price:45000,desc:'Beans, rice, maize flour, groundnuts',badge:'Family Pack'},
+    {name:'Student Deal',emoji:'🎓',price:15000,desc:'3 veg items + 1 fruit + posho 1kg',badge:'Student Offer'},
+  ];
+  const grid = document.getElementById('combos-grid');
+  if(!grid) return;
+  grid.innerHTML = combos.map((c,i) => `
+    <div class="pcard">
+      <div class="pcard-img bg${i%4}">
+        <span>${c.emoji}</span>
+        <div class="fresh-tag in">${c.badge}</div>
+      </div>
+      <div class="pcard-body">
+        <div class="pcard-name">${c.name}</div>
+        <div class="pcard-cat">Basket Combo</div>
+        <div class="pcard-price">${KF.fmt(c.price)} <small>/ box</small></div>
+      </div>
+      <div class="pcard-foot">
+        <span class="pcard-stock in">✓ Available</span>
+        <button class="add-btn" onclick="toast('${c.emoji} ${c.name} added!','✅')">+ Add</button>
+      </div>
+    </div>`).join('');
+}
+</script>
+</body>
+</html>
