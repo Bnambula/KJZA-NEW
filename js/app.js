@@ -433,3 +433,106 @@ function addRecipeToCart(key){
   updateCartBadge();
   toast(added+' ingredients from '+recipe.name+' added! 🛒','🍃');
 }
+
+// ─── EXPRESS DELIVERY ────────────────────────────────────────────
+KF.state.deliveryType = 'standard';
+
+function selectDeliveryType(type, el) {
+  KF.state.deliveryType = type;
+  document.querySelectorAll('.dt-card').forEach(function(c){ c.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  updateDeliveryETA();
+}
+
+function updateDeliveryETA() {
+  var zone = KF.data.zones.find(function(z){ return z.name === KF.state.selectedZone; });
+  var etaEl = document.getElementById('delivery-eta-display');
+  if (!etaEl) return;
+  if (!zone) { etaEl.innerHTML = ''; return; }
+  var isExpress = KF.state.deliveryType === 'express';
+  var fee = isExpress ? zone.expressFee : zone.fee;
+  var eta = isExpress ? zone.expressEta : zone.eta;
+  etaEl.innerHTML = '<div class="delivery-eta-pill ' + (isExpress?'eta-express':'eta-std') + '">' +
+    (isExpress ? '⚡ Express' : '🚚 Standard') + ' · Estimated arrival: <strong>' + eta + '</strong> · Fee: <strong>UGX ' + fee.toLocaleString() + '</strong>' +
+    '</div>';
+  // Update std/express price display
+  var stdP = document.getElementById('dt-std-price');
+  var expP = document.getElementById('dt-exp-price');
+  if (stdP) stdP.textContent = 'UGX ' + zone.fee.toLocaleString();
+  if (expP) expP.textContent = 'UGX ' + zone.expressFee.toLocaleString();
+}
+
+var _origSelectZone = selectZone;
+selectZone = function(el, name) {
+  _origSelectZone(el, name);
+  updateDeliveryETA();
+};
+
+function openExpressDelivery() {
+  showPage('page-checkout');
+  setTimeout(function() {
+    var expBtn = document.getElementById('dt-express');
+    if (expBtn) selectDeliveryType('express', expBtn);
+    document.querySelector('.co-page') && document.querySelector('.co-page').scrollIntoView({behavior:'smooth'});
+  }, 100);
+}
+
+// Override placeOrder to include express delivery fee
+var _origPlaceOrder = placeOrder;
+placeOrder = function() {
+  var zone = KF.data.zones.find(function(z){ return z.name===KF.state.selectedZone; });
+  if (zone && KF.state.deliveryType === 'express') {
+    var origFee = zone.fee;
+    zone.fee = zone.expressFee;
+    _origPlaceOrder();
+    zone.fee = origFee;
+  } else {
+    _origPlaceOrder();
+  }
+};
+
+// ─── PAYMENT: Add Visa ────────────────────────────────────────────
+var _origBuildPayMethods = buildPayMethods;
+buildPayMethods = function() {
+  var methods = [
+    { id:'mtn',    icon:'📱', name:'MTN Mobile Money',    detail:'Dial *165# to confirm payment' },
+    { id:'airtel', icon:'📱', name:'Airtel Money',         detail:'Dial *185# to confirm payment' },
+    { id:'visa',   icon:'💳', name:'Visa / Mastercard',    detail:'Secure card payment — Visa, Mastercard accepted' },
+    { id:'cod',    icon:'💵', name:'Cash on Delivery',     detail:'Pay the rider when your order arrives' },
+    { id:'bank',   icon:'🏦', name:'Bank Transfer',        detail:'Centenary Bank · Kujaza Fresh Ltd · A/C: 01234567' },
+  ];
+  var el = document.getElementById('pay-grid'); if(!el) return;
+  el.innerHTML = methods.map(function(m){
+    return '<div class="pay-card '+(KF.state.selectedPay===m.id?'selected':'')+'" onclick="selectPay(this,\''+m.id+'\',\''+m.detail+'\')">'+
+      '<div class="pay-icon">'+m.icon+'</div><div class="pay-name">'+m.name+'</div></div>';
+  }).join('');
+};
+
+// ─── FAQ TOGGLE ──────────────────────────────────────────────────
+function toggleFaq(el) {
+  var item = el.parentElement;
+  var answer = item.querySelector('.faq-a');
+  var arrow = item.querySelector('.faq-arrow');
+  var isOpen = item.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.faq-item').forEach(function(i){
+    i.classList.remove('open');
+    var a = i.querySelector('.faq-a'); if(a) a.style.maxHeight = '0';
+    var ar = i.querySelector('.faq-arrow'); if(ar) ar.textContent = '▼';
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    if (answer) answer.style.maxHeight = answer.scrollHeight + 'px';
+    if (arrow) arrow.textContent = '▲';
+  }
+}
+
+// ─── PHONE VALIDATION ────────────────────────────────────────────
+function validatePhone(input) {
+  var v = input.value.replace(/[^0-9]/g,'');
+  if (v.length > 10) v = v.slice(0,10);
+  input.value = v;
+  var valid = v.length === 10 && v.startsWith('07');
+  input.style.borderColor = (v.length > 0 && !valid) ? 'var(--t2)' : '';
+  return valid;
+}

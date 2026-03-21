@@ -1634,3 +1634,149 @@ input, select, textarea {
 @media(min-width:769px) {
   input, select, textarea { font-size: 14px !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   EXPRESS DELIVERY & NEW FEATURES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── HERO DELIVERY BADGES ───────────────────────────────────── */
+.hero-delivery-badge {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.hdb-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+.hdb-express { background: var(--o2); color: #fff; box-shadow: 0 2px 8px rgba(232,98,26,.4); }
+.hdb-std     { background: rgba(255,255,255,.18); color: #fff; border: 1.5px solid rgba(255,255,255,.3); }
+.hdb-wa      { background: #25D366; color: #fff; }
+
+/* ── EXPRESS DELIVERY SELECTOR ─────────────────────────────── */
+.delivery-type-selector { margin-bottom: 20px; }
+.delivery-type-title {
+  font-size: 13px; font-weight: 800; color: var(--g2);
+  text-transform: uppercase; letter-spacing: .6px;
+  margin-bottom: 12px;
+}
+.delivery-type-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.dt-card {
+  border: 2.5px solid var(--c3);
+  border-radius: var(--rl);
+  padding: 16px;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+  background: #fff;
+}
+.dt-card:hover { border-color: var(--g4); }
+.dt-card.active { border-color: var(--g2); background: var(--g7); box-shadow: 0 0 0 3px rgba(26,63,28,.12); }
+.dt-card#dt-express.active { border-color: var(--o2); background: var(--o5); box-shadow: 0 0 0 3px rgba(232,98,26,.15); }
+.dt-icon  { font-size: 28px; margin-bottom: 6px; }
+.dt-name  { font-weight: 800; font-size: 15px; color: var(--ink); margin-bottom: 3px; }
+.dt-desc  { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.dt-price { font-family: var(--font-h); font-size: 17px; color: var(--o1); font-weight: 700; }
+.dt-badge {
+  position: absolute; top: -10px; right: 12px;
+  background: var(--o2); color: #fff;
+  font-size: 10px; font-weight: 800;
+  padding: 3px 10px; border-radius: 50px;
+  letter-spacing: .5px;
+}
+.delivery-eta-pill {
+  padding: 10px 16px;
+  border-radius: var(--r);
+  font-size: 13px; font-weight: 600;
+}
+.eta-express { background: var(--o5); color: var(--o1); border: 1.5px solid var(--o4); }
+.eta-std     { background: var(--g7); color: var(--g2); border: 1.5px solid var(--g6); }
+
+/* ── FAQ SECTION ────────────────────────────────────────────── */
+.faq-sec {
+  background: #fff;
+  padding: 64px 32px;
+  border-top: 2px solid var(--c3);
+}
+.faq-inner { max-width: 900px; margin: 0 auto; }
+.faq-grid  { display: flex; flex-direction: column; gap: 0; border: 2px solid var(--c3); border-radius: var(--rxl); overflow: hidden; }
+.faq-item  { border-bottom: 1px solid var(--c3); }
+.faq-item:last-child { border-bottom: none; }
+.faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background .2s;
+  gap: 16px;
+  background: #fff;
+}
+.faq-q:hover    { background: var(--c5); }
+.faq-arrow      { color: var(--o2); font-size: 12px; flex-shrink: 0; transition: transform .2s; }
+.faq-a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .3s ease;
+  font-size: 14px;
+  color: var(--txt2);
+  line-height: 1.75;
+  padding: 0 24px;
+}
+.faq-item.open .faq-a { padding: 0 24px 18px; }
+@media(max-width:768px) {
+  .faq-sec { padding: 36px 16px; }
+  .faq-q   { padding: 14px 16px; font-size: 14px; }
+  .faq-a   { padding: 0 16px; }
+  .faq-item.open .faq-a { padding: 0 16px 14px; }
+}
+
+/* ── WHATSAPP ORDER CARDS ───────────────────────────────────── */
+.wa-badge {
+  display: inline-flex;
+  background: #25D366; color: #fff;
+  font-size: 10px; font-weight: 800;
+  padding: 1px 7px; border-radius: 50px;
+  margin-left: 6px;
+}
+.wa-order-card {
+  border: 2px solid var(--border2);
+  border-radius: var(--rl);
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  background: #fff;
+  transition: border-color .2s;
+}
+.wa-order-card.wa-new { border-color: #25D366; border-left: 5px solid #25D366; background: #F0FDF4; }
+.wa-order-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.wa-order-id   { display: flex; align-items: center; gap: 10px; }
+.wa-id { font-family: monospace; font-size: 13px; font-weight: 700; color: var(--g2); }
+.wa-time { font-size: 12px; color: var(--muted); }
+.wa-customer { display: flex; gap: 16px; margin-bottom: 8px; flex-wrap: wrap; }
+.wa-cname { font-size: 13px; font-weight: 700; color: var(--ink); }
+.wa-phone { font-size: 13px; }
+.wa-msg {
+  font-size: 13px; color: var(--txt2); line-height: 1.6;
+  font-style: italic; margin-bottom: 12px;
+  background: var(--c5); border-radius: 8px; padding: 10px 14px;
+}
+.wa-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+/* ── PAGE TITLE ─────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+*:focus { outline-offset: 2px; }

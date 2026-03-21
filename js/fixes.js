@@ -349,6 +349,11 @@ function showSec(id) {
     customers: renderCustomers, feedback: renderAdminFeedback,
     vouchers: renderVouchers, loyalty: renderLoyalty, newsletter: renderNewsletterAdmin,
     recipes: renderAdminRecipes, heromgmt: renderAdminHeroSlides,
+    whatsapp:  typeof renderWhatsappOrders==='function' ? renderWhatsappOrders  : null,
+    b2b:       typeof renderB2B==='function'            ? renderB2B             : null,
+    hubs:      typeof renderHubs==='function'           ? renderHubs            : null,
+    userroles: typeof renderUserRoles==='function'      ? renderUserRoles       : null,
+    tickets:   typeof renderTickets==='function'        ? renderTickets         : null,
   };
   if (fn[id]) { try { fn[id](); } catch(e){ console.error('showSec render error ['+id+']:', e); } }
 }

@@ -38,12 +38,17 @@
   <section class="hero">
     <div class="hero-inner">
       <div class="hero-left">
-        <div class="hero-eyebrow">🌿 Uganda's Farm-Fresh Marketplace</div>
-        <h1>Fresh Picked.<br><em>Delivered Today.</em></h1>
-        <p>Fruits, vegetables, grains & more — sourced direct from Ugandan farms. Same-day delivery across Kampala & 13 zones.</p>
+        <div class="hero-eyebrow">⚡ Delivered to Your Door in Minutes</div>
+        <h1>Fresh Groceries<br><em>Delivered in Minutes.</em></h1>
+        <p>Fruits, Vegetables, Grains &amp; Tubers — Fast, Fresh, Affordable. Serving Kampala &amp; surrounding areas.</p>
+        <div class="hero-delivery-badge">
+          <span class="hdb-pill hdb-express">⚡ Express: 15–25 min</span>
+          <span class="hdb-pill hdb-std">🚚 Standard from UGX 3,000</span>
+          <span class="hdb-pill hdb-wa">📱 WhatsApp Orders: 0766026401</span>
+        </div>
         <div class="hero-btns">
-          <button class="btn-hero-p" onclick="document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">Shop Fresh Now 🛒</button>
-          <button class="btn-hero-o" onclick="openModal('modal-signup')">Create Free Account</button>
+          <button class="btn-hero-p" onclick="document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">Order Now 🛒</button>
+          <button class="btn-hero-o" onclick="openExpressDelivery()">⚡ Get Express Delivery</button>
         </div>
         <div class="hero-slideshow-ctrl">
           <button class="hero-arrow" onclick="heroPrev();resetHeroTimer()">&#8592;</button>
@@ -81,7 +86,7 @@
       </div>
       <div class="trust-item">
         <div class="trust-icon">⚡</div>
-        <div class="trust-text"><strong>Same-Day Delivery</strong><span>Order before 12 noon</span></div>
+        <div class="trust-text"><strong>Delivered in Minutes</strong><span>⚡ Express 15–25 min</span></div>
       </div>
       <div class="trust-item">
         <div class="trust-icon">🔄</div>
@@ -100,7 +105,7 @@
 
   <!-- FLASH SALE BAR — banana yellow bg -->
   <div class="flash-bar" id="flash-bar">
-    ⚡ Flash Sale — Student & Weekend Offers active now!
+    ⚡ Express Delivery Available — Groceries in <strong>15–25 minutes!</strong>
     <span class="flash-countdown" id="countdown">02:47:33</span>
     &nbsp;·&nbsp; Use code <strong>KUJAZA10</strong> for 10% off
   </div>
@@ -367,6 +372,25 @@
     </div>
   </section>
 
+
+  <!-- FAQ SECTION -->
+  <section class="faq-sec" id="faq-section">
+    <div class="faq-inner">
+      <div style="text-align:center;margin-bottom:36px">
+        <div class="sec-eye o">Got Questions?</div>
+        <h2 class="sec-title" style="font-size:32px;text-align:center">Frequently Asked Questions</h2>
+      </div>
+      <div class="faq-grid" id="faq-grid">
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>How fast is Express Delivery?</span><span class="faq-arrow">▼</span></div><div class="faq-a">Express Delivery gets your groceries to you in <strong>15–25 minutes</strong> for Zone 1 areas (Kawempe, Nakawa, Bugolobi). Zone 2 is 15–25 min, Zone 3 is 25–35 min. A dedicated rider is dispatched immediately from the nearest micro-hub.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>How do I order via WhatsApp?</span><span class="faq-arrow">▼</span></div><div class="faq-a">Send your order list to <strong>0766026401</strong> on WhatsApp. Tell us what you need, your delivery area, and preferred payment method. We confirm and dispatch within minutes.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>What payment methods do you accept?</span><span class="faq-arrow">▼</span></div><div class="faq-a">We accept MTN Mobile Money, Airtel Money, Cash on Delivery, Visa/Mastercard (online), and Bank Transfer. For B2B clients, we offer 7–30 day credit terms.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>What is your freshness guarantee?</span><span class="faq-arrow">▼</span></div><div class="faq-a">If any item is not fresh on delivery, we replace it free of charge or give you a full refund within 24 hours. No questions asked. Report via WhatsApp or raise a ticket.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Do you do bulk and B2B orders?</span><span class="faq-arrow">▼</span></div><div class="faq-a">Yes! We supply hotels, schools, restaurants and businesses with weekly standing orders, custom quantities, invoicing and credit terms. Email b2b@kujazafresh.com or WhatsApp 0766026401.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Which areas do you deliver to?</span><span class="faq-arrow">▼</span></div><div class="faq-a">We deliver across Greater Kampala including Kawempe, Nakawa, Najjera, Ntinda, Makindye, Bugolobi, Kisaasi, Bukoto, Bweyogerere, Wakiso, Kajjansi, Entebbe, Kitende, Lubowa and Mukono.</div></div>
+      </div>
+    </div>
+  </section>
+
   <!-- CUSTOMER FEEDBACK SECTION — cream bg -->
   <section class="feedback-sec" id="feedback-section">
     <div class="feedback-inner">
@@ -526,7 +550,7 @@
           <div class="form-group"><label>First Name</label><input id="co-fn" placeholder="Sarah"></div>
           <div class="form-group"><label>Last Name</label><input id="co-ln" placeholder="Nakato"></div>
         </div>
-        <div class="form-group"><label>Phone Number *</label><input id="co-ph" type="tel" placeholder="+256 700 000 000"></div>
+        <div class="form-group"><label>Phone Number *</label><input id="co-ph" type="tel" placeholder="07XXXXXXXX" maxlength="10" pattern="07[0-9]{8}" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"></div>
         <div class="form-group"><label>Address / Estate</label><input id="co-addr" placeholder="e.g. Plot 22, Najjera Road, near Shell station"></div>
         <div class="form-group"><label>Delivery Notes</label><input id="co-notes" placeholder="e.g. Blue gate, call on arrival"></div>
       </div>
@@ -534,6 +558,25 @@
         <h4>Select Delivery Zone</h4>
         <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Orders above UGX 60,000 qualify for free delivery in most zones.</p>
         <div class="zone-grid" id="zone-grid"></div>
+      </div>
+      <div class="delivery-type-selector">
+        <div class="delivery-type-title">Select Delivery Type</div>
+        <div class="delivery-type-cards">
+          <div class="dt-card active" id="dt-standard" onclick="selectDeliveryType('standard',this)">
+            <div class="dt-icon">🚚</div>
+            <div class="dt-name">Standard Delivery</div>
+            <div class="dt-desc">25–60 min · Zone price</div>
+            <div class="dt-price" id="dt-std-price">From UGX 3,000</div>
+          </div>
+          <div class="dt-card" id="dt-express" onclick="selectDeliveryType('express',this)">
+            <div class="dt-icon">⚡</div>
+            <div class="dt-name">Express Delivery</div>
+            <div class="dt-desc">15–25 min · Priority rider</div>
+            <div class="dt-price" id="dt-exp-price">From UGX 6,000</div>
+            <div class="dt-badge">FASTEST</div>
+          </div>
+        </div>
+        <div id="delivery-eta-display" class="delivery-eta"></div>
       </div>
       <button class="btn btn-primary btn-full btn-lg" onclick="coNext()">Continue to Payment →</button>
     </div>
@@ -587,7 +630,11 @@
       <div class="side-item" data-sec="tickets"    onclick="showSec('tickets')"><span class="side-icon">🎫</span> Tickets</div>
       <div class="side-item" data-sec="riders"     onclick="showSec('riders')"><span class="side-icon">🏍️</span> Riders / Fleet</div>
       <div class="side-item" data-sec="delivery"   onclick="showSec('delivery')"><span class="side-icon">📍</span> Delivery Allocation</div>
+      <div class="side-item" data-sec="whatsapp"   onclick="showSec('whatsapp')"><span class="side-icon">📱</span> WhatsApp Orders <span class="wa-badge" id="wa-badge">3</span></div>
+      <div class="side-item" data-sec="b2b"        onclick="showSec('b2b')"><span class="side-icon">🏢</span> B2B Management</div>
+      <div class="side-item" data-sec="hubs"       onclick="showSec('hubs')"><span class="side-icon">🏪</span> Micro Hubs</div>
       <div class="side-item" data-sec="vendors"    onclick="showSec('vendors')"><span class="side-icon">🤝</span> Vendors</div>
+      <div class="side-item" data-sec="userroles"  onclick="showSec('userroles')"><span class="side-icon">🔐</span> User &amp; Access Roles</div>
       <div class="side-lbl">Finance</div>
       <div class="side-item" data-sec="finance"      onclick="showSec('finance')"><span class="side-icon">💰</span> Ledger / P&amp;L</div>
       <div class="side-item" data-sec="finstatements" onclick="showSec('finstatements')"><span class="side-icon">📄</span> Financial Statements</div>
@@ -951,6 +998,74 @@
         </div>
       </div>
 
+
+      <!-- WHATSAPP ORDERS -->
+      <div class="admin-section" id="asec-whatsapp">
+        <div class="page-hd">
+          <h2>WhatsApp Orders</h2>
+          <p>📱 Live WhatsApp order inbox — 0766026401 · Assign, process and confirm orders</p>
+        </div>
+        <div class="a-card" style="background:linear-gradient(135deg,#075E54,#128C7E);color:#fff;margin-bottom:20px;border:none">
+          <div class="a-card-body" style="display:flex;align-items:center;gap:16px;padding:16px 24px">
+            <div style="font-size:40px">📱</div>
+            <div>
+              <div style="font-size:18px;font-weight:800;margin-bottom:2px">WhatsApp Business Line</div>
+              <div style="font-size:24px;font-weight:700;color:#25D366">0766 026 401</div>
+              <div style="font-size:13px;opacity:.8;margin-top:2px">Share this number with customers for fast WhatsApp orders</div>
+            </div>
+            <a href="https://wa.me/256766026401" target="_blank" class="btn btn-sm" style="background:#25D366;color:#fff;margin-left:auto;white-space:nowrap;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:700">Open WhatsApp →</a>
+          </div>
+        </div>
+        <div class="stats-row" id="wa-stats"></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Incoming WhatsApp Orders</h4><button class="btn btn-primary btn-sm" onclick="addManualWAOrder()">+ Add Manual Order</button></div>
+          <div id="wa-orders-list"></div>
+        </div>
+      </div>
+
+      <!-- B2B MANAGEMENT -->
+      <div class="admin-section" id="asec-b2b">
+        <div class="page-hd"><h2>B2B Client Management</h2><p>Hotels, schools, restaurants and bulk buyers — standing orders, credit terms, invoicing</p></div>
+        <div class="stats-row" id="b2b-stats"></div>
+        <div class="a-card" style="margin-bottom:20px">
+          <div class="a-card-hd"><h4>B2B Clients</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-b2bclient')">+ Add Client</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Client</th><th>Type</th><th>Contact</th><th>Frequency</th><th>Volume</th><th>Credit Days</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead><tbody id="b2b-tbody"></tbody></table></div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>B2B Standing Orders — This Week</h4></div>
+          <div id="b2b-standing-orders"></div>
+        </div>
+      </div>
+
+      <!-- MICRO HUBS -->
+      <div class="admin-section" id="asec-hubs">
+        <div class="page-hd"><h2>Micro Hub Management</h2><p>Distributed fulfillment points for minutes delivery — stock levels, rider assignment</p></div>
+        <div class="stats-row" id="hubs-stats"></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Active Hubs</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-hub')">+ Add Hub</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Hub Name</th><th>Zone Coverage</th><th>Address</th><th>Capacity</th><th>Stock Level</th><th>Active Riders</th><th>Status</th><th>Actions</th></tr></thead><tbody id="hubs-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- USER ACCESS ROLES -->
+      <div class="admin-section" id="asec-userroles">
+        <div class="page-hd"><h2>User Access &amp; Role Management</h2><p>Create system users, assign roles, control which admin modules each user can access</p></div>
+        <div class="a-card" style="margin-bottom:20px;background:var(--y5);border-color:var(--y3)">
+          <div class="a-card-body" style="font-size:13px;color:var(--y1)">
+            <strong>⚠ Access Control:</strong> Admin has full access to all modules. Other roles below can be restricted to specific sections only. Users must use the Help. login in the footer.
+          </div>
+        </div>
+        <div class="a-card" style="margin-bottom:20px">
+          <div class="a-card-hd"><h4>System Users &amp; Roles</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-sysuser')">+ Add System User</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Dept</th><th>Module Access</th><th>Status</th><th>Actions</th></tr></thead><tbody id="sysusers-tbody"></tbody></table></div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Available Roles &amp; Default Permissions</h4></div>
+          <div id="roles-list"></div>
+        </div>
+      </div>
+
+      <!-- REMOVE CART/SHOP FROM ADMIN: these placeholders ensure navigation works -->
     </main>
   </div>
 </div>
@@ -1455,67 +1570,6 @@
 
 
 <!-- Employee Add/Edit Modal (Full HR) -->
-<div class="modal-bd" id="modal-emp">
-  <div class="modal-box" style="max-width:680px;border-top:4px solid var(--g2)">
-    <div class="modal-hd"><h3 id="emp-modal-title">Add Employee</h3><button class="modal-x" onclick="closeModal('modal-emp')">✕</button></div>
-    <div class="modal-body">
-      <div class="emp-id-banner" id="emp-id-banner" style="display:none">
-        <div class="emp-id-label">Auto-Generated Employee Number</div>
-        <div class="emp-id-val" id="emp-id-display">EMP-000</div>
-      </div>
-      <div style="display:grid;grid-template-columns:120px 1fr;gap:20px;align-items:start;margin-bottom:18px">
-        <div>
-          <label style="font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:6px">Employee Photo</label>
-          <div id="emp-photo-preview" style="width:100px;height:100px;border-radius:12px;background:var(--c4);border:2px dashed var(--c2);display:flex;align-items:center;justify-content:center;font-size:36px;cursor:pointer;overflow:hidden" onclick="document.getElementById('emp-photo-file').click()">👤</div>
-          <input type="file" id="emp-photo-file" accept="image/*" style="display:none" onchange="previewEmpPhoto()">
-          <div style="font-size:10px;color:var(--muted);margin-top:4px;text-align:center">Click to upload</div>
-        </div>
-        <div>
-          <div class="form-row">
-            <div class="form-group"><label>First Name *</label><input id="em-fn" placeholder="e.g. Sarah"></div>
-            <div class="form-group"><label>Last Name *</label><input id="em-ln" placeholder="e.g. Nakato"></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group"><label>Job Title *</label><input id="em-role" placeholder="e.g. Senior Driver"></div>
-            <div class="form-group"><label>Department</label>
-              <select id="em-dept"><option>Operations</option><option>Finance</option><option>HR</option><option>Procurement</option><option>Management</option><option>IT</option></select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>National ID (NIN)</label><input id="em-nin" placeholder="CM9000000XXXXXX"></div>
-        <div class="form-group"><label>TIN Number</label><input id="em-tin" placeholder="Tax Identification Number"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Phone Number *</label><input id="em-phone" type="tel" placeholder="+256 700 000 000"></div>
-        <div class="form-group"><label>Personal Email</label><input id="em-email" type="email" placeholder="personal@email.com"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Work Email</label><input id="em-work-email" placeholder="name@kujaza.com"></div>
-        <div class="form-group"><label>Date of Birth</label><input id="em-dob" type="date"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Contract Type</label>
-          <select id="em-contract"><option>Permanent</option><option>Fixed-Term</option><option>Probation</option><option>Casual</option><option>Intern</option></select>
-        </div>
-        <div class="form-group"><label>Start Date *</label><input id="em-start" type="date"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Basic Salary (UGX) *</label><input id="em-sal" type="number" min="0" placeholder="850000"></div>
-        <div class="form-group"><label>Transport Allowance</label><input id="em-transport" type="number" min="0" placeholder="0"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Housing Allowance</label><input id="em-housing" type="number" min="0" placeholder="0"></div>
-        <div class="form-group"><label>Other Allowances</label><input id="em-other-allow" type="number" min="0" placeholder="0"></div>
-      </div>
-      <div class="form-group"><label>Next of Kin (Name &amp; Phone)</label><input id="em-kin" placeholder="e.g. John Nakato — +256 700 111 222"></div>
-      <div class="form-group"><label>Bank / Mobile Money Account</label><input id="em-bank" placeholder="e.g. Stanbic Bank — 9040012345678"></div>
-      <div class="form-group"><label>NSSF Number</label><input id="em-nssf" placeholder="NSSF registration number"></div>
-      <button class="btn btn-green btn-full" style="margin-top:8px" onclick="saveEmployee()">Save Employee &amp; Generate ID</button>
-    </div>
-  </div>
-</div>
 
 <!-- Info Pages Modal -->
 <div class="modal-bd" id="modal-infopage">
@@ -1525,6 +1579,80 @@
   </div>
 </div>
 
+
+<!-- B2B Client Modal -->
+<div class="modal-bd" id="modal-b2bclient">
+  <div class="modal-box" style="max-width:500px;border-top:4px solid var(--g2)">
+    <div class="modal-hd"><h3>Add B2B Client</h3><button class="modal-x" onclick="closeModal('modal-b2bclient')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Business Name *</label><input id="b2b-name" placeholder="e.g. Hotel Entebbe"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Business Type</label><select id="b2b-type"><option>Hotel</option><option>School</option><option>Restaurant</option><option>Caterer</option><option>Supermarket</option><option>Other</option></select></div>
+        <div class="form-group"><label>Contact Name *</label><input id="b2b-contact" placeholder="e.g. Chef David"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Phone *</label><input id="b2b-phone" type="tel" placeholder="07XXXXXXXX" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"></div>
+        <div class="form-group"><label>Email</label><input id="b2b-email" type="email" placeholder="chef@hotel.com"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Order Frequency</label><select id="b2b-freq"><option>Daily</option><option>Weekly</option><option>Bi-weekly</option><option>Monthly</option></select></div>
+        <div class="form-group"><label>Credit Days</label><select id="b2b-credit"><option value="0">Cash</option><option value="7">7 days</option><option value="14">14 days</option><option value="30">30 days</option></select></div>
+      </div>
+      <div class="form-group"><label>Typical Order Items</label><textarea id="b2b-items" rows="2" placeholder="e.g. Tomatoes 20kg, Onions 10kg, Leafy greens"></textarea></div>
+      <button class="btn btn-green btn-full" onclick="saveB2BClient()">Add B2B Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hub Modal -->
+<div class="modal-bd" id="modal-hub">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-hd"><h3>Add Micro Hub</h3><button class="modal-x" onclick="closeModal('modal-hub')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Hub Name *</label><input id="hub-name" placeholder="e.g. Ntinda Hub"></div>
+      <div class="form-group"><label>Zone Coverage *</label><input id="hub-zones" placeholder="e.g. Ntinda, Nakawa, Kisaasi"></div>
+      <div class="form-group"><label>Physical Address</label><input id="hub-addr" placeholder="e.g. Ntinda Trading Centre, Plot 12"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Capacity (kg)</label><input id="hub-cap" placeholder="200"></div>
+        <div class="form-group"><label>Stock Level</label><select id="hub-stock"><option>High</option><option>Medium</option><option>Low</option></select></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveHub()">Save Hub</button>
+    </div>
+  </div>
+</div>
+
+<!-- System User Modal -->
+<div class="modal-bd" id="modal-sysuser">
+  <div class="modal-box" style="max-width:520px;border-top:4px solid var(--g2)">
+    <div class="modal-hd"><h3>Add System User</h3><button class="modal-x" onclick="closeModal('modal-sysuser')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Full Name *</label><input id="su2-name" placeholder="e.g. Moses Opio"></div>
+        <div class="form-group"><label>Work Email *</label><input id="su2-email" type="email" placeholder="name@kujaza.com"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Password *</label><input id="su2-pass" type="password" placeholder="Min 6 characters"></div>
+        <div class="form-group"><label>Role</label>
+          <select id="su2-role" onchange="updateRoleModules()">
+            <option value="inventory">Inventory Officer</option>
+            <option value="cashier">Cashier</option>
+            <option value="hr">HR Officer</option>
+            <option value="accounts">Accounts Officer</option>
+            <option value="staff">General Staff</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Department</label>
+        <select id="su2-dept"><option>Operations</option><option>Finance</option><option>HR</option><option>Procurement</option><option>IT</option></select>
+      </div>
+      <div class="form-group">
+        <label>Module Access <span style="font-size:11px;color:var(--muted);font-weight:400">(tick the modules this user can access)</span></label>
+        <div id="su2-modules" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px"></div>
+      </div>
+      <button class="btn btn-green btn-full" style="margin-top:12px" onclick="saveSysUser()">Create System User</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script src="js/data.js"></script>
@@ -1533,6 +1661,7 @@
 <script src="js/extended.js"></script>
 <script src="js/staff.js"></script>
 <script src="js/finance.js"></script>
+<script src="js/operations.js"></script>
 <script src="js/fixes.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
