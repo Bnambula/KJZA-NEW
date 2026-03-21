@@ -80,11 +80,65 @@ function renderProducts() {
   ).join('');
 }
 
+// ─── PRODUCT IMAGE STATE ────────────────────────────────────────
+var _productImageData = null; // holds base64 or URL
+
+function _resetProductImageUI() {
+  _productImageData = null;
+  const prev = document.getElementById('p-img-preview');
+  if (prev) { prev.innerHTML = '<div class="piu-placeholder"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg><span>Click to upload photo</span><span style="font-size:11px;opacity:.7">JPG, PNG, WEBP · Max 5MB · or use URL below</span></div>'; }
+  const urlEl = document.getElementById('p-img-url');
+  const pathEl = document.getElementById('p-img-path');
+  if (urlEl) urlEl.value = '';
+  if (pathEl) pathEl.value = '';
+  const fi = document.getElementById('p-img-file');
+  if (fi) fi.value = '';
+  // reset tags
+  ['pt-organic','pt-seasonal','pt-discount','pt-premium','pt-fresh'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.checked = false;
+  });
+  const badgeEl = document.getElementById('p-badge');
+  if (badgeEl) badgeEl.value = '';
+  const origEl = document.getElementById('p-orig-price');
+  if (origEl) origEl.value = '';
+}
+
+function _setProductImagePreview(src) {
+  _productImageData = src;
+  const prev = document.getElementById('p-img-preview');
+  if (prev) prev.innerHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:cover;border-radius:10px" onerror="this.parentElement.innerHTML='<span style=color:var(--t2);font-size:12px>Image failed to load</span>'">`;
+}
+
+function handleProductImageFile() {
+  const fi = document.getElementById('p-img-file');
+  if (!fi || !fi.files || !fi.files[0]) return;
+  const file = fi.files[0];
+  if (file.size > 5 * 1024 * 1024) { toast('Image must be under 5MB', '⚠️'); return; }
+  const reader = new FileReader();
+  reader.onload = e => _setProductImagePreview(e.target.result);
+  reader.readAsDataURL(file);
+}
+
+function handleProductImageURL() {
+  const urlEl = document.getElementById('p-img-url');
+  const url = (urlEl && urlEl.value) ? urlEl.value.trim() : '';
+  if (!url) { toast('Enter an image URL', '⚠️'); return; }
+  _setProductImagePreview(url);
+  toast('Image loaded from URL ✅');
+}
+
+function previewProductImagePath(path) {
+  if (!path) return;
+  _setProductImagePreview(path);
+}
+
 function openAddProduct() {
   KF.state.editingProduct = null;
   document.getElementById('pm-title').textContent = 'Add Product';
   clearForm(['p-name','p-emoji','p-price','p-stock','p-desc']);
   document.getElementById('p-status').value = 'Active';
+  populateCatSelect('p-cat');
+  _resetProductImageUI();
   openModal('modal-product');
 }
 
@@ -92,15 +146,38 @@ function editProduct(id) {
   const p = KF.data.products.find(x => x.id === id);
   if (!p) return;
   KF.state.editingProduct = id;
-  document.getElementById('pm-title').textContent = 'Edit Product';
-  document.getElementById('p-name').value   = p.name;
-  document.getElementById('p-emoji').value  = p.emoji;
-  document.getElementById('p-cat').value    = p.catId;
-  document.getElementById('p-unit').value   = p.unit;
-  document.getElementById('p-price').value  = p.price;
-  document.getElementById('p-stock').value  = p.stock;
-  document.getElementById('p-desc').value   = p.desc;
+  document.getElementById('pm-title').textContent = 'Edit: ' + p.name;
+  document.getElementById('p-name').value  = p.name;
+  document.getElementById('p-emoji').value = p.emoji || '';
+  populateCatSelect('p-cat');
+  document.getElementById('p-cat').value   = p.catId;
+  document.getElementById('p-unit').value  = p.unit;
+  document.getElementById('p-price').value = p.price;
+  document.getElementById('p-stock').value = p.stock;
+  document.getElementById('p-desc').value  = p.desc || '';
   document.getElementById('p-status').value = p.status;
+  const origEl = document.getElementById('p-orig-price');
+  if (origEl) origEl.value = p.origPrice || '';
+  const badgeEl = document.getElementById('p-badge');
+  if (badgeEl) badgeEl.value = p.badge || '';
+  // set tags
+  const tags = p.tags || [];
+  ['pt-organic','pt-seasonal','pt-discount','pt-premium','pt-fresh'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.checked = tags.includes(el.value);
+  });
+  // set image
+  _productImageData = p.img || null;
+  const prev = document.getElementById('p-img-preview');
+  if (prev) {
+    if (p.img) {
+      prev.innerHTML = `<img src="${p.img}" style="width:100%;height:100%;object-fit:cover;border-radius:10px">`;
+    } else {
+      prev.innerHTML = `<div class="piu-placeholder"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg><span>No image yet — add one below</span></div>`;
+    }
+  }
+  const pathEl = document.getElementById('p-img-path');
+  if (pathEl && p.img && !p.img.startsWith('data:') && !p.img.startsWith('http')) pathEl.value = p.img;
   openModal('modal-product');
 }
 
@@ -108,25 +185,52 @@ function saveProduct() {
   const name  = document.getElementById('p-name').value.trim();
   const price = parseInt(document.getElementById('p-price').value);
   const stock = parseInt(document.getElementById('p-stock').value);
-  if (!name || isNaN(price) || isNaN(stock)) { toast('Please fill all required fields', '⚠️'); return; }
+  if (!name || isNaN(price) || isNaN(stock)) { toast('Please fill Name, Price and Stock', '⚠️'); return; }
+
+  // Collect tags from checkboxes
+  const tags = [];
+  ['pt-organic','pt-seasonal','pt-discount','pt-premium','pt-fresh'].forEach(id => {
+    const el = document.getElementById(id); if (el && el.checked) tags.push(el.value);
+  });
+
+  const origPriceEl = document.getElementById('p-orig-price');
+  const origPrice   = origPriceEl && origPriceEl.value ? parseInt(origPriceEl.value) : null;
+  const badgeEl     = document.getElementById('p-badge');
+  const badge       = badgeEl ? (badgeEl.value || null) : null;
+
   const data = {
-    name, emoji: document.getElementById('p-emoji').value || '📦',
-    catId: parseInt(document.getElementById('p-cat').value),
-    unit:  document.getElementById('p-unit').value,
-    price, stock,
-    desc:   document.getElementById('p-desc').value,
-    status: document.getElementById('p-status').value
+    name,
+    emoji:     document.getElementById('p-emoji').value || '📦',
+    catId:     parseInt(document.getElementById('p-cat').value),
+    unit:      document.getElementById('p-unit').value,
+    price,
+    origPrice: origPrice || null,
+    stock,
+    desc:      document.getElementById('p-desc').value || '',
+    status:    document.getElementById('p-status').value,
+    badge,
+    tags,
+    img:       _productImageData || null,
   };
+
   if (KF.state.editingProduct) {
     Object.assign(KF.data.products.find(x => x.id === KF.state.editingProduct), data);
-    toast('Product updated!');
+    toast('Product updated! ✅');
   } else {
     KF.data.products.push({ id: KF.data.nextIds.product++, ...data });
-    toast('Product added!');
+    toast('Product added! ✅');
   }
   closeModal('modal-product');
   renderProducts();
-  renderShop();
+  renderProductGrid();
+}
+
+function delProduct(id) {
+  if (!confirm('Delete this product? This cannot be undone.')) return;
+  KF.data.products = KF.data.products.filter(p => p.id !== id);
+  renderProducts();
+  renderProductGrid();
+  toast('Product deleted', '🗑');
 }
 
 function delProduct(id) {

@@ -382,3 +382,117 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+
+// ─── FILTER SIDEBAR ──────────────────────────────────────────
+function toggleFilterSidebar() {
+  var sb  = document.getElementById('filter-sidebar');
+  var ovl = document.getElementById('filter-sidebar-overlay');
+  if (!sb) return;
+  var isOpen = sb.classList.contains('open');
+  if (isOpen) {
+    closeFilterSidebar();
+  } else {
+    sb.classList.add('open');
+    if (ovl) ovl.classList.add('open');
+    populateFsbCategories();
+    updateFsbCount();
+  }
+}
+
+function closeFilterSidebar() {
+  var sb  = document.getElementById('filter-sidebar');
+  var ovl = document.getElementById('filter-sidebar-overlay');
+  if (sb)  sb.classList.remove('open');
+  if (ovl) ovl.classList.remove('open');
+}
+
+function populateFsbCategories() {
+  var el = document.getElementById('fsb-cat-list');
+  if (!el || !KF || !KF.data) return;
+  el.innerHTML = [{ id:'all', name:'All Categories', emoji:'🛒' }]
+    .concat(KF.data.categories)
+    .map(function(c) {
+      var active = KF.state.activeCat === c.id;
+      return '<button class="fsb-cat-btn' + (active?' active':'') + '" onclick="setCat(\'' + c.id + '\');updateFsbCount()">' +
+        (c.emoji||'📦') + ' ' + c.name +
+        '<span class="fsb-cat-count">' + (c.id==='all' ? KF.data.products.length : KF.data.products.filter(function(p){return p.catId===c.id&&p.status==='Active';}).length) + '</span>' +
+      '</button>';
+    }).join('');
+}
+
+function updateFsbCount() {
+  var el = document.getElementById('fsb-result-count');
+  var countEl = document.getElementById('filter-count');
+  var count = document.querySelectorAll('#product-grid .pcard').length;
+  // Re-read from KF state
+  if (KF && KF.data) {
+    var s = KF.state;
+    count = KF.data.products.filter(function(p) {
+      if (p.status !== 'Active') return false;
+      if (s.activeCat !== 'all' && p.catId !== s.activeCat) return false;
+      if (s.activeFilter === 'discount' && !(p.origPrice && p.origPrice > p.price)) return false;
+      if (s.activeFilter === 'organic'  && !(p.tags||[]).includes('organic'))  return false;
+      if (s.activeFilter === 'seasonal' && !(p.tags||[]).includes('seasonal')) return false;
+      if (s.activeFilter === 'premium'  && !(p.tags||[]).includes('premium'))  return false;
+      if (s.activeFilter === 'instock'  && p.stock <= 0) return false;
+      if (s.activeFilter === 'fresh'    && p.badge !== 'Fresh Today') return false;
+      if (s.maxPrice && p.price > s.maxPrice) return false;
+      return true;
+    }).length;
+  }
+  if (el) el.textContent = count;
+  if (countEl) countEl.textContent = count + ' product' + (count !== 1 ? 's' : '');
+  // show active filter indicator on toolbar button
+  var activeCount = document.getElementById('filter-active-count');
+  if (activeCount) {
+    var hasActive = KF && KF.state && (KF.state.activeFilter !== 'all' || KF.state.activeCat !== 'all' || KF.state.maxPrice);
+    activeCount.style.display = hasActive ? 'inline-flex' : 'none';
+  }
+}
+
+function resetFilters() {
+  if (KF) { KF.state.activeFilter = 'all'; KF.state.activeCat = 'all'; KF.state.maxPrice = null; }
+  document.querySelectorAll('.fchip').forEach(function(c){
+    c.classList.toggle('active', c.getAttribute('data-filter') === 'all');
+  });
+  var pr = document.getElementById('price-range');
+  if (pr) pr.value = pr.max;
+  var pl = document.getElementById('price-label');
+  if (pl) pl.textContent = 'Any price';
+  if (typeof renderProductGrid === 'function') renderProductGrid();
+  populateFsbCategories();
+  updateFsbCount();
+  toast('Filters reset', '✅');
+}
+
+function updateFilterCount() {
+  updateFsbCount();
+}
+
+// ─── CART AMOUNT DISPLAY ─────────────────────────────────────
+function updateCartAmount() {
+  var el = document.getElementById('cart-amount');
+  if (!el || !KF) return;
+  var sub = KF.cartSubtotal ? KF.cartSubtotal() : 0;
+  el.textContent = sub > 0 ? KF.fmt(sub) : 'UGX 0';
+}
+
+// Patch updateCartBadge to also update amount
+document.addEventListener('DOMContentLoaded', function() {
+  var _origBadge = typeof updateCartBadge === 'function' ? updateCartBadge : null;
+  if (_origBadge) {
+    window.updateCartBadge = function() {
+      _origBadge();
+      updateCartAmount();
+    };
+  }
+
+  // Initialize secondary nav visibility (start on shop page)
+  var secNav = document.getElementById('secondary-nav');
+  if (secNav) secNav.style.display = '';
+  
+  // Close filter sidebar on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeFilterSidebar();
+  });
+});

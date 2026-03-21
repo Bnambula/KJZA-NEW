@@ -4,10 +4,22 @@ function showPage(id) {
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('show'); });
   var pg = document.getElementById(id);
   if (pg) pg.classList.add('show');
-  document.querySelectorAll('.nav-link').forEach(function(b){ b.classList.remove('active'); });
-  var map = { 'page-shop':'nav-shop', 'page-checkout':'nav-checkout', 'page-admin':'nav-admin' };
-  if (map[id]) { var el = document.getElementById(map[id]); if (el) el.classList.add('active'); }
   window.scrollTo(0, 0);
+
+  // Secondary nav and search — only on shop page
+  var secNav    = document.getElementById('secondary-nav');
+  var searchWrap = document.getElementById('nav-search-wrap');
+  var isShop = (id === 'page-shop');
+  if (secNav)    secNav.style.display    = isShop ? '' : 'none';
+  if (searchWrap) searchWrap.style.display = isShop ? '' : 'none';
+
+  // Update navbar context label
+  var adminBar = document.getElementById('navbar-context');
+  if (adminBar) {
+    adminBar.textContent = (id==='page-admin') ? '⚙ Admin Dashboard' : (id==='page-staff') ? '👔 Staff Portal' : '';
+    adminBar.style.display = (id==='page-shop') ? 'none' : 'flex';
+  }
+
   if (id === 'page-admin')    { if(typeof initAdmin==='function') initAdmin(); }
   if (id === 'page-checkout') { initCheckout(); }
 }
