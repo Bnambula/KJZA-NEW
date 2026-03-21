@@ -194,20 +194,27 @@
     </div>
   </div>
 
-  <!-- SHOP TOOLBAR — inline with product count and filter trigger -->
+  <!-- SHOP TOOLBAR — hover-triggered filter panel -->
   <div class="shop-toolbar">
     <div class="shop-toolbar-inner">
       <div class="st-left">
-        <button class="filter-trigger-btn" onclick="toggleFilterSidebar()" id="filter-trigger-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg>
-          Filters
-          <span id="filter-active-count" class="filter-active-count" style="display:none">1</span>
-        </button>
+        <!-- Hover zone: entering this area opens the filter panel -->
+        <div class="filter-hover-zone" id="filter-hover-zone"
+          onmouseenter="openFilterSidebar()"
+          onmouseleave="scheduleFilterClose()"
+          onclick="openFilterSidebar()">
+          <button class="filter-trigger-btn" id="filter-trigger-btn" aria-haspopup="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg>
+            Filters &amp; Sort
+            <span id="filter-active-count" class="filter-active-count" style="display:none">1</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:2px;opacity:.5"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+        </div>
         <span id="filter-count" class="st-count">Loading…</span>
       </div>
       <div class="st-right">
         <div class="st-sort">
-          <label>Sort by</label>
+          <label>Sort by:</label>
           <select onchange="setSort(this.value)">
             <option value="default">Recommended</option>
             <option value="price-low">Price: Low → High</option>
@@ -216,15 +223,22 @@
             <option value="name">Name A–Z</option>
           </select>
         </div>
+        <div class="view-toggle">
+          <button class="vt-btn active" id="vt-grid" onclick="setViewMode('grid',this)" title="Grid view">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </button>
+          <button class="vt-btn" id="vt-list" onclick="setViewMode('list',this)" title="List view">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- FILTER SIDEBAR OVERLAY -->
-  <div class="filter-sidebar-overlay" id="filter-sidebar-overlay" onclick="closeFilterSidebar()"></div>
-
-  <!-- FILTER SIDEBAR PANEL -->
-  <aside class="filter-sidebar" id="filter-sidebar" onmouseleave="closeFilterSidebar()">
+  <!-- FILTER DROPDOWN PANEL — appears below filter button on hover -->
+  <div class="filter-dropdown" id="filter-sidebar"
+    onmouseenter="cancelFilterClose()"
+    onmouseleave="scheduleFilterClose()">
     <div class="fsb-header">
       <h3>🔍 Filter Products</h3>
       <button onclick="resetFilters()" class="fsb-reset">Reset all</button>
@@ -264,7 +278,7 @@
     <div class="fsb-apply">
       <button class="btn btn-primary btn-full" onclick="closeFilterSidebar()">View <span id="fsb-result-count">—</span> products →</button>
     </div>
-  </aside>
+  </div>
 
   <!-- SHOP GRID — white bg (product focus) -->
   <section class="shop-sec">
@@ -280,6 +294,144 @@
         </div>
       </div>
       <div class="product-grid" id="product-grid"></div>
+    </div>
+  </section>
+
+
+  <!-- ═══ RECOMMENDATIONS ══════════════════════════════════════════ -->
+  <section class="reco-sec" id="reco-section">
+    <div class="reco-inner">
+      <div class="reco-header">
+        <div class="reco-tabs" id="reco-tabs">
+          <button class="reco-tab active" data-reco="popular" onclick="switchReco('popular',this)">
+            🔥 Most Popular
+          </button>
+          <button class="reco-tab" data-reco="deals" onclick="switchReco('deals',this)">
+            🏷️ Best Deals
+          </button>
+          <button class="reco-tab" data-reco="fresh" onclick="switchReco('fresh',this)">
+            ⚡ Fresh Today
+          </button>
+          <button class="reco-tab" data-reco="organic" onclick="switchReco('organic',this)">
+            🌱 Organic Picks
+          </button>
+        </div>
+        <a class="reco-see-all" onclick="setCat('all');document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">
+          See all products →
+        </a>
+      </div>
+      <div class="reco-scroll-wrap">
+        <button class="reco-scroll-btn reco-scroll-left" onclick="scrollReco(-1)" aria-label="Scroll left">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg>
+        </button>
+        <div class="reco-grid" id="reco-grid"></div>
+        <button class="reco-scroll-btn reco-scroll-right" onclick="scrollReco(1)" aria-label="Scroll right">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SOCIAL PROOF / STATS STRIP ════════════════════════════════ -->
+  <div class="stats-strip">
+    <div class="stats-strip-inner">
+      <div class="ss-item">
+        <div class="ss-num" data-target="2400">0</div>
+        <div class="ss-lbl">Happy Customers</div>
+      </div>
+      <div class="ss-divider"></div>
+      <div class="ss-item">
+        <div class="ss-num" data-target="47">0</div>
+        <div class="ss-lbl">Products Available</div>
+      </div>
+      <div class="ss-divider"></div>
+      <div class="ss-item">
+        <div class="ss-num" data-target="13">0</div>
+        <div class="ss-lbl">Delivery Zones</div>
+      </div>
+      <div class="ss-divider"></div>
+      <div class="ss-item">
+        <div class="ss-num" data-target="22">0</div>
+        <div class="ss-lbl">Min Express Delivery</div>
+      </div>
+      <div class="ss-divider"></div>
+      <div class="ss-item">
+        <div class="ss-num" data-target="120">0</div>
+        <div class="ss-lbl">Farmer Partners</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ HOW IT WORKS ═════════════════════════════════════════════ -->
+  <section class="how-sec">
+    <div class="how-inner">
+      <div style="text-align:center;margin-bottom:40px">
+        <div class="sec-eye o">Simple & Fast</div>
+        <h2 class="sec-title" style="text-align:center">How Kujaza Fresh Works</h2>
+        <p style="color:var(--muted);font-size:15px;max-width:500px;margin:0 auto">From your screen to your door in minutes. It really is this simple.</p>
+      </div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-num">01</div>
+          <div class="how-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <div class="how-title">Browse & Choose</div>
+          <div class="how-desc">Scroll our 47+ fresh products. Filter by category, price or organic. Add to cart in one tap.</div>
+        </div>
+        <div class="how-arrow">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+        </div>
+        <div class="how-step">
+          <div class="how-num">02</div>
+          <div class="how-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <div class="how-title">Pay Your Way</div>
+          <div class="how-desc">MTN Money, Airtel Money, Visa, Cash on Delivery or Bank Transfer. Checkout takes 30 seconds.</div>
+        </div>
+        <div class="how-arrow">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+        </div>
+        <div class="how-step">
+          <div class="how-num">03</div>
+          <div class="how-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+          </div>
+          <div class="how-title">We Pick & Pack</div>
+          <div class="how-desc">Your order is picked from the nearest hub within 2–5 minutes. Quality checked before dispatch.</div>
+        </div>
+        <div class="how-arrow">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+        </div>
+        <div class="how-step">
+          <div class="how-num">04</div>
+          <div class="how-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="16" r="1"/><circle cx="20" cy="16" r="1"/></svg>
+          </div>
+          <div class="how-title">Delivered Fresh</div>
+          <div class="how-desc">A dedicated rider brings your order to your door. Express: 15–25 min. Standard: 25–60 min.</div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:40px">
+        <button class="btn btn-primary btn-lg" onclick="document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">Start Shopping Now →</button>
+        <button class="btn btn-ghost btn-lg" style="margin-left:12px" onclick="openModal('modal-signup')">Create Free Account</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEASONAL SPOTLIGHT ════════════════════════════════════════ -->
+  <section class="seasonal-sec">
+    <div class="seasonal-inner">
+      <div class="seasonal-left">
+        <div class="sec-eye y">In Season Right Now</div>
+        <h2 class="sec-title" style="color:#fff">Seasonal<br>Freshness</h2>
+        <p style="color:rgba(255,255,255,.75);font-size:15px;margin-bottom:24px">March–April brings the best mangoes, passion fruit and nsenene across Uganda. Get them while the season lasts.</p>
+        <button class="btn" style="background:var(--y3);color:var(--g1);font-weight:800;padding:12px 28px;border-radius:50px;font-size:14px;border:none;cursor:pointer" onclick="setFilter('seasonal',null);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">
+          🌿 Shop Seasonal Now →
+        </button>
+      </div>
+      <div class="seasonal-right" id="seasonal-products"></div>
     </div>
   </section>
 
@@ -556,6 +708,43 @@
     </div>
   </section>
 
+
+  <!-- ═══ DID YOU KNOW — Floating food facts widget ═══════════════ -->
+  <div id="dyk-widget" class="dyk-widget">
+    <!-- Hanging tab trigger -->
+    <div class="dyk-tab" id="dyk-tab" onclick="toggleDYK()" title="Did You Know? Daily food fact">
+      <div class="dyk-tab-icon">💡</div>
+      <div class="dyk-tab-text">Did You<br>Know?</div>
+    </div>
+
+    <!-- Expanded card -->
+    <div class="dyk-card" id="dyk-card">
+      <!-- Header -->
+      <div class="dyk-card-header">
+        <div class="dyk-header-left">
+          <div class="dyk-bulb">💡</div>
+          <div>
+            <div class="dyk-title">Did You Know?</div>
+            <div class="dyk-subtitle">Daily food fact · <span id="dyk-date"></span></div>
+          </div>
+        </div>
+        <button class="dyk-close" onclick="toggleDYK()" aria-label="Close">✕</button>
+      </div>
+
+      <!-- Food image & fact -->
+      <div class="dyk-body" id="dyk-body">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Navigation footer -->
+      <div class="dyk-footer">
+        <button class="dyk-nav-btn" onclick="dykPrev()" title="Previous fact">← Prev</button>
+        <div class="dyk-dots" id="dyk-dots"></div>
+        <button class="dyk-nav-btn" onclick="dykNext()" title="Next fact">Next →</button>
+      </div>
+    </div>
+  </div>
+
   <!-- FOOTER — near-black bg (anchor) -->
   <footer class="site-footer">
     <!-- Social bar -->
@@ -763,6 +952,7 @@
       <div class="side-lbl">Content</div>
       <div class="side-item" data-sec="recipes"   onclick="showSec('recipes')"><span class="side-icon">🍃</span> Recipes</div>
       <div class="side-item" data-sec="heromgmt"  onclick="showSec('heromgmt')"><span class="side-icon">🖼️</span> Hero Slides</div>
+      <div class="side-item" data-sec="dykadmin"  onclick="showSec('dykadmin')"><span class="side-icon">💡</span> Did You Know</div>
     </aside>
 
     <main class="admin-main">
@@ -785,7 +975,7 @@
         <div class="page-hd"><h2>Products</h2><p>Manage the full product catalogue</p></div>
         <div class="a-card">
           <div class="a-card-hd"><h4>All Products</h4><button class="btn btn-primary btn-sm" onclick="openAddProduct()">+ Add Product</button></div>
-          <div class="tbl-wrap"><table><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead><tbody id="prod-tbody"></tbody></table></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Product &amp; Code</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead><tbody id="prod-tbody"></tbody></table></div>
         </div>
       </div>
 
@@ -1176,6 +1366,36 @@
       </div>
 
       <!-- REMOVE CART/SHOP FROM ADMIN: these placeholders ensure navigation works -->
+
+      <!-- DYK ADMIN — Did You Know food facts management -->
+      <div class="admin-section" id="asec-dykadmin">
+        <div class="page-hd">
+          <h2>Did You Know? — Food Facts</h2>
+          <p>Manage the daily food facts widget on the homepage — add, edit, reorder and remove facts with photos</p>
+        </div>
+        <div class="a-card" style="background:linear-gradient(135deg,var(--g7),#fffbeb);border-color:var(--y3);margin-bottom:20px">
+          <div class="a-card-body" style="padding:16px 20px;display:flex;align-items:center;gap:16px">
+            <div style="font-size:36px">💡</div>
+            <div>
+              <div style="font-weight:800;color:var(--g2);margin-bottom:4px">Daily Rotation — One fact per day, automatically selected</div>
+              <div style="font-size:13px;color:var(--muted)">The widget shows today's fact based on the day of the year. Customers can browse all facts using the navigation arrows. Facts with a linked product show an Add to Cart button.</div>
+            </div>
+          </div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-hd">
+            <h4>All Food Facts (<span id="dyk-admin-count">0</span>)</h4>
+            <button class="btn btn-primary btn-sm" onclick="openAddDYKFact()">+ Add Food Fact</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Title</th><th>Food / Product</th><th>Photo</th><th>Benefits</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="dyk-admin-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 </div>
@@ -1470,7 +1690,15 @@
 
       <div class="form-row">
         <div class="form-group"><label>Product Name *</label><input id="p-name" placeholder="e.g. Ripe Mangoes"></div>
-        <div class="form-group"><label>Emoji Icon</label><input id="p-emoji" placeholder="🥭" style="font-size:20px"></div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:6px">
+            Emoji <span style="font-size:10px;font-weight:400;color:var(--muted)">(optional fallback icon)</span>
+          </label>
+          <div class="emoji-field-wrap">
+            <input id="p-emoji" placeholder="🥭" style="font-size:20px;width:64px;text-align:center">
+            <div style="font-size:10px;color:var(--muted);margin-top:3px">Used only if no photo uploaded</div>
+          </div>
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group"><label>Category *</label><select id="p-cat"></select></div>
@@ -1808,6 +2036,68 @@
     </div>
   </div>
 </div>
+
+<!-- DYK Fact Add/Edit Modal -->
+<div class="modal-bd" id="modal-dyk-fact">
+  <div class="modal-box" style="max-width:620px;border-top:4px solid var(--y3)">
+    <div class="modal-hd">
+      <h3 id="dyk-modal-title">Add Food Fact</h3>
+      <button class="modal-x" onclick="closeModal('modal-dyk-fact')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Fact Title *</label><input id="dyk-title" placeholder="e.g. Tomatoes Are Actually Fruits!"></div>
+        <div class="form-group"><label>Food Name *</label><input id="dyk-food" placeholder="e.g. Tomatoes"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Linked Product (for Add to Cart)</label>
+          <select id="dyk-product-id">
+            <option value="">None — no product link</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Icon Emoji</label><input id="dyk-icon" placeholder="🍅" style="font-size:20px;width:64px"></div>
+      </div>
+      <!-- Photo upload section -->
+      <div class="form-group">
+        <label>Photo <span style="font-size:11px;font-weight:400;color:var(--muted)">(upload from device or paste URL)</span></label>
+        <div style="display:grid;grid-template-columns:120px 1fr;gap:12px;margin-top:6px">
+          <div id="dyk-img-preview" style="width:120px;height:90px;border-radius:10px;border:2px dashed var(--c2);background:var(--c5);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;font-size:28px" onclick="document.getElementById('dyk-img-file').click()">📷</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <input type="file" id="dyk-img-file" accept="image/*" style="display:none" onchange="dykPreviewImg()">
+            <button class="btn btn-sm" onclick="document.getElementById('dyk-img-file').click()">📁 Browse Device</button>
+            <input id="dyk-img-url" type="url" placeholder="https://example.com/photo.jpg" style="font-size:12px">
+            <button class="btn btn-sm btn-green" onclick="dykLoadImgURL()">🌐 Load from URL</button>
+            <input id="dyk-img-path" type="text" placeholder="images/tomatoes.jpg" style="font-size:12px" oninput="dykPreviewPath(this.value)">
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Tag Line *</label><input id="dyk-tag" placeholder="e.g. A fruit disguised as a vegetable"></div>
+        <div class="form-group"><label>Origin</label><input id="dyk-origin" placeholder="🌍 Origin: South America · Uganda"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Accent Colour</label><input id="dyk-color" type="color" value="#E8621A" style="height:38px;width:60px;border-radius:6px;cursor:pointer"></div>
+        <div class="form-group"><label>Background Colour</label><input id="dyk-bgcolor" type="color" value="#FFF5F0" style="height:38px;width:60px;border-radius:6px;cursor:pointer"></div>
+      </div>
+      <div class="form-group">
+        <label>Main Fact Text * <span style="font-size:11px;font-weight:400;color:var(--muted)">(3–5 interesting sentences)</span></label>
+        <textarea id="dyk-fact" rows="4" placeholder="The main educational/interesting story about this food…"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Health Benefits <span style="font-size:11px;font-weight:400;color:var(--muted)">(one per line, max 5)</span></label>
+        <textarea id="dyk-benefits" rows="4" placeholder="Rich in Vitamin C&#10;Reduces blood pressure&#10;High in antioxidants&#10;Great for digestion"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Pro Tip</label>
+        <input id="dyk-tip" placeholder="🌟 Pro Tip: A practical kitchen or nutrition tip about this food">
+      </div>
+      <button class="btn btn-yellow btn-full" onclick="saveDYKFact()" style="margin-top:8px;background:var(--y2);color:var(--g1);font-weight:800">
+        💡 Save Food Fact
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="js/data.js"></script>
@@ -1818,6 +2108,8 @@
 <script src="js/finance.js"></script>
 <script src="js/operations.js"></script>
 <script src="js/fixes.js"></script>
+<script src="js/dyk.js"></script>
+<script src="js/enhancements.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   renderShop();

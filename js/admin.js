@@ -1,5 +1,11 @@
 // ===== KUJAZA FRESH — ADMIN MODULE =====
 
+// Helper — product thumbnail HTML (no emoji)
+function prodThumb(p) {
+  if (p.img) return '<img src="' + p.img + '" style="width:100%;height:100%;object-fit:cover">';
+  return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>';
+}
+
 function initAdmin() {
   if (!KF.state.currentUser || KF.state.currentUser.role !== 'admin') {
     showPage('page-shop');
@@ -53,7 +59,7 @@ function renderDashboard() {
 
   const lowStock = KF.data.products.filter(p => p.stock <= 12 && p.status === 'Active');
   document.getElementById('dash-stock').innerHTML = lowStock.length
-    ? lowStock.map(p => `<div class="fin-row"><span>${p.emoji} ${p.name}</span><span class="badge ${p.stock===0?'badge-red':'badge-amber'}">${p.stock===0?'Out of Stock':p.stock+' left'}</span></div>`).join('')
+    ? lowStock.map(p => `<div class="fin-row"><span><span style="font-family:monospace;font-size:11px;color:var(--o1);margin-right:6px">${p.code||''}</span>${p.name}</span><span class="badge ${p.stock===0?'badge-red':'badge-amber'}">${p.stock===0?'Out of Stock':p.stock+' left'}</span></div>`).join('')
     : '<div style="color:var(--muted);font-size:13px;padding:12px 0">✓ All products well stocked</div>';
 }
 
@@ -70,7 +76,14 @@ function renderProducts() {
   populateCatSelect('p-cat');
   document.getElementById('prod-tbody').innerHTML = KF.data.products.map(p =>
     `<tr>
-      <td><span style="font-size:22px;margin-right:8px">${p.emoji}</span><strong>${p.name}</strong><br><small class="text-muted">${p.desc.substring(0,50)}…</small></td>
+      <td><div class="prod-tbl-cell">
+        <div class="prod-tbl-thumb">${prodThumb(p)}</div>
+        <div>
+          <div class="prod-code-badge">${p.code||'—'}</div>
+          <strong>${p.name}</strong>
+          <div style="font-size:11px;color:var(--muted)">${(p.desc||'').substring(0,45)}…</div>
+        </div>
+      </div></td>
       <td>${KF.catEmoji(p.catId)} ${KF.catName(p.catId)}</td>
       <td><strong>${KF.fmt(p.price)}</strong><br><small class="text-muted">per ${p.unit}</small></td>
       <td>${p.stock}</td>
@@ -326,7 +339,7 @@ function renderOrders() {
   document.getElementById('orders-tbody').innerHTML = KF.data.orders.map(o => {
     const rider = o.riderId ? KF.data.riders.find(r => r.id === o.riderId) : null;
     return `<tr>
-      <td><strong style="color:var(--g1)">${o.id}</strong><br><small class="text-muted">${o.date}</small></td>
+      <td><span class='id-chip id-chip-order'>${o.id}</span><br><small class='text-muted' style='font-size:11px'>${o.date}</small></td>
       <td>${o.customer}</td>
       <td>📍 ${o.zone}</td>
       <td style="font-size:12px;max-width:160px;overflow:hidden">${o.items.filter(i=>i.name!=='Delivery fee').map(i=>i.name+'×'+i.qty).join(', ')}</td>

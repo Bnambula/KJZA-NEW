@@ -6,22 +6,51 @@ function showPage(id) {
   if (pg) pg.classList.add('show');
   window.scrollTo(0, 0);
 
+  var isShop     = (id === 'page-shop');
+  var isCheckout = (id === 'page-checkout');
+  var isPublic   = isShop || isCheckout; // pages customers can use
+
   // Secondary nav and search — only on shop page
-  var secNav    = document.getElementById('secondary-nav');
+  var secNav     = document.getElementById('secondary-nav');
   var searchWrap = document.getElementById('nav-search-wrap');
-  var isShop = (id === 'page-shop');
-  if (secNav)    secNav.style.display    = isShop ? '' : 'none';
+  if (secNav)     secNav.style.display     = isShop ? '' : 'none';
   if (searchWrap) searchWrap.style.display = isShop ? '' : 'none';
+
+  // Wishlist and Cart buttons — hidden on admin & staff portals
+  var cartBtn     = document.querySelector('.nav-cart-btn');
+  var wishlistBtn = document.querySelector('.nav-icon-btn[title="Wishlist"]');
+  if (cartBtn)     cartBtn.style.display     = isPublic ? '' : 'none';
+  if (wishlistBtn) wishlistBtn.style.display = isPublic ? '' : 'none';
+
+  // Mobile bottom nav — only on public pages
+  var mbn = document.getElementById('mobile-bottom-nav');
+  if (mbn) mbn.style.display = isPublic ? '' : 'none';
 
   // Update navbar context label
   var adminBar = document.getElementById('navbar-context');
   if (adminBar) {
-    adminBar.textContent = (id==='page-admin') ? '⚙ Admin Dashboard' : (id==='page-staff') ? '👔 Staff Portal' : '';
-    adminBar.style.display = (id==='page-shop') ? 'none' : 'flex';
+    if (id === 'page-admin') {
+      adminBar.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>&nbsp; Admin Dashboard';
+    } else if (id === 'page-staff') {
+      adminBar.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>&nbsp; Staff Portal';
+    }
+    adminBar.style.display = isPublic ? 'none' : 'flex';
   }
 
   if (id === 'page-admin')    { if(typeof initAdmin==='function') initAdmin(); }
   if (id === 'page-checkout') { initCheckout(); }
+
+  // Show/hide cart & wishlist based on page context
+  var u = KF.state.currentUser;
+  var isStaff = u && (u.role !== 'customer');
+  // On shop page always show cart/wishlist for customers
+  var hideShopUI = isStaff || (id !== 'page-shop' && id !== 'page-checkout');
+  var cartBtn     = document.querySelector('.nav-cart-btn');
+  var wishlistBtn = document.querySelector('.nav-icon-btn[title="Wishlist"]');
+  if (cartBtn)     cartBtn.style.display     = (isStaff) ? 'none' : '';
+  if (wishlistBtn) wishlistBtn.style.display = (isStaff) ? 'none' : '';
+  var mbn = document.getElementById('mobile-bottom-nav');
+  if (mbn) mbn.style.display = isStaff ? 'none' : '';
 }
 
 function toast(msg, icon) {
@@ -67,7 +96,7 @@ function renderCartDrawer() {
       if(!p) return '';
       var img=p.img
         ? '<img src="'+p.img+'" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0">'
-        : '<div style="width:44px;height:44px;background:var(--g7);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">'+p.emoji+'</div>';
+        : '<div style="width:44px;height:44px;background:var(--c4);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid var(--c3)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg></div>';
       return '<div class="cart-item">'+img+
         '<div class="cart-item-info"><div class="cart-item-name">'+p.name+'</div><div class="cart-item-price">'+KF.fmt(p.price*i.qty)+'</div></div>'+
         '<div class="qty-ctrl"><button class="qty-btn" onclick="changeQty('+p.id+',-1)">−</button><span class="qty-val">'+i.qty+'</span><button class="qty-btn" onclick="changeQty('+p.id+',1)">+</button></div>'+
@@ -85,7 +114,7 @@ function addToCart(pid) {
   if(ex){if(ex.qty>=p.stock){toast('Maximum stock reached','⚠️');return;}ex.qty++;}
   else{KF.state.cart.push({pid:pid,qty:1});}
   updateCartBadge();
-  toast(p.emoji+' '+p.name+' added to cart');
+  toast(p.name + ' added to cart');
 }
 function removeFromCart(pid) {
   KF.state.cart=KF.state.cart.filter(function(i){return i.pid!==pid;});
@@ -168,10 +197,25 @@ function logout() {
 }
 function updateAuthUI() {
   var u=KF.state.currentUser;
+  var isStaff = u && (u.role!=='customer');
+  var isAdmin  = u && u.role==='admin';
+  // Auth buttons
   var ab=document.getElementById('auth-btn'); if(ab) ab.classList.toggle('hidden',!!u);
   var up=document.getElementById('user-pill'); if(up) up.classList.toggle('hidden',!u);
-  var an=document.getElementById('nav-admin'); if(an) an.classList.toggle('hidden',!(u&&u.role==='admin'));
+  var an=document.getElementById('nav-admin'); if(an) an.classList.toggle('hidden',!isAdmin);
   var un=document.getElementById('user-name'); if(u&&un) un.textContent=u.name.split(' ')[0];
+  // Hide cart + wishlist for admin/staff (they don't shop)
+  _applyNavbarContext(isStaff);
+}
+
+function _applyNavbarContext(isStaff) {
+  var cartBtn     = document.querySelector('.nav-cart-btn');
+  var wishlistBtn = document.querySelector('.nav-icon-btn[title="Wishlist"]');
+  if (cartBtn)     cartBtn.style.display     = isStaff ? 'none' : '';
+  if (wishlistBtn) wishlistBtn.style.display = isStaff ? 'none' : '';
+  // Also hide the mobile bottom nav for staff/admin
+  var mbn = document.getElementById('mobile-bottom-nav');
+  if (mbn) mbn.style.display = isStaff ? 'none' : '';
 }
 
 // ─── SHOP ───────────────────────────────────────────────────────
@@ -210,14 +254,20 @@ function buildProductCard(p) {
   var out=p.stock===0, low=p.stock>0&&p.stock<=12;
   var hd=p.origPrice&&p.origPrice>p.price, dp=hd?Math.round((1-p.price/p.origPrice)*100):0;
   var bmap={'Best Seller':'badge-orange','Fresh Today':'badge-green','Organic':'badge-green','Low Stock':'badge-yellow',
-    'Premium':'badge-blue','Imported':'badge-blue','Farm Fresh':'badge-green','Local':'badge-local','Staple':'badge-local',
-    'Traditional':'badge-local','Seasonal':'badge-yellow','28% Off':'badge-orange','20% Off':'badge-orange',
-    '17% Off':'badge-orange','14% Off':'badge-orange','18% Off':'badge-orange'};
+    'New Arrival':'badge-green','Premium':'badge-blue','Imported':'badge-blue','Farm Fresh':'badge-green',
+    'Local':'badge-local','Staple':'badge-local','Traditional':'badge-local','Seasonal':'badge-yellow',
+    '28% Off':'badge-orange','20% Off':'badge-orange','17% Off':'badge-orange','14% Off':'badge-orange','18% Off':'badge-orange'};
   var bc=p.badge?(bmap[p.badge]||'badge-orange'):'';
-  var ic=p.img?'<img src="'+p.img+'" alt="'+p.name+'" class="box-photo" loading="lazy">':'<div class="box-emoji-display">'+p.emoji+'</div>';
+
+  // Image: use uploaded photo OR clean placeholder (no emoji fallback)
+  var ic = p.img
+    ? '<img src="'+p.img+'" alt="'+p.name+'" class="box-photo" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling&&(this.nextElementSibling.style.display=\'flex\')">'
+      + '<div class="box-img-placeholder" style="display:none"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".35"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg></div>'
+    : '<div class="box-img-placeholder"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".35"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg><span style="font-size:11px;opacity:.5;margin-top:4px">'+p.code+'</span></div>';
+
   return '<div class="pcard" onclick="openQuickView('+p.id+')">'+
     '<div class="pcard-box"><div class="box-frame">'+
-      '<div class="box-top-strip"><span class="box-logo">Kujaza Fresh</span><span class="box-organic">🌱 Organic</span></div>'+
+      '<div class="box-top-strip"><span class="box-logo">Kujaza Fresh</span><span class="box-organic">🌱 Fresh</span></div>'+
       '<div class="box-image-area '+(p.img?'has-photo':'no-photo')+'">'+ic+
         (out?'<div class="box-overlay-out">Out of Stock</div>':'')+
         (hd?'<div class="discount-ribbon">-'+dp+'%</div>':'')+
@@ -225,6 +275,7 @@ function buildProductCard(p) {
       '</div><div class="box-wood-grain"></div><div class="box-side-left"></div><div class="box-side-right"></div>'+
     '</div></div>'+
     '<div class="pcard-body">'+
+      '<div class="pcard-code" title="Product Code">'+p.code+'</div>'+
       '<div class="pcard-name">'+p.name+'</div>'+
       '<div class="pcard-cat">'+KF.catEmoji(p.catId)+' '+KF.catName(p.catId)+'</div>'+
       '<div class="pcard-price-row"><div class="pcard-price">'+KF.fmt(p.price)+' <small>/ '+p.unit+'</small></div>'+(hd?'<div class="pcard-orig">'+KF.fmt(p.origPrice)+'</div>':'')+
@@ -257,8 +308,9 @@ function openQuickView(pid) {
   var hd=p.origPrice&&p.origPrice>p.price, disc=hd?Math.round((1-p.price/p.origPrice)*100):0;
   var out=p.stock===0, low=p.stock>0&&p.stock<=12;
   var imgHtml=p.img
-    ?'<img src="'+p.img+'" alt="'+p.name+'" style="width:100%;height:220px;object-fit:cover;border-radius:12px;border:2px solid var(--c3)">'
-    :'<div style="width:100%;height:220px;border-radius:12px;background:linear-gradient(135deg,#6B3F1A,#8B5520);display:flex;align-items:center;justify-content:center;font-size:80px">'+p.emoji+'</div>';
+    ?'<img src="'+p.img+'" alt="'+p.name+'" style="width:100%;height:220px;object-fit:cover;border-radius:12px;border:2px solid var(--c3)" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+     +'<div style="width:100%;height:220px;border-radius:12px;background:var(--c4);display:none;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--muted);font-size:13px;border:2px dashed var(--c2)"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".4"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg><span>'+p.code+'</span></div>'
+    :'<div style="width:100%;height:220px;border-radius:12px;background:var(--c4);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--muted);font-size:13px;border:2px dashed var(--c2)"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".4"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg><span>No image uploaded</span><span style="font-size:11px">'+p.code+'</span></div>';
   var qv=document.getElementById('qv-content'); if(!qv)return;
   qv.innerHTML=
     '<div style="display:grid;grid-template-columns:1fr 1.1fr;gap:24px;align-items:start">'+
@@ -321,7 +373,7 @@ function renderCheckoutSummary(){
   var sub=KF.cartSubtotal();
   el.innerHTML=KF.state.cart.map(function(i){
     var p=KF.data.products.find(function(x){return x.id===i.pid;}); if(!p)return'';
-    return '<div class="order-line"><span>'+p.emoji+' '+p.name+' × '+i.qty+'</span><span>'+KF.fmt(p.price*i.qty)+'</span></div>';
+    return '<div class="order-line"><span>'+p.name+' × '+i.qty+'</span><span>'+KF.fmt(p.price*i.qty)+'</span></div>';
   }).join('')+
   (fee?'<div class="order-line"><span>Delivery — '+(KF.state.selectedZone||'Select zone')+'</span><span>'+KF.fmt(fee)+'</span></div>':'')+
   '<div class="order-line" style="font-weight:800;font-size:16px;border-top:2px solid var(--c3);padding-top:12px;margin-top:6px"><span>Total</span><span>'+KF.fmt(sub+fee)+'</span></div>';
@@ -342,7 +394,11 @@ function renderCheckoutStep(n){
 function placeOrder(){
   var zone=KF.data.zones.find(function(z){return z.name===KF.state.selectedZone;}), fee=zone?zone.fee:0;
   var sub=KF.cartSubtotal();
-  var oid='KF-'+String(KF.data.nextIds.order++).padStart(4,'0');
+  var now  = new Date();
+  var mm   = String(now.getMonth()+1).padStart(2,'0');
+  var yy   = String(now.getFullYear()).slice(2);
+  var seq  = String(KF.data.nextIds.order++).padStart(6,'0');
+  var oid  = 'KJZ' + mm + yy + seq;
   var fn=document.getElementById('co-fn'), ln=document.getElementById('co-ln');
   var cname=KF.state.currentUser?KF.state.currentUser.name:((fn?fn.value:'')+' '+(ln?ln.value:'')).trim()||'Guest';
   var order={id:oid,customer:cname,zone:KF.state.selectedZone,
@@ -422,7 +478,7 @@ function renderRecipeIngredients(key){
     var p=KF.data.products.find(function(x){return x.id===ing.id;}); if(!p)return'';
     var ok=p.stock>0;
     return '<div class="ingredient-row'+(ok?'':' ingredient-oos')+'">' +
-      '<div class="ing-emoji">'+p.emoji+'</div>' +
+      '<div class="ing-img">'+(p.img?'<img src="'+p.img+'" style="width:36px;height:36px;object-fit:cover;border-radius:6px">':'<div style="width:36px;height:36px;background:var(--c4);border-radius:6px;border:1px solid var(--c3)"></div>')+'</div>' +
       '<div class="ing-info"><div class="ing-name">'+p.name+'</div><div class="ing-note">'+ing.note+'</div></div>' +
       '<div class="ing-right"><div class="ing-price">'+KF.fmt(p.price)+'</div>' +
       (ok?'<button class="ing-add-btn" onclick="addToCart('+p.id+');this.textContent=\'✓\';this.style.background=\'var(--g3)\'">+</button>':'<span class="ing-oos-tag">Soon</span>')+

@@ -441,9 +441,11 @@ function previewEmpPhoto() {
 }
 
 function generateEmpId() {
-  var year = new Date().getFullYear().toString().slice(2);
-  var seq  = String(KF.data.nextEmpNum || (KF.data.employees||[]).length + 1).padStart(4,'0');
-  var id   = 'KF-EMP-' + year + seq;
+  var now  = new Date();
+  var yy   = now.getFullYear().toString().slice(2);
+  var mm   = String(now.getMonth()+1).padStart(2,'0');
+  var seq  = String(KF.data.nextEmpNum || (KF.data.employees||[]).length + 1).padStart(3,'0');
+  var id   = 'EJF' + yy + mm + seq;
   KF.data.nextEmpNum = (KF.data.nextEmpNum || (KF.data.employees||[]).length + 1) + 1;
   return id;
 }

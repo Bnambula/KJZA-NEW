@@ -3,10 +3,10 @@
 // ── SEED DATA ──────────────────────────────────────────────────
 Object.assign(KF.data, {
   tickets: [
-    { id:'TKT-001', by:'Sarah Nakato',  cat:'Delivery',       subj:'Order arrived late',         status:'Resolved', assigned:'Agnes', pri:'Normal', date:'2026-03-10' },
-    { id:'TKT-002', by:'James Kato',    cat:'Product Quality', subj:'Avocados were overripe',     status:'In Progress', assigned:'Brian', pri:'Urgent', date:'2026-03-14' },
-    { id:'TKT-003', by:'Hotel Entebbe', cat:'Order Issue',     subj:'Missing 5kg tomatoes',       status:'Open',     assigned:null,   pri:'Urgent', date:'2026-03-16' },
-    { id:'TKT-004', by:'Staff — Alex',  cat:'Staff Request',  subj:'Request for fuel allowance',  status:'Open',     assigned:null,   pri:'Normal', date:'2026-03-16' },
+    { id:'TKT100300001', by:'Sarah Nakato',  cat:'Delivery',       subj:'Order arrived late',         status:'Resolved', assigned:'Agnes', pri:'Normal', date:'2026-03-10' },
+    { id:'TKT140300002', by:'James Kato',    cat:'Product Quality', subj:'Avocados were overripe',     status:'In Progress', assigned:'Brian', pri:'Urgent', date:'2026-03-14' },
+    { id:'TKT160300003', by:'Hotel Entebbe', cat:'Order Issue',     subj:'Missing 5kg tomatoes',       status:'Open',     assigned:null,   pri:'Urgent', date:'2026-03-16' },
+    { id:'TKT160300004', by:'Staff — Alex',  cat:'Staff Request',  subj:'Request for fuel allowance',  status:'Open',     assigned:null,   pri:'Normal', date:'2026-03-16' },
   ],
   requisitions: [
     { id:'REQ-001', item:'500kg Tomatoes — Wakiso farms',  by:'Alex M.',  amt:600000,  dept:'Operations', deptApproval:'Approved', finApproval:'Approved', po:'PO-001', date:'2026-03-08' },
@@ -41,7 +41,7 @@ Object.assign(KF.data, {
 function renderTickets() {
   document.getElementById('ticket-tbody').innerHTML = KF.data.tickets.map(t =>
     `<tr>
-      <td><strong style="color:var(--o1)">${t.id}</strong><br><small style="color:var(--muted)">${t.date}</small></td>
+      <td><span class='id-chip id-chip-ticket'>${t.id}</span><br><small style='color:var(--muted);font-size:11px'>${t.date}</small></td>
       <td>${t.by}</td>
       <td><span class="badge badge-yellow">${t.cat}</span></td>
       <td>${t.subj}</td>
@@ -58,7 +58,11 @@ function renderTickets() {
 function saveTicket() {
   const subj = document.getElementById('tk-subj').value.trim();
   if(!subj) { toast('Enter a subject','⚠️'); return; }
-  const id = 'TKT-00' + KF.data.nextTicketId++;
+  const now = new Date();
+  const dd  = String(now.getDate()).padStart(2,'0');
+  const mm  = String(now.getMonth()+1).padStart(2,'0');
+  const seq = String(KF.data.nextTicketId++).padStart(6,'0');
+  const id  = 'TKT' + dd + mm + seq;
   KF.data.tickets.unshift({ id, by:document.getElementById('tk-name').value||'Customer', cat:document.getElementById('tk-cat').value, subj, status:'Open', assigned:null, pri:document.getElementById('tk-pri').value, date:new Date().toISOString().split('T')[0] });
   closeModal('modal-ticket'); renderTickets(); toast('Ticket '+id+' submitted!','🎫');
 }
@@ -101,7 +105,7 @@ function saveReq() {
 function renderVendors() {
   document.getElementById('vendor-tbody').innerHTML = KF.data.vendors.map(v =>
     `<tr>
-      <td><strong>${v.name}</strong></td>
+      <td><span class='id-chip id-chip-vendor'>${v.id||'—'}</span><br><strong style='font-size:13px'>${v.name}</strong></td>
       <td>${v.contact}<br><small style="color:var(--muted)">${v.phone}</small></td>
       <td>${KF.data.products.filter(p=>p.catId).length}</td>
       <td>${v.commission}%</td>
@@ -114,7 +118,12 @@ function renderVendors() {
 function saveVendor() {
   const name = document.getElementById('vn-name').value.trim();
   if(!name) { toast('Enter vendor name','⚠️'); return; }
-  KF.data.vendors.push({ id:KF.data.nextVendorId++, name, contact:document.getElementById('vn-contact').value, phone:document.getElementById('vn-phone').value, commission:parseFloat(document.getElementById('vn-comm').value)||8, payout:0, status:document.getElementById('vn-status').value });
+  const vNow = new Date();
+  const vYY = String(vNow.getFullYear()).slice(2);
+  const vMM = String(vNow.getMonth()+1).padStart(2,'0');
+  const vSeq = String(KF.data.nextVendorId++).padStart(3,'0');
+  const vId  = 'VDR' + vYY + vMM + vSeq;
+  KF.data.vendors.push({ id:vId, name, contact:document.getElementById('vn-contact').value, phone:document.getElementById('vn-phone').value, commission:parseFloat(document.getElementById('vn-comm').value)||8, payout:0, status:document.getElementById('vn-status').value });
   closeModal('modal-vendor'); renderVendors(); toast('Vendor added!','🤝');
 }
 function delVendor(id) { if(!confirm('Remove this vendor?')) return; KF.data.vendors = KF.data.vendors.filter(v=>v.id!==id); renderVendors(); toast('Vendor removed','🗑'); }
