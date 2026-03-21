@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kujaza Fresh — Farm to Door, Kampala</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ═══ NAVBAR ═══════════════════════════════════════════════════ -->
+<!-- Primary bar — logo | search | account icons -->
+<nav class="navbar">
+  <div class="nav-logo" onclick="showPage('page-shop')">
+    <span class="nl-kujaza">Kujaza</span>
+    <span class="nl-fresh">Fresh</span>
+    <sup class="nl-ug">UG</sup>
+  </div>
+
+  <!-- Admin/Staff context label - shown instead of search when not on shop -->
+  <div class="navbar-context" id="navbar-context" style="display:none"></div>
+
+  <!-- Central search bar — prominent, Namma-style -->
+  <div class="nav-search-wrap" id="nav-search-wrap">
+    <div class="nav-search-box">
+      <span class="ns-cat-icon">🥬</span>
+      <input id="nav-search-input" type="text" placeholder='Search "Tomatoes, Mangoes, Rice…"'
+        oninput="filterSearch(this.value);showPage('page-shop')"
+        onfocus="this.parentElement.classList.add('focused')"
+        onblur="this.parentElement.classList.remove('focused')" autocomplete="off">
+      <button class="ns-search-btn" onclick="filterSearch(document.getElementById('nav-search-input').value);showPage('page-shop')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search
+      </button>
+    </div>
+  </div>
+
+  <!-- Right icons — wishlist, account, cart -->
+  <div class="nav-icons">
+    <button class="nav-icon-btn" onclick="openInfoPage('wishlist','Wishlist','<div class="empty-state" style="padding:40px">💚 Your wishlist is empty. Browse products and save your favourites!</div>')" title="Wishlist">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      <span class="nav-icon-lbl">Wishlist</span>
+    </button>
+    <button class="nav-icon-btn" id="auth-btn" onclick="openModal('modal-login')" title="Account">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-icon-lbl" id="auth-lbl">Login /<br>Account</span>
+    </button>
+    <div class="nav-icon-btn hidden" id="user-pill" onclick="logout()" title="Sign out" style="cursor:pointer">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-icon-lbl"><span id="user-name">User</span><br><span style="font-size:10px;opacity:.7">Sign Out</span></span>
+    </div>
+    <button class="nav-icon-btn nav-cart-btn" onclick="openCart()" title="Cart">
+      <div class="nav-cart-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+        <span class="cart-badge" id="cart-count">0</span>
+      </div>
+      <span class="nav-icon-lbl">Cart<br><span id="cart-amount" style="font-size:10px;font-weight:800;color:var(--y3)">UGX 0</span></span>
+    </button>
+    <button class="nav-icon-btn hidden" id="nav-admin" onclick="showPage('page-admin')" title="Admin Dashboard">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span class="nav-icon-lbl">Admin ⚙</span>
+    </button>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Secondary nav — only visible on shop page, hidden on admin/staff portals -->
+<nav class="secondary-nav" id="secondary-nav">
+  <div class="sec-nav-inner">
+    <button class="sec-nav-cat" onclick="toggleFilterSidebar()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      Shop by categories
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6,9 12,15 18,9"/></svg>
+    </button>
+    <div class="sec-nav-links">
+      <button class="snl" onclick="setFilter('discount',null);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">
+        <span class="snl-icon" style="color:var(--o2)">🏷</span> Offers
+      </button>
+      <button class="snl" onclick="showPage('page-checkout')">
+        <span class="snl-icon">💳</span> Checkout
+      </button>
+      <button class="snl" onclick="document.querySelector('.specials').scrollIntoView({behavior:'smooth'})">
+        <span class="snl-icon" style="color:var(--y2)">⚡</span> Basket Deals
+      </button>
+      <button class="snl" onclick="openInfoPage('b2b')">
+        <span class="snl-icon">🏢</span> Bulk Orders
+      </button>
+      <button class="snl" onclick="openInfoPage('about')">
+        <span class="snl-icon">🌱</span> About Us
+      </button>
+      <button class="snl" onclick="openInfoPage('faq')">
+        <span class="snl-icon">💬</span> FAQs
+      </button>
+      <button class="snl" onclick="openModal('modal-ticket')">
+        <span class="snl-icon">🎫</span> Contact Us
+      </button>
+    </div>
+    <div class="sec-nav-right">
+      <button class="snl offer-btn" onclick="setFilter('discount',null);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">
+        ⚡ OFFER ZONE
+      </button>
+      <button class="snl new-btn" onclick="setFilter('fresh',null);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">
+        ✅ FRESH TODAY
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════ SHOP PAGE ════════════════════════════════════════════ -->
+<div id="page-shop" class="page show">
+
+  <!-- HERO — deep forest green bg -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-eyebrow">⚡ Delivered to Your Door in Minutes</div>
+        <h1>Fresh Groceries<br><em>Delivered in Minutes.</em></h1>
+        <p>Fruits, Vegetables, Grains &amp; Tubers — Fast, Fresh, Affordable. Serving Kampala &amp; surrounding areas.</p>
+        <div class="hero-delivery-badge">
+          <span class="hdb-pill hdb-express">⚡ Express: 15–25 min</span>
+          <span class="hdb-pill hdb-std">🚚 Standard from UGX 3,000</span>
+          <span class="hdb-pill hdb-wa">📱 WhatsApp Orders: 0766026401</span>
+        </div>
+        <div class="hero-btns">
+          <button class="btn-hero-p" onclick="document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">Order Now 🛒</button>
+          <button class="btn-hero-o" onclick="openExpressDelivery()">⚡ Get Express Delivery</button>
+        </div>
+        <div class="hero-slideshow-ctrl">
+          <button class="hero-arrow" onclick="heroPrev();resetHeroTimer()">&#8592;</button>
+          <div id="hero-dots" class="hero-dots"></div>
+          <button class="hero-arrow" onclick="heroNext();resetHeroTimer()">&#8594;</button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hsc yc"><div class="hsc-icon">📍</div><div class="hsc-num">13</div><div class="hsc-lbl">Zones Covered</div></div>
+        <div class="hsc"><div class="hsc-icon">📱</div><div class="hsc-num">MTN/Airtel</div><div class="hsc-lbl">Mobile Money</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES — cream linen bg -->
+  <div class="features">
+    <div class="features-inner">
+      <div class="fi"><div class="fi-icon o">🌱</div> Farm-direct sourcing</div>
+      <div class="fi"><div class="fi-icon g">✅</div> Quality guaranteed</div>
+      <div class="fi"><div class="fi-icon y">⚡</div> Same-day delivery</div>
+      <div class="fi"><div class="fi-icon t">📱</div> Pay with Mobile Money</div>
+      <div class="fi"><div class="fi-icon o">🔄</div> Replace if not fresh</div>
+      <div class="fi"><div class="fi-icon g">🧺</div> Basket combo deals</div>
+    </div>
+  </div>
+
+  <!-- TRUST & CTA STRIP -->
+  <div class="trust-strip">
+    <div class="trust-inner">
+      <div class="trust-item">
+        <div class="trust-icon">🌱</div>
+        <div class="trust-text"><strong>100% Farm Fresh</strong><span>Sourced daily, no cold storage</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">⚡</div>
+        <div class="trust-text"><strong>Delivered in Minutes</strong><span>⚡ Express 15–25 min</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🔄</div>
+        <div class="trust-text"><strong>Freshness Guarantee</strong><span>Replace or full refund</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">📱</div>
+        <div class="trust-text"><strong>MTN &amp; Airtel Money</strong><span>Pay the way you like</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🧺</div>
+        <div class="trust-text"><strong>Custom Baskets</strong><span>B2B, schools &amp; hotels</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLASH SALE BAR — banana yellow bg -->
+  <div class="flash-bar" id="flash-bar">
+    ⚡ Express Delivery Available — Groceries in <strong>15–25 minutes!</strong>
+    <span class="flash-countdown" id="countdown">02:47:33</span>
+    &nbsp;·&nbsp; Use code <strong>KUJAZA10</strong> for 10% off
+  </div>
+
+  <!-- CATEGORIES — pale orange bg (warm welcome) -->
+  <div class="cat-strip" id="shop-anchor">
+    <div class="cat-inner">
+      <div class="sec-eye o">Browse by category</div>
+      <div class="sec-title">What are you looking for?</div>
+      <div class="cat-row" id="cat-pills"></div>
+    </div>
+  </div>
+
+  <!-- SHOP TOOLBAR — hover-triggered filter panel -->
+  <div class="shop-toolbar">
+    <div class="shop-toolbar-inner">
+      <div class="st-left">
+        <!-- Hover zone: entering this area opens the filter panel -->
+        <div class="filter-hover-zone" id="filter-hover-zone"
+          onmouseenter="openFilterSidebar()"
+          onmouseleave="scheduleFilterClose()"
+          onclick="openFilterSidebar()">
+          <button class="filter-trigger-btn" id="filter-trigger-btn" aria-haspopup="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg>
+            Filters &amp; Sort
+            <span id="filter-active-count" class="filter-active-count" style="display:none">1</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:2px;opacity:.5"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+        </div>
+        <span id="filter-count" class="st-count">Loading…</span>
+      </div>
+      <div class="st-right">
+        <div class="st-sort">
+          <label>Sort by:</label>
+          <select onchange="setSort(this.value)">
+            <option value="default">Recommended</option>
+            <option value="price-low">Price: Low → High</option>
+            <option value="price-high">Price: High → Low</option>
+            <option value="discount">Biggest Discount</option>
+            <option value="name">Name A–Z</option>
+          </select>
+        </div>
+        <div class="view-toggle">
+          <button class="vt-btn active" id="vt-grid" onclick="setViewMode('grid',this)" title="Grid view">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </button>
+          <button class="vt-btn" id="vt-list" onclick="setViewMode('list',this)" title="List view">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTER DROPDOWN PANEL — appears below filter button on hover -->
+  <div class="filter-dropdown" id="filter-sidebar"
+    onmouseenter="cancelFilterClose()"
+    onmouseleave="scheduleFilterClose()">
+    <div class="fsb-header">
+      <h3>🔍 Filter Products</h3>
+      <button onclick="resetFilters()" class="fsb-reset">Reset all</button>
+    </div>
+
+    <div class="fsb-section">
+      <div class="fsb-sec-title">Quick Filters</div>
+      <div class="fsb-chips">
+        <button class="fchip active" data-filter="all" onclick="setFilter('all',this);updateFilterCount()">All Products</button>
+        <button class="fchip" data-filter="discount" onclick="setFilter('discount',this);updateFilterCount()">🏷 On Sale</button>
+        <button class="fchip" data-filter="organic" onclick="setFilter('organic',this);updateFilterCount()">🌱 Organic</button>
+        <button class="fchip" data-filter="fresh" onclick="setFilter('fresh',this);updateFilterCount()">⚡ Fresh Today</button>
+        <button class="fchip" data-filter="seasonal" onclick="setFilter('seasonal',this);updateFilterCount()">🌿 Seasonal</button>
+        <button class="fchip" data-filter="premium" onclick="setFilter('premium',this);updateFilterCount()">⭐ Premium</button>
+        <button class="fchip" data-filter="instock" onclick="setFilter('instock',this);updateFilterCount()">✅ In Stock</button>
+      </div>
+    </div>
+
+    <div class="fsb-section">
+      <div class="fsb-sec-title">Max Price</div>
+      <div style="padding:0 4px">
+        <input type="range" min="1000" max="55000" step="1000" value="55000" id="price-range"
+          oninput="setPriceFilter(this.value)" style="width:100%;accent-color:var(--o2)">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px">
+          <span>UGX 1,000</span>
+          <span id="price-label" style="font-weight:800;color:var(--o1)">Any price</span>
+          <span>UGX 55,000+</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="fsb-section">
+      <div class="fsb-sec-title">Category</div>
+      <div id="fsb-cat-list" class="fsb-cat-list"></div>
+    </div>
+
+    <div class="fsb-apply">
+      <button class="btn btn-primary btn-full" onclick="closeFilterSidebar()">View <span id="fsb-result-count">—</span> products →</button>
+    </div>
+  </div>
+
+  <!-- SHOP GRID — white bg (product focus) -->
+  <section class="shop-sec">
+    <div class="shop-inner">
+      <div class="shop-bar">
+        <div>
+          <div class="sec-eye g">Kujaza Fresh</div>
+          <div class="sec-title" style="font-size:24px">Fresh Produce</div>
+        </div>
+        <div class="search-box">
+          <span class="si">🔍</span>
+          <input type="text" placeholder="Search products…" oninput="filterSearch(this.value)">
+        </div>
+      </div>
+      <div class="product-grid" id="product-grid"></div>
+    </div>
+  </section>
+
+
+  <!-- ═══ RECOMMENDATIONS ══════════════════════════════════════════ -->
+  <section class="reco-sec" id="reco-section">
+    <div class="reco-inner">
+      <div class="reco-header">
+        <div class="reco-tabs" id="reco-tabs">
+          <button class="reco-tab active" data-reco="popular" onclick="switchReco('popular',this)">
+            🔥 Most Popular
+          </button>
+          <button class="reco-tab" data-reco="deals" onclick="switchReco('deals',this)">
+            🏷️ Best Deals
+          </button>
+          <button class="reco-tab" data-reco="fresh" onclick="switchReco('fresh',this)">
+            ⚡ Fresh Today
+          </button>
+          <button class="reco-tab" data-reco="organic" onclick="switchReco('organic',this)">
+            🌱 Organic Picks
+          </button>
+        </div>
+        <a class="reco-see-all" onclick="setCat('all');document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">
+          See all products →
+        </a>
+      </div>
+      <div class="reco-scroll-wrap">
+        <button class="reco-scroll-btn reco-scroll-left" onclick="scrollReco(-1)" aria-label="Scroll left">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg>
+        </button>
+        <div class="reco-grid" id="reco-grid"></div>
+        <button class="reco-scroll-btn reco-scroll-right" onclick="scrollReco(1)" aria-label="Scroll right">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SOCIAL PROOF / STATS STRIP ════════════════════════════════ -->
+  <div class="stats-strip">
+    <div class="stats-strip-inner">
+      <div class="ss-item">
+        <div class="ss-num" data-target="2400">0</div>
+        <div class="ss-lbl">Happy Customers</div>
+      </div>
+      <div class="ss-divider"></div>
+      <div class="ss-item">
+        <div class="ss-num" data-target="47">0</div>
+        <div class="ss-lbl">Products Available</div>
+      </div>
+      <div class="ss-divider"></div>
+      <div class="ss-item">
+        <div class="ss-num" data-target="13">0</div>
+        <div class="ss-lbl">Delivery Zones</div>
+      </div>
+      <div class="ss-divider"></div>
+      <div class="ss-item">
+        <div class="ss-num" data-target="22">0</div>
+        <div class="ss-lbl">Min Express Delivery</div>
+      </div>
+      <div class="ss-divider"></div>
+      <div class="ss-item">
+        <div class="ss-num" data-target="120">0</div>
+        <div class="ss-lbl">Farmer Partners</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ HOW IT WORKS ═════════════════════════════════════════════ -->
+  <section class="how-sec">
+    <div class="how-inner">
+      <div style="text-align:center;margin-bottom:40px">
+        <div class="sec-eye o">Simple & Fast</div>
+        <h2 class="sec-title" style="text-align:center">How Kujaza Fresh Works</h2>
+        <p style="color:var(--muted);font-size:15px;max-width:500px;margin:0 auto">From your screen to your door in minutes. It really is this simple.</p>
+      </div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-num">01</div>
+          <div class="how-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <div class="how-title">Browse & Choose</div>
+          <div class="how-desc">Scroll our 47+ fresh products. Filter by category, price or organic. Add to cart in one tap.</div>
+        </div>
+        <div class="how-arrow">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+        </div>
+        <div class="how-step">
+          <div class="how-num">02</div>
+          <div class="how-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <div class="how-title">Pay Your Way</div>
+          <div class="how-desc">MTN Money, Airtel Money, Visa, Cash on Delivery or Bank Transfer. Checkout takes 30 seconds.</div>
+        </div>
+        <div class="how-arrow">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+        </div>
+        <div class="how-step">
+          <div class="how-num">03</div>
+          <div class="how-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+          </div>
+          <div class="how-title">We Pick & Pack</div>
+          <div class="how-desc">Your order is picked from the nearest hub within 2–5 minutes. Quality checked before dispatch.</div>
+        </div>
+        <div class="how-arrow">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+        </div>
+        <div class="how-step">
+          <div class="how-num">04</div>
+          <div class="how-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="16" r="1"/><circle cx="20" cy="16" r="1"/></svg>
+          </div>
+          <div class="how-title">Delivered Fresh</div>
+          <div class="how-desc">A dedicated rider brings your order to your door. Express: 15–25 min. Standard: 25–60 min.</div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:40px">
+        <button class="btn btn-primary btn-lg" onclick="document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">Start Shopping Now →</button>
+        <button class="btn btn-ghost btn-lg" style="margin-left:12px" onclick="openModal('modal-signup')">Create Free Account</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEASONAL SPOTLIGHT ════════════════════════════════════════ -->
+  <section class="seasonal-sec">
+    <div class="seasonal-inner">
+      <div class="seasonal-left">
+        <div class="sec-eye y">In Season Right Now</div>
+        <h2 class="sec-title" style="color:#fff">Seasonal<br>Freshness</h2>
+        <p style="color:rgba(255,255,255,.75);font-size:15px;margin-bottom:24px">March–April brings the best mangoes, passion fruit and nsenene across Uganda. Get them while the season lasts.</p>
+        <button class="btn" style="background:var(--y3);color:var(--g1);font-weight:800;padding:12px 28px;border-radius:50px;font-size:14px;border:none;cursor:pointer" onclick="setFilter('seasonal',null);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">
+          🌿 Shop Seasonal Now →
+        </button>
+      </div>
+      <div class="seasonal-right" id="seasonal-products"></div>
+    </div>
+  </section>
+
+  <!-- PROMO BAND — tangerine bg (energy) -->
+  <div class="promo">
+    <h2>Order Before Noon — Delivered Today</h2>
+    <p>Basket combos, subscription orders & bulk B2B supply available. Fresh produce, guaranteed.</p>
+    <button class="btn-promo" onclick="openModal('modal-signup')">Join Kujaza Fresh Free →</button>
+  </div>
+
+  <!-- SPECIALS / BASKET COMBOS — pale green bg -->
+  <section class="specials">
+    <div class="specials-inner">
+      <div class="sec-eye g">Saving Corner</div>
+      <div class="sec-title">Basket Combos & Specials</div>
+      <div class="product-grid" id="combos-grid" style="margin-top:20px"></div>
+    </div>
+  </section>
+
+
+  <!-- B2B CTA SECTION -->
+  <section class="b2b-sec">
+    <div class="b2b-inner">
+      <div class="b2b-left">
+        <div class="sec-eye o">For Hotels, Schools &amp; Restaurants</div>
+        <h2 style="font-family:var(--font-h);font-size:32px;color:var(--g2);margin-bottom:12px">Bulk &amp; B2B Orders</h2>
+        <p style="color:var(--muted);font-size:15px;margin-bottom:20px">Weekly standing orders, custom quantity packs, invoicing, credit terms and dedicated account management — tailored for your business.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-lg" onclick="openInfoPage('b2b')">Get a B2B Quote →</button>
+          <button class="btn btn-ghost btn-lg" onclick="openInfoPage('vendor')">Become a Vendor Partner</button>
+        </div>
+      </div>
+      <div class="b2b-stats">
+        <div class="b2b-stat"><div class="b2b-num">50+</div><div class="b2b-lbl">Business Clients</div></div>
+        <div class="b2b-stat"><div class="b2b-num">13</div><div class="b2b-lbl">Delivery Zones</div></div>
+        <div class="b2b-stat"><div class="b2b-num">48hr</div><div class="b2b-lbl">Standing Order Setup</div></div>
+        <div class="b2b-stat"><div class="b2b-num">100%</div><div class="b2b-lbl">Freshness Guaranteed</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ RECIPE OF THE DAY ═══════════════════════════════════════ -->
+  <section class="recipe-sec" id="recipe-section">
+    <div class="recipe-inner">
+      <div class="recipe-header">
+        <div>
+          <div class="sec-eye o">Ugandan Kitchen</div>
+          <h2 class="recipe-main-title">Recipe of the Day</h2>
+          <p class="recipe-subtitle">Cook authentic Ugandan dishes — all ingredients available on Kujaza Fresh.</p>
+        </div>
+        <div class="recipe-tabs-wrap">
+          <button class="recipe-tab active" onclick="switchRecipe('luwombo',this)">🍃 Luwombo</button>
+          <button class="recipe-tab" onclick="switchRecipe('nsenene',this)">🦗 Nsenene</button>
+          <button class="recipe-tab" onclick="switchRecipe('bilungo',this)">🍆 Bilungo</button>
+        </div>
+      </div>
+
+      <!-- LUWOMBO -->
+      <div class="recipe-card show" id="recipe-luwombo">
+        <div class="recipe-visual">
+          <div class="recipe-banner rbn-luwombo">
+            <div class="recipe-banner-emoji">🍃</div>
+            <div class="recipe-banner-name">Luwombo</div>
+            <div class="recipe-banner-sub">Uganda&rsquo;s Royal Steam Stew</div>
+            <div class="recipe-leaf-deco">🍃 🍃 🍃 🍃 🍃</div>
+          </div>
+          <div class="recipe-info-strip">
+            <div class="recipe-stat"><div class="rs-icon">⏱</div><div class="rs-val">2–3 hrs</div><div class="rs-lbl">Cook time</div></div>
+            <div class="recipe-stat"><div class="rs-icon">👥</div><div class="rs-val">4–6</div><div class="rs-lbl">Serves</div></div>
+            <div class="recipe-stat"><div class="rs-icon">🌶</div><div class="rs-val">Mild</div><div class="rs-lbl">Heat level</div></div>
+            <div class="recipe-stat"><div class="rs-icon">🏅</div><div class="rs-val">Traditional</div><div class="rs-lbl">Ugandan</div></div>
+          </div>
+        </div>
+        <div class="recipe-content">
+          <p class="recipe-desc">Luwombo is one of Uganda&rsquo;s most treasured dishes — tender meat or chicken slow-steamed inside banana leaves with a rich groundnut sauce. Originally prepared for the Buganda royal courts, it is today a centrepiece at celebrations, weddings and Sunday family meals. The banana leaf wrapping seals in every flavour and gives an unmistakeable earthy aroma.</p>
+          <div class="recipe-two-col">
+            <div>
+              <div class="recipe-section-label">🛒 Ingredients <small style="font-weight:500;color:var(--muted)">— all on Kujaza</small></div>
+              <div class="ingredients-list" id="luwombo-ingredients"></div>
+              <button class="add-all-btn" onclick="addRecipeToCart('luwombo')">🛒 Add All to Cart</button>
+            </div>
+            <div>
+              <div class="recipe-section-label">📋 Method</div>
+              <ol class="recipe-steps">
+                <li><strong>Prepare leaves:</strong> Wilt plantain leaves over a flame for 30 secs until pliable. Wipe clean and set aside.</li>
+                <li><strong>Marinate:</strong> Cut chicken or beef into pieces. Season with onions, garlic, ginger, salt and bilungo paste. Rest 30 minutes.</li>
+                <li><strong>Make the sauce:</strong> Mix ebinyebwa (groundnut paste) with warm water to a thick consistency. Add spring onions, tomatoes, curry powder.</li>
+                <li><strong>Wrap:</strong> Lay a banana leaf flat. Add meat and spoon sauce over it. Fold into a sealed parcel, tie with a leaf strip.</li>
+                <li><strong>Steam:</strong> Stack parcels in a pot over boiling water. Cover tightly. Steam 1.5–2 hours.</li>
+                <li><strong>Serve:</strong> Open at the table for the full aroma. Serve with matooke, rice or sweet potatoes.</li>
+              </ol>
+              <div class="recipe-tip"><span>💡</span><span><strong>Kujaza Tip:</strong> Use fresh plantain leaves from our store — they are the secret to authentic flavour. Order extra leaves for serving too!</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NSENENE -->
+      <div class="recipe-card" id="recipe-nsenene">
+        <div class="recipe-visual">
+          <div class="recipe-banner rbn-nsenene">
+            <div class="recipe-banner-emoji">🦗</div>
+            <div class="recipe-banner-name">Nsenene</div>
+            <div class="recipe-banner-sub">Fried Grasshopper Delicacy</div>
+            <div class="recipe-leaf-deco">🌿 🌾 🌿 🌾 🌿</div>
+          </div>
+          <div class="recipe-info-strip">
+            <div class="recipe-stat"><div class="rs-icon">⏱</div><div class="rs-val">30 min</div><div class="rs-lbl">Cook time</div></div>
+            <div class="recipe-stat"><div class="rs-icon">👥</div><div class="rs-val">4</div><div class="rs-lbl">Serves</div></div>
+            <div class="recipe-stat"><div class="rs-icon">🌶</div><div class="rs-val">Medium</div><div class="rs-lbl">Heat level</div></div>
+            <div class="recipe-stat"><div class="rs-icon">📅</div><div class="rs-val">Seasonal</div><div class="rs-lbl">Ugandan</div></div>
+          </div>
+        </div>
+        <div class="recipe-content">
+          <p class="recipe-desc">Nsenene (long-horned grasshoppers) are a seasonal Ugandan delicacy anticipated twice a year — November and April. Crispy, salty and packed with protein, they are eaten as a snack or cooked into a full dish with onions and chilli. A true taste of Uganda that surprises and delights every visitor.</p>
+          <div class="recipe-two-col">
+            <div>
+              <div class="recipe-section-label">🛒 Ingredients <small style="font-weight:500;color:var(--muted)">— all on Kujaza</small></div>
+              <div class="ingredients-list" id="nsenene-ingredients"></div>
+              <button class="add-all-btn" onclick="addRecipeToCart('nsenene')">🛒 Add All to Cart</button>
+            </div>
+            <div>
+              <div class="recipe-section-label">📋 Method</div>
+              <ol class="recipe-steps">
+                <li><strong>Clean:</strong> Remove wings and hind legs. Rinse in salted water and drain. Pat dry thoroughly.</li>
+                <li><strong>Dry roast:</strong> Heat a dry pan on medium. Add nsenene, stir constantly for 5 minutes until golden and moisture is released.</li>
+                <li><strong>Fry with flavour:</strong> Add a splash of oil, sliced onions, garlic, chilli and salt. Stir-fry 8–10 minutes until crisp and golden brown.</li>
+                <li><strong>Finish:</strong> Remove from heat. Squeeze lemon juice over and toss with fresh spring onions.</li>
+                <li><strong>Serve:</strong> Eat warm as a snack, or serve alongside matooke and groundnut sauce.</li>
+              </ol>
+              <div class="recipe-tip"><span>💡</span><span><strong>Kujaza Tip:</strong> Nsenene are seasonal and sell out fast — order early in November and April. We sell them pre-cleaned and ready to cook!</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BILUNGO -->
+      <div class="recipe-card" id="recipe-bilungo">
+        <div class="recipe-visual">
+          <div class="recipe-banner rbn-bilungo">
+            <div class="recipe-banner-emoji">🍆</div>
+            <div class="recipe-banner-name">Bilungo Stew</div>
+            <div class="recipe-banner-sub">Smoked Eggplant Sauce</div>
+            <div class="recipe-leaf-deco">🌿 🍅 🌿 🧅 🌿</div>
+          </div>
+          <div class="recipe-info-strip">
+            <div class="recipe-stat"><div class="rs-icon">⏱</div><div class="rs-val">45 min</div><div class="rs-lbl">Cook time</div></div>
+            <div class="recipe-stat"><div class="rs-icon">👥</div><div class="rs-val">4–5</div><div class="rs-lbl">Serves</div></div>
+            <div class="recipe-stat"><div class="rs-icon">🌶</div><div class="rs-val">Mild–Med</div><div class="rs-lbl">Heat level</div></div>
+            <div class="recipe-stat"><div class="rs-icon">🌱</div><div class="rs-val">Veg option</div><div class="rs-lbl">Flexible</div></div>
+          </div>
+        </div>
+        <div class="recipe-content">
+          <p class="recipe-desc">Bilungo is a rich Ugandan stew built on smoked, dried eggplant as its flavour base. The eggplant is charred over fire, peeled and pounded into a paste that gives the sauce a deep, smoky earthiness unlike anything else. Combined with tomatoes, onions, groundnut paste and dodo, it creates one of Uganda&rsquo;s most distinctive sauces.</p>
+          <div class="recipe-two-col">
+            <div>
+              <div class="recipe-section-label">🛒 Ingredients <small style="font-weight:500;color:var(--muted)">— all on Kujaza</small></div>
+              <div class="ingredients-list" id="bilungo-ingredients"></div>
+              <button class="add-all-btn" onclick="addRecipeToCart('bilungo')">🛒 Add All to Cart</button>
+            </div>
+            <div>
+              <div class="recipe-section-label">📋 Method</div>
+              <ol class="recipe-steps">
+                <li><strong>Char eggplant:</strong> Place whole eggplants on open flame. Char until blackened all over. Cool then peel off charred skin to reveal smoky flesh.</li>
+                <li><strong>Make bilungo paste:</strong> Mash charred eggplant with salt, garlic and chilli into a smooth paste. Or use our ready-made bilungo paste!</li>
+                <li><strong>Build the sauce:</strong> Fry onions and spring onions in oil until golden. Add tomatoes, cook down 8 minutes. Stir in bilungo paste.</li>
+                <li><strong>Add greens:</strong> Stir in dodo or spinach. Add groundnut paste dissolved in water. Add chicken or keep vegetarian.</li>
+                <li><strong>Simmer:</strong> Cook on low heat 20 minutes, stirring occasionally, until thick and fragrant.</li>
+                <li><strong>Serve:</strong> Over matooke, rice, cassava or sweet potatoes. Garnish with spring onions.</li>
+              </ol>
+              <div class="recipe-tip"><span>💡</span><span><strong>Kujaza Tip:</strong> We stock pre-prepared bilungo paste — skip the charring step and get straight to cooking! Same authentic smoky flavour.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- LOYALTY & REWARDS SECTION -->
+  <section class="rewards-sec">
+    <div class="rewards-inner">
+      <div class="rewards-left">
+        <div class="sec-eye o">Kujaza Rewards</div>
+        <h2 style="font-family:var(--font-h);font-size:32px;color:#fff;margin-bottom:12px">Earn Points.<br>Get Rewarded.</h2>
+        <p style="color:rgba(255,255,255,.78);font-size:15px;margin-bottom:24px">Every order earns you Kujaza Points. Redeem them for discounts, free delivery, and exclusive offers.</p>
+        <div class="tier-cards">
+          <div class="tier-card bronze"><div class="tier-icon">🥉</div><div class="tier-name">Bronze</div><div class="tier-pts">0–299 pts</div></div>
+          <div class="tier-card silver"><div class="tier-icon">🥈</div><div class="tier-name">Silver</div><div class="tier-pts">300–599 pts</div></div>
+          <div class="tier-card gold"><div class="tier-icon">🥇</div><div class="tier-name">Gold</div><div class="tier-pts">600+ pts</div></div>
+        </div>
+        <button class="btn-promo" style="margin-top:24px;background:#fff;color:var(--g2)" onclick="openModal('modal-signup')">Join & Start Earning →</button>
+      </div>
+      <div class="rewards-right">
+        <div class="voucher-display">
+          <div class="vd-title">🎟 Available Vouchers</div>
+          <div id="public-vouchers"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- FAQ SECTION -->
+  <section class="faq-sec" id="faq-section">
+    <div class="faq-inner">
+      <div style="text-align:center;margin-bottom:36px">
+        <div class="sec-eye o">Got Questions?</div>
+        <h2 class="sec-title" style="font-size:32px;text-align:center">Frequently Asked Questions</h2>
+      </div>
+      <div class="faq-grid" id="faq-grid">
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>How fast is Express Delivery?</span><span class="faq-arrow">▼</span></div><div class="faq-a">Express Delivery gets your groceries to you in <strong>15–25 minutes</strong> for Zone 1 areas (Kawempe, Nakawa, Bugolobi). Zone 2 is 15–25 min, Zone 3 is 25–35 min. A dedicated rider is dispatched immediately from the nearest micro-hub.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>How do I order via WhatsApp?</span><span class="faq-arrow">▼</span></div><div class="faq-a">Send your order list to <strong>0766026401</strong> on WhatsApp. Tell us what you need, your delivery area, and preferred payment method. We confirm and dispatch within minutes.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>What payment methods do you accept?</span><span class="faq-arrow">▼</span></div><div class="faq-a">We accept MTN Mobile Money, Airtel Money, Cash on Delivery, Visa/Mastercard (online), and Bank Transfer. For B2B clients, we offer 7–30 day credit terms.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>What is your freshness guarantee?</span><span class="faq-arrow">▼</span></div><div class="faq-a">If any item is not fresh on delivery, we replace it free of charge or give you a full refund within 24 hours. No questions asked. Report via WhatsApp or raise a ticket.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Do you do bulk and B2B orders?</span><span class="faq-arrow">▼</span></div><div class="faq-a">Yes! We supply hotels, schools, restaurants and businesses with weekly standing orders, custom quantities, invoicing and credit terms. Email b2b@kujazafresh.com or WhatsApp 0766026401.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Which areas do you deliver to?</span><span class="faq-arrow">▼</span></div><div class="faq-a">We deliver across Greater Kampala including Kawempe, Nakawa, Najjera, Ntinda, Makindye, Bugolobi, Kisaasi, Bukoto, Bweyogerere, Wakiso, Kajjansi, Entebbe, Kitende, Lubowa and Mukono.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMER FEEDBACK SECTION — cream bg -->
+  <section class="feedback-sec" id="feedback-section">
+    <div class="feedback-inner">
+      <div style="text-align:center;margin-bottom:36px">
+        <div class="sec-eye o" style="display:block;margin-bottom:6px">What our customers say</div>
+        <h2 class="sec-title" style="font-size:32px;text-align:center">Real Reviews from Real Customers</h2>
+        <p style="color:var(--muted);font-size:15px;margin-top:8px">Fresh produce, honest opinions.</p>
+      </div>
+      <div class="reviews-grid" id="reviews-grid"></div>
+      <div class="review-form-wrap">
+        <div class="review-form-card">
+          <h4 class="rfc-title">Leave Your Review</h4>
+          <p class="rfc-sub">Ordered from Kujaza Fresh? Tell others about your experience.</p>
+          <div id="rfb-msg"></div>
+          <div class="form-row">
+            <div class="form-group"><label>Your Name *</label><input id="rfb-name" placeholder="e.g. Sarah Nakato"></div>
+            <div class="form-group"><label>Email Address *</label><input id="rfb-email" type="email" placeholder="your@email.com"></div>
+          </div>
+          <div class="form-group">
+            <label>Rating *</label>
+            <div class="star-row" id="star-row">
+              <span class="star" data-v="1" onclick="setRating(1)">★</span>
+              <span class="star" data-v="2" onclick="setRating(2)">★</span>
+              <span class="star" data-v="3" onclick="setRating(3)">★</span>
+              <span class="star" data-v="4" onclick="setRating(4)">★</span>
+              <span class="star" data-v="5" onclick="setRating(5)">★</span>
+            </div>
+          </div>
+          <div class="form-group"><label>Your Review *</label><textarea id="rfb-msg-txt" rows="3" placeholder="Tell us about the freshness, delivery speed, overall experience…"></textarea></div>
+          <button class="btn btn-primary btn-full" onclick="submitFeedback()">Submit Review →</button>
+          <p style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center">Reviews are verified by our team before publishing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER SECTION -->
+  <section class="newsletter-sec">
+    <div class="newsletter-inner">
+      <div class="nl-left">
+        <div class="sec-eye o" style="color:var(--y3)">Stay in the loop</div>
+        <h2 style="font-family:var(--font-h);font-size:28px;color:#fff;margin:8px 0">Get Fresh Deals in Your Inbox</h2>
+        <p style="color:rgba(255,255,255,.7);font-size:14px">Weekly offers, seasonal produce alerts, and exclusive subscriber discounts. No spam — ever.</p>
+      </div>
+      <div class="nl-right">
+        <div id="nl-msg"></div>
+        <div class="nl-form">
+          <input id="nl-email" type="email" placeholder="your@email.com" style="flex:1;border-radius:10px 0 0 10px;border-right:none">
+          <button class="nl-btn" onclick="subscribeNewsletter()">Subscribe →</button>
+        </div>
+        <p style="font-size:11px;color:rgba(255,255,255,.5);margin-top:8px">By subscribing you agree to receive marketing emails. Unsubscribe anytime.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ DID YOU KNOW — Floating food facts widget ═══════════════ -->
+  <div id="dyk-widget" class="dyk-widget">
+    <!-- Hanging tab trigger -->
+    <div class="dyk-tab" id="dyk-tab" onclick="toggleDYK()" title="Did You Know? Daily food fact">
+      <div class="dyk-tab-icon">💡</div>
+      <div class="dyk-tab-text">Did You<br>Know?</div>
+    </div>
+
+    <!-- Expanded card -->
+    <div class="dyk-card" id="dyk-card">
+      <!-- Header -->
+      <div class="dyk-card-header">
+        <div class="dyk-header-left">
+          <div class="dyk-bulb">💡</div>
+          <div>
+            <div class="dyk-title">Did You Know?</div>
+            <div class="dyk-subtitle">Daily food fact · <span id="dyk-date"></span></div>
+          </div>
+        </div>
+        <button class="dyk-close" onclick="toggleDYK()" aria-label="Close">✕</button>
+      </div>
+
+      <!-- Food image & fact -->
+      <div class="dyk-body" id="dyk-body">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Navigation footer -->
+      <div class="dyk-footer">
+        <button class="dyk-nav-btn" onclick="dykPrev()" title="Previous fact">← Prev</button>
+        <div class="dyk-dots" id="dyk-dots"></div>
+        <button class="dyk-nav-btn" onclick="dykNext()" title="Next fact">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER — near-black bg (anchor) -->
+  <footer class="site-footer">
+    <!-- Social bar -->
+    <div class="social-bar">
+      <div class="social-inner">
+        <span style="font-size:13px;color:rgba(255,255,255,.5);font-weight:600">Follow us:</span>
+        <a class="social-btn" href="#" title="Facebook">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          Facebook
+        </a>
+        <a class="social-btn" href="#" title="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          Instagram
+        </a>
+        <a class="social-btn" href="#" title="WhatsApp">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          WhatsApp
+        </a>
+        <a class="social-btn" href="#" title="TikTok">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.67a8.27 8.27 0 004.83 1.55V6.77a4.85 4.85 0 01-1.06-.08z"/></svg>
+          TikTok
+        </a>
+        <a class="social-btn" href="#" title="Twitter/X">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          X (Twitter)
+        </a>
+      </div>
+    </div>
+    <div class="footer-grid">
+      <div class="f-brand">
+        <div class="logo">Kujaza <span>Fresh</span></div>
+        <p>Filling homes & businesses with the freshest produce Uganda's farms offer. Farm-sourced, quality-graded, reliably delivered across Greater Kampala.</p>
+        <div class="footer-badges">
+          <div class="f-badge">🌱 Organic</div>
+          <div class="f-badge">🚚 Same Day</div>
+          <div class="f-badge">📱 Mobile Money</div>
+        </div>
+      </div>
+      <div class="f-col">
+        <h5>Shop</h5>
+        <a href="#" onclick="setCat('all');document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">All Products</a>
+        <a href="#" onclick="setCat(1);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">Fresh Fruits</a>
+        <a href="#" onclick="setCat(2);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">Fresh Vegetables</a>
+        <a href="#" onclick="setCat(3);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">Dried Grains</a>
+        <a href="#" onclick="setFilter('discount',null)">On Sale</a>
+        <a href="#" onclick="document.querySelector('.specials').scrollIntoView({behavior:'smooth'})">Basket Combos</a>
+      </div>
+      <div class="f-col">
+        <h5>Company</h5>
+        <a href="#" onclick="openInfoPage('about')">About Kujaza Fresh</a>
+        <a href="#" onclick="openInfoPage('farmers')">Our Farmers</a>
+        <a href="#" onclick="openInfoPage('quality')">Quality Promise</a>
+        <a href="#" onclick="openInfoPage('careers')">Careers</a>
+        <a href="#" onclick="openInfoPage('vendor')">Become a Vendor</a>
+        <a href="#" onclick="openInfoPage('b2b')">B2B / Bulk Orders</a>
+      </div>
+      <div class="f-col">
+        <h5>Help &amp; Support</h5>
+        <a href="#" onclick="openInfoPage('delivery')">Delivery Zones &amp; Fees</a>
+        <a href="#" onclick="openInfoPage('track')">Track Your Order</a>
+        <a href="#" onclick="openInfoPage('returns')">Returns &amp; Refunds</a>
+        <a href="#" onclick="openModal('modal-ticket')">Raise a Support Ticket</a>
+        <a href="#" onclick="openInfoPage('faq')">FAQs</a>
+        <a href="#" onclick="openInfoPage('contact')">Contact Us</a>
+      </div>
+      <div class="f-col">
+        <h5>Legal</h5>
+        <a href="#" onclick="openInfoPage('terms')">Terms of Use</a>
+        <a href="#" onclick="openInfoPage('privacy')">Privacy Policy</a>
+        <a href="#" onclick="openInfoPage('cookies')">Cookie Policy</a>
+        <a href="#" onclick="openInfoPage('refund')">Refund Policy</a>
+        <a href="#" onclick="openInfoPage('compliance')">Regulatory Compliance</a>
+        <button class="help-trigger" onclick="openModal('modal-admin-login')" style="background:none;border:none;padding:0;font-family:inherit;font-size:inherit;font-weight:700;color:rgba(255,255,255,.5);cursor:pointer;font-size:12px;margin-top:4px;display:block">Staff &amp; Admin<span class="help-dot">.</span></button>
+      </div>
+    </div>
+    <div class="f-divider"></div>
+    <div class="f-bottom-row">
+      <div class="f-bottom">© 2026 Kujaza Fresh Ltd · Kampala, Uganda · All rights reserved</div>
+      <div class="f-payment-icons">
+        <span class="pay-icon-chip">📱 MTN Money</span>
+        <span class="pay-icon-chip">📱 Airtel Money</span>
+        <span class="pay-icon-chip">💵 Cash on Delivery</span>
+        <span class="pay-icon-chip">🏦 Bank Transfer</span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ═══════ CHECKOUT PAGE ══════════════════════════════════════ -->
+<div id="page-checkout" class="page">
+  <div class="co-page">
+    <div class="co-steps">
+      <div class="co-step active" id="step-1"><span class="sn">1</span>Delivery</div>
+      <div class="co-step"        id="step-2"><span class="sn">2</span>Payment</div>
+      <div class="co-step"        id="step-3"><span class="sn">3</span>Confirm</div>
+    </div>
+    <!-- Step 1 -->
+    <div id="co-s1">
+      <div class="co-card">
+        <h4>Delivery Details</h4>
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input id="co-fn" placeholder="Sarah"></div>
+          <div class="form-group"><label>Last Name</label><input id="co-ln" placeholder="Nakato"></div>
+        </div>
+        <div class="form-group"><label>Phone Number *</label><input id="co-ph" type="tel" placeholder="07XXXXXXXX" maxlength="10" pattern="07[0-9]{8}" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"></div>
+        <div class="form-group"><label>Address / Estate</label><input id="co-addr" placeholder="e.g. Plot 22, Najjera Road, near Shell station"></div>
+        <div class="form-group"><label>Delivery Notes</label><input id="co-notes" placeholder="e.g. Blue gate, call on arrival"></div>
+      </div>
+      <div class="co-card">
+        <h4>Select Delivery Zone</h4>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Orders above UGX 60,000 qualify for free delivery in most zones.</p>
+        <div class="zone-grid" id="zone-grid"></div>
+      </div>
+      <div class="delivery-type-selector">
+        <div class="delivery-type-title">Select Delivery Type</div>
+        <div class="delivery-type-cards">
+          <div class="dt-card active" id="dt-standard" onclick="selectDeliveryType('standard',this)">
+            <div class="dt-icon">🚚</div>
+            <div class="dt-name">Standard Delivery</div>
+            <div class="dt-desc">25–60 min · Zone price</div>
+            <div class="dt-price" id="dt-std-price">From UGX 3,000</div>
+          </div>
+          <div class="dt-card" id="dt-express" onclick="selectDeliveryType('express',this)">
+            <div class="dt-icon">⚡</div>
+            <div class="dt-name">Express Delivery</div>
+            <div class="dt-desc">15–25 min · Priority rider</div>
+            <div class="dt-price" id="dt-exp-price">From UGX 6,000</div>
+            <div class="dt-badge">FASTEST</div>
+          </div>
+        </div>
+        <div id="delivery-eta-display" class="delivery-eta"></div>
+      </div>
+      <button class="btn btn-primary btn-full btn-lg" onclick="coNext()">Continue to Payment →</button>
+    </div>
+    <!-- Step 2 -->
+    <div id="co-s2" class="hidden">
+      <div class="co-card"><h4>Order Summary</h4><div id="order-lines"></div></div>
+      <div class="co-card">
+        <h4>Payment Method</h4>
+        <div class="pay-grid" id="pay-grid"></div>
+        <div id="pay-detail" style="margin-top:14px"></div>
+      </div>
+      <div style="display:flex;gap:12px">
+        <button class="btn btn-ghost btn-lg" style="min-width:120px" onclick="coPrev()">← Back</button>
+        <button class="btn btn-primary btn-full btn-lg" onclick="coNext()">Place Order →</button>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div id="co-s3" class="hidden">
+      <div class="co-card">
+        <div class="order-success">
+          <div class="big-check">✅</div>
+          <h2 style="color:var(--g2);margin-bottom:8px">Order Placed!</h2>
+          <p style="font-size:16px">Thank you for shopping with Kujaza Fresh.</p>
+          <p style="font-size:14px;color:var(--muted);margin-top:4px">We'll confirm via WhatsApp or SMS shortly.</p>
+          <div class="order-id-box">
+            <strong style="font-size:18px;color:var(--g2)">Order #<span id="placed-id">KF-0045</span></strong><br>
+            <span style="font-size:13px;color:var(--muted)">📍 <span id="placed-zone">—</span> · <span id="placed-total">—</span></span>
+          </div>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-primary btn-lg" onclick="continueShopping()">Continue Shopping</button>
+            <button class="btn btn-green btn-lg" onclick="openModal('modal-ticket')">Track / Raise Ticket</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ ADMIN PAGE ═════════════════════════════════════════ -->
+<div id="page-admin" class="page">
+  <div class="admin-wrap">
+    <aside class="admin-side">
+      <div class="side-lbl">Overview</div>
+      <div class="side-item active" data-sec="dashboard" onclick="showSec('dashboard')"><span class="side-icon">📊</span> Dashboard</div>
+      <div class="side-lbl">Catalogue</div>
+      <div class="side-item" data-sec="products"   onclick="showSec('products')"><span class="side-icon">🥬</span> Products</div>
+      <div class="side-item" data-sec="categories" onclick="showSec('categories')"><span class="side-icon">🏷️</span> Categories</div>
+      <div class="side-item" data-sec="inventory"  onclick="showSec('inventory')"><span class="side-icon">📦</span> Inventory</div>
+      <div class="side-lbl">Operations</div>
+      <div class="side-item" data-sec="orders"     onclick="showSec('orders')"><span class="side-icon">🛒</span> Orders</div>
+      <div class="side-item" data-sec="tickets"    onclick="showSec('tickets')"><span class="side-icon">🎫</span> Tickets</div>
+      <div class="side-item" data-sec="riders"     onclick="showSec('riders')"><span class="side-icon">🏍️</span> Riders / Fleet</div>
+      <div class="side-item" data-sec="delivery"   onclick="showSec('delivery')"><span class="side-icon">📍</span> Delivery Allocation</div>
+      <div class="side-item" data-sec="whatsapp"   onclick="showSec('whatsapp')"><span class="side-icon">📱</span> WhatsApp Orders <span class="wa-badge" id="wa-badge">3</span></div>
+      <div class="side-item" data-sec="b2b"        onclick="showSec('b2b')"><span class="side-icon">🏢</span> B2B Management</div>
+      <div class="side-item" data-sec="hubs"       onclick="showSec('hubs')"><span class="side-icon">🏪</span> Micro Hubs</div>
+      <div class="side-item" data-sec="vendors"    onclick="showSec('vendors')"><span class="side-icon">🤝</span> Vendors</div>
+      <div class="side-item" data-sec="userroles"  onclick="showSec('userroles')"><span class="side-icon">🔐</span> User &amp; Access Roles</div>
+      <div class="side-lbl">Finance</div>
+      <div class="side-item" data-sec="finance"      onclick="showSec('finance')"><span class="side-icon">💰</span> Ledger / P&amp;L</div>
+      <div class="side-item" data-sec="finstatements" onclick="showSec('finstatements')"><span class="side-icon">📄</span> Financial Statements</div>
+      <div class="side-item" data-sec="taxreturns"   onclick="showSec('taxreturns')"><span class="side-icon">🏛️</span> Tax &amp; URA Returns</div>
+      <div class="side-item" data-sec="procurement"  onclick="showSec('procurement')"><span class="side-icon">📋</span> Procurement</div>
+      <div class="side-lbl">HR &amp; People</div>
+      <div class="side-item" data-sec="hr"           onclick="showSec('hr')"><span class="side-icon">👔</span> Employees</div>
+      <div class="side-item" data-sec="payroll"      onclick="showSec('payroll')"><span class="side-icon">💵</span> Payroll</div>
+      <div class="side-item" data-sec="reports"      onclick="showSec('reports')"><span class="side-icon">📈</span> Reports</div>
+      <div class="side-lbl">People</div>
+      <div class="side-item" data-sec="customers"  onclick="showSec('customers')"><span class="side-icon">👥</span> Customers</div>
+      <div class="side-item" data-sec="feedback"   onclick="showSec('feedback')"><span class="side-icon">⭐</span> Feedback</div>
+      <div class="side-item" data-sec="vouchers"   onclick="showSec('vouchers')"><span class="side-icon">🎟</span> Vouchers</div>
+      <div class="side-item" data-sec="loyalty"    onclick="showSec('loyalty')"><span class="side-icon">🏅</span> Loyalty / Rewards</div>
+      <div class="side-item" data-sec="newsletter" onclick="showSec('newsletter')"><span class="side-icon">📧</span> Newsletter</div>
+      <div class="side-lbl">Content</div>
+      <div class="side-item" data-sec="recipes"   onclick="showSec('recipes')"><span class="side-icon">🍃</span> Recipes</div>
+      <div class="side-item" data-sec="heromgmt"  onclick="showSec('heromgmt')"><span class="side-icon">🖼️</span> Hero Slides</div>
+      <div class="side-item" data-sec="dykadmin"  onclick="showSec('dykadmin')"><span class="side-icon">💡</span> Did You Know</div>
+    </aside>
+
+    <main class="admin-main">
+      <!-- DASHBOARD -->
+      <div class="admin-section show" id="asec-dashboard">
+        <div class="page-hd"><h2>Dashboard</h2><p>Kujaza Fresh — live overview for March 2026</p></div>
+        <div class="stats-row" id="dash-stats"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="a-card"><div class="a-card-hd"><h4>Recent Orders</h4></div><div class="a-card-body" id="dash-orders"></div></div>
+          <div class="a-card"><div class="a-card-hd"><h4>⚠ Low Stock Alert</h4></div><div class="a-card-body" id="dash-stock"></div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px">
+          <div class="a-card"><div class="a-card-hd"><h4>Open Tickets</h4></div><div class="a-card-body" id="dash-tickets"></div></div>
+          <div class="a-card"><div class="a-card-hd"><h4>Pending Procurement</h4></div><div class="a-card-body" id="dash-proc"></div></div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS -->
+      <div class="admin-section" id="asec-products">
+        <div class="page-hd"><h2>Products</h2><p>Manage the full product catalogue</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>All Products</h4><button class="btn btn-primary btn-sm" onclick="openAddProduct()">+ Add Product</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Product &amp; Code</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead><tbody id="prod-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- CATEGORIES -->
+      <div class="admin-section" id="asec-categories">
+        <div class="page-hd"><h2>Categories</h2><p>Manage product categories</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>All Categories</h4><button class="btn btn-primary btn-sm" onclick="openAddCat()">+ Add Category</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Icon</th><th>Name</th><th>Products</th><th>Actions</th></tr></thead><tbody id="cat-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- INVENTORY -->
+      <div class="admin-section" id="asec-inventory">
+        <div class="page-hd"><h2>Inventory</h2><p>Monitor and update stock levels in real time</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Stock Levels</h4></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Product</th><th>Category</th><th>Stock</th><th>Level</th><th>Status</th><th>Update</th></tr></thead><tbody id="inv-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="admin-section" id="asec-orders">
+        <div class="page-hd"><h2>Orders</h2><p>View and manage all customer orders</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>All Orders</h4></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Zone</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Rider</th></tr></thead><tbody id="orders-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- TICKETS -->
+      <div class="admin-section" id="asec-tickets">
+        <div class="page-hd"><h2>Ticketing System</h2><p>Customer & staff issue management</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>All Tickets</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-ticket')">+ New Ticket</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Ticket #</th><th>Raised By</th><th>Category</th><th>Subject</th><th>Status</th><th>Assigned</th><th>Actions</th></tr></thead><tbody id="ticket-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- RIDERS / FLEET -->
+      <div class="admin-section" id="asec-riders">
+        <div class="page-hd"><h2>Riders & Fleet</h2><p>Company drivers, outsourced riders, vehicles & motorcycles</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Rider Fleet</h4><button class="btn btn-primary btn-sm" onclick="openAddRider()">+ Add Rider</button></div>
+          <div class="rider-grid" id="rider-grid"></div>
+        </div>
+      </div>
+
+      <!-- DELIVERY ALLOCATION -->
+      <div class="admin-section" id="asec-delivery">
+        <div class="page-hd"><h2>Delivery Allocation</h2><p>Assign riders to pending orders</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Pending Assignments</h4></div>
+          <div id="alloc-list" style="padding:16px 24px"></div>
+        </div>
+      </div>
+
+      <!-- VENDORS -->
+      <div class="admin-section" id="asec-vendors">
+        <div class="page-hd"><h2>Vendor Management</h2><p>Onboarding, commissions & payouts</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Registered Vendors</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-vendor')">+ Add Vendor</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Vendor</th><th>Contact</th><th>Products</th><th>Commission %</th><th>Total Payout</th><th>Status</th><th>Actions</th></tr></thead><tbody id="vendor-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- FINANCE -->
+      <div class="admin-section" id="asec-finance">
+        <div class="page-hd"><h2>Finance</h2><p>Income, expenses, P&amp;L — QuickBooks-style interface</p></div>
+        <div class="stats-row" id="fin-stats"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div class="a-card"><div class="a-card-hd"><h4>📈 Income</h4><button class="btn btn-green btn-sm" onclick="openModal('modal-income')">+ Add</button></div><div class="a-card-body" id="income-list"></div></div>
+          <div class="a-card"><div class="a-card-hd"><h4>📉 Expenses</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-expense')">+ Add</button></div><div class="a-card-body" id="expense-list"></div></div>
+        </div>
+        <div class="a-card"><div class="a-card-hd"><h4>Profit & Loss Statement</h4></div><div class="a-card-body" id="pnl-body"></div></div>
+      </div>
+
+      <!-- PROCUREMENT -->
+      <div class="admin-section" id="asec-procurement">
+        <div class="page-hd"><h2>Procurement & Requisitions</h2><p>Requisition → Dept Head → Finance → Purchase Order workflow</p></div>
+        <div class="a-card" style="margin-bottom:20px">
+          <div class="a-card-hd"><h4>Procurement Workflow</h4></div>
+          <div class="a-card-body">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+              <div style="background:var(--o5);border:2px solid var(--o2);border-radius:12px;padding:14px 20px;text-align:center;min-width:140px">
+                <div style="font-size:22px">📝</div><div style="font-weight:800;font-size:13px;color:var(--o1);margin-top:4px">Staff Raises<br>Requisition</div>
+              </div>
+              <div style="font-size:24px;color:var(--muted)">→</div>
+              <div style="background:var(--y5);border:2px solid var(--y2);border-radius:12px;padding:14px 20px;text-align:center;min-width:140px">
+                <div style="font-size:22px">👔</div><div style="font-weight:800;font-size:13px;color:var(--y1);margin-top:4px">Dept Head<br>Approval</div>
+              </div>
+              <div style="font-size:24px;color:var(--muted)">→</div>
+              <div style="background:var(--g7);border:2px solid var(--g5);border-radius:12px;padding:14px 20px;text-align:center;min-width:140px">
+                <div style="font-size:22px">💰</div><div style="font-weight:800;font-size:13px;color:var(--g2);margin-top:4px">Finance Head<br>Approval</div>
+              </div>
+              <div style="font-size:24px;color:var(--muted)">→</div>
+              <div style="background:var(--g6);border:2px solid var(--g4);border-radius:12px;padding:14px 20px;text-align:center;min-width:140px">
+                <div style="font-size:22px">📦</div><div style="font-weight:800;font-size:13px;color:var(--g2);margin-top:4px">Auto Purchase<br>Order Generated</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Requisitions</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-req')">+ New Requisition</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Ref #</th><th>Item / Description</th><th>Raised By</th><th>Amount (UGX)</th><th>Dept Head</th><th>Finance</th><th>PO Status</th></tr></thead><tbody id="req-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- HR EMPLOYEES -->
+      <div class="admin-section" id="asec-hr">
+        <div class="page-hd"><h2>Employee Management</h2><p>Full HR records — auto-generated employee numbers, ID cards, leave, NSSF &amp; SACCO</p></div>
+        <div class="stats-row" id="hr-stats"></div>
+        <div class="a-card" style="margin-bottom:20px">
+          <div class="a-card-hd">
+            <h4>All Employees</h4>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-primary btn-sm" onclick="openAddEmployee()">+ Add Employee</button>
+              <button class="btn btn-sm btn-green" onclick="exportEmployeeCSV()">📊 Export</button>
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>EMP #</th><th>Photo</th><th>Full Name</th><th>Title / Role</th><th>Dept</th><th>Basic Salary</th><th>Contract</th><th>Start Date</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="emp-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div class="a-card">
+            <div class="a-card-hd"><h4>Leave Applications</h4><button class="btn btn-green btn-sm" onclick="openModal('modal-leave')">+ Apply Leave</button></div>
+            <div class="tbl-wrap"><table><thead><tr><th>Employee</th><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Status</th><th>Action</th></tr></thead><tbody id="leave-tbody"></tbody></table></div>
+          </div>
+          <div class="a-card">
+            <div class="a-card-hd"><h4>SACCO — Savings &amp; Loans</h4><button class="btn btn-yellow btn-sm" onclick="openModal('modal-sacco')">+ Entry</button></div>
+            <div class="tbl-wrap"><table><thead><tr><th>Employee</th><th>Savings</th><th>Loan</th><th>Repaid</th><th>Balance</th><th>Status</th></tr></thead><tbody id="sacco-tbody"></tbody></table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="admin-section" id="asec-reports">
+        <div class="page-hd"><h2>Reports</h2><p>Sales, inventory, rider performance & financial summaries</p></div>
+        <div class="rep-tabs">
+          <button class="rep-tab active" data-rep="sales"     onclick="renderReport('sales',this)">Sales Report</button>
+          <button class="rep-tab"        data-rep="inventory" onclick="renderReport('inventory',this)">Inventory</button>
+          <button class="rep-tab"        data-rep="riders"    onclick="renderReport('riders',this)">Riders</button>
+          <button class="rep-tab"        data-rep="financial" onclick="renderReport('financial',this)">Financial</button>
+          <button class="rep-tab"        data-rep="tickets"   onclick="renderReport('tickets',this)">Tickets</button>
+        </div>
+        <div class="a-card"><div class="a-card-body" id="report-content"></div></div>
+      </div>
+
+      <!-- CUSTOMERS -->
+      <div class="admin-section" id="asec-customers">
+        <div class="page-hd"><h2>Customers</h2><p>Registered customer accounts</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>All Customers</h4></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Orders</th><th>Total Spent</th><th>Joined</th></tr></thead><tbody id="cust-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- VOUCHERS -->
+      <div class="admin-section" id="asec-vouchers">
+        <div class="page-hd"><h2>Vouchers & Promo Codes</h2><p>Create and manage discount vouchers, promo codes and flash offers</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>All Vouchers</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-voucher')">+ Create Voucher</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Description</th><th>Type</th><th>Value</th><th>Min Order</th><th>Used / Max</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead><tbody id="voucher-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- LOYALTY -->
+      <div class="admin-section" id="asec-loyalty">
+        <div class="page-hd"><h2>Loyalty & Rewards</h2><p>Track customer points, tiers, and redemptions</p></div>
+        <div class="stats-row" id="loyalty-stats"></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Loyalty Members</h4></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Customer</th><th>Tier</th><th>Points</th><th>Redeemed</th><th>Total Spent</th><th>Action</th></tr></thead><tbody id="loyalty-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- NEWSLETTER -->
+      <div class="admin-section" id="asec-newsletter">
+        <div class="page-hd"><h2>Newsletter Subscribers</h2><p>Manage email subscribers and send campaigns</p></div>
+        <div class="stats-row" id="nl-stats"></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Subscribers</h4></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Email</th><th>Date Subscribed</th><th>Status</th><th>Action</th></tr></thead><tbody id="nl-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- FEEDBACK MODERATION -->
+      <div class="admin-section" id="asec-feedback">
+        <div class="page-hd"><h2>Customer Feedback</h2><p>Review, approve or reject customer reviews before they appear on the homepage</p></div>
+        <div class="stats-row" id="fb-stats"></div>
+        <div class="a-card" style="margin-bottom:20px">
+          <div class="a-card-hd"><h4>⏳ Pending Review</h4></div>
+          <div id="fb-pending"></div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>✅ Approved Reviews</h4></div>
+          <div id="fb-approved"></div>
+        </div>
+      </div>
+
+
+      <!-- RECIPES ADMIN -->
+      <div class="admin-section" id="asec-recipes">
+        <div class="page-hd"><h2>Recipe Management</h2><p>Add, edit and manage homepage recipes — with photos, captions and preparation text</p></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>All Recipes</h4><button class="btn btn-primary btn-sm" onclick="openAddRecipeAdmin()">+ Add Recipe</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Title</th><th>Description</th><th>Photo</th><th>Caption</th><th>Status</th><th>Actions</th></tr></thead><tbody id="recipe-admin-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- HERO SLIDES ADMIN -->
+      <div class="admin-section" id="asec-heromgmt">
+        <div class="page-hd"><h2>Hero Slideshow</h2><p>Manage homepage hero slides — upload photos with effects, headings and captions</p></div>
+        <div class="a-card">
+          <div class="a-card-hd">
+            <h4>Hero Slides</h4>
+            <button class="btn btn-primary btn-sm" onclick="openAddHeroSlide()">+ Add Slide</button>
+          </div>
+          <div style="background:var(--o5);border:1.5px solid var(--o4);border-radius:var(--r);padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--o1);font-weight:600">
+            💡 Slides auto-rotate every 5 seconds on the homepage. You can upload a photo or set a gradient background colour. Changes apply immediately.
+          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>#</th><th>Heading</th><th>Subtitle</th><th>Photo</th><th>Actions</th></tr></thead><tbody id="hero-slides-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+
+      <!-- FINANCIAL STATEMENTS -->
+      <div class="admin-section" id="asec-finstatements">
+        <div class="page-hd">
+          <h2>Financial Statements</h2>
+          <p>GAAP &amp; IASB-compliant financial reports — Statement of Financial Position, Comprehensive Income, Cash Flows, Changes in Equity</p>
+        </div>
+        <div class="fin-stmt-toolbar a-card" style="margin-bottom:20px">
+          <div class="a-card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto auto;gap:12px;align-items:end;flex-wrap:wrap">
+              <div class="form-group" style="margin:0"><label>Statement Type</label>
+                <select id="stmt-type" style="width:100%">
+                  <option value="income">Statement of Comprehensive Income</option>
+                  <option value="position">Statement of Financial Position (Balance Sheet)</option>
+                  <option value="cashflow">Statement of Cash Flows</option>
+                  <option value="equity">Statement of Changes in Equity</option>
+                  <option value="payroll">Payroll Summary Statement</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin:0"><label>Period Type</label>
+                <select id="stmt-period" onchange="updateStmtDates()">
+                  <option value="monthly">Monthly</option>
+                  <option value="quarterly">Quarterly</option>
+                  <option value="annual">Annual</option>
+                  <option value="custom">Custom Range</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin:0"><label>From Date</label><input type="date" id="stmt-from"></div>
+              <div class="form-group" style="margin:0"><label>To Date</label><input type="date" id="stmt-to"></div>
+              <button class="btn btn-primary" onclick="generateFinStatement()" style="white-space:nowrap;height:42px">Generate →</button>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+              <button class="btn btn-sm btn-green" onclick="printStatement()">🖨 Print</button>
+              <button class="btn btn-sm" style="background:var(--o5);color:var(--o1);border:1.5px solid var(--o3)" onclick="exportStatementCSV()">📊 Export CSV</button>
+              <span style="font-size:12px;color:var(--muted);padding:6px 0;font-weight:600">Compliant with GAAP · IASB · IAS 1 · URA Requirements</span>
+            </div>
+          </div>
+        </div>
+        <div id="fin-stmt-output"></div>
+      </div>
+
+      <!-- TAX & URA RETURNS -->
+      <div class="admin-section" id="asec-taxreturns">
+        <div class="page-hd"><h2>Tax &amp; URA Returns</h2><p>Uganda Revenue Authority compliance — VAT, PAYE, Corporate Tax, WHT calculations</p></div>
+        <div class="stats-row" id="tax-stats"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div class="a-card">
+            <div class="a-card-hd"><h4>📊 VAT Computation (18%)</h4></div>
+            <div class="a-card-body" id="vat-computation"></div>
+          </div>
+          <div class="a-card">
+            <div class="a-card-hd"><h4>👔 PAYE Summary</h4></div>
+            <div class="a-card-body" id="paye-computation"></div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div class="a-card">
+            <div class="a-card-hd"><h4>🏛️ Corporate Income Tax (30%)</h4></div>
+            <div class="a-card-body" id="cit-computation"></div>
+          </div>
+          <div class="a-card">
+            <div class="a-card-hd"><h4>📋 Withholding Tax (WHT)</h4></div>
+            <div class="a-card-body" id="wht-computation"></div>
+          </div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>URA Return Summary — Ready to File</h4><button class="btn btn-primary btn-sm" onclick="printStatement()">🖨 Print URA Return</button></div>
+          <div class="a-card-body" id="ura-return-summary"></div>
+        </div>
+      </div>
+
+      <!-- PAYROLL MODULE -->
+      <div class="admin-section" id="asec-payroll">
+        <div class="page-hd"><h2>Payroll Processing</h2><p>Run payroll, compute net pay, PAYE, NSSF, LST for all employees. GAAP and URA compliant.</p></div>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
+          <div class="form-group" style="margin:0"><label>Payroll Month</label><input type="month" id="payroll-month" style="font-size:14px;padding:8px 12px;border-radius:8px;border:1.5px solid var(--c3)"></div>
+          <button class="btn btn-primary" onclick="runPayroll()">▶ Run Payroll</button>
+          <button class="btn btn-green btn-sm" onclick="exportPayrollCSV()">📊 Export CSV</button>
+          <button class="btn btn-sm" style="background:var(--y5);color:var(--y1);border:1.5px solid var(--y3)" onclick="printPayroll()">🖨 Print Payslips</button>
+        </div>
+        <div class="stats-row" id="payroll-stats"></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Payroll Register</h4></div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>EMP #</th><th>Employee</th><th>Department</th><th>Basic</th><th>Allowances</th><th>Gross</th><th>NSSF (10%)</th><th>PAYE</th><th>LST</th><th>Other</th><th>Net Pay</th><th>Status</th></tr></thead>
+              <tbody id="payroll-tbody"></tbody>
+            </table>
+          </div>
+          <div class="a-card-body" id="payroll-totals" style="border-top:2px solid var(--border2);padding-top:16px"></div>
+        </div>
+      </div>
+
+
+      <!-- WHATSAPP ORDERS -->
+      <div class="admin-section" id="asec-whatsapp">
+        <div class="page-hd">
+          <h2>WhatsApp Orders</h2>
+          <p>📱 Live WhatsApp order inbox — 0766026401 · Assign, process and confirm orders</p>
+        </div>
+        <div class="a-card" style="background:linear-gradient(135deg,#075E54,#128C7E);color:#fff;margin-bottom:20px;border:none">
+          <div class="a-card-body" style="display:flex;align-items:center;gap:16px;padding:16px 24px">
+            <div style="font-size:40px">📱</div>
+            <div>
+              <div style="font-size:18px;font-weight:800;margin-bottom:2px">WhatsApp Business Line</div>
+              <div style="font-size:24px;font-weight:700;color:#25D366">0766 026 401</div>
+              <div style="font-size:13px;opacity:.8;margin-top:2px">Share this number with customers for fast WhatsApp orders</div>
+            </div>
+            <a href="https://wa.me/256766026401" target="_blank" class="btn btn-sm" style="background:#25D366;color:#fff;margin-left:auto;white-space:nowrap;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:700">Open WhatsApp →</a>
+          </div>
+        </div>
+        <div class="stats-row" id="wa-stats"></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Incoming WhatsApp Orders</h4><button class="btn btn-primary btn-sm" onclick="addManualWAOrder()">+ Add Manual Order</button></div>
+          <div id="wa-orders-list"></div>
+        </div>
+      </div>
+
+      <!-- B2B MANAGEMENT -->
+      <div class="admin-section" id="asec-b2b">
+        <div class="page-hd"><h2>B2B Client Management</h2><p>Hotels, schools, restaurants and bulk buyers — standing orders, credit terms, invoicing</p></div>
+        <div class="stats-row" id="b2b-stats"></div>
+        <div class="a-card" style="margin-bottom:20px">
+          <div class="a-card-hd"><h4>B2B Clients</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-b2bclient')">+ Add Client</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Client</th><th>Type</th><th>Contact</th><th>Frequency</th><th>Volume</th><th>Credit Days</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead><tbody id="b2b-tbody"></tbody></table></div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>B2B Standing Orders — This Week</h4></div>
+          <div id="b2b-standing-orders"></div>
+        </div>
+      </div>
+
+      <!-- MICRO HUBS -->
+      <div class="admin-section" id="asec-hubs">
+        <div class="page-hd"><h2>Micro Hub Management</h2><p>Distributed fulfillment points for minutes delivery — stock levels, rider assignment</p></div>
+        <div class="stats-row" id="hubs-stats"></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Active Hubs</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-hub')">+ Add Hub</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Hub Name</th><th>Zone Coverage</th><th>Address</th><th>Capacity</th><th>Stock Level</th><th>Active Riders</th><th>Status</th><th>Actions</th></tr></thead><tbody id="hubs-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- USER ACCESS ROLES -->
+      <div class="admin-section" id="asec-userroles">
+        <div class="page-hd"><h2>User Access &amp; Role Management</h2><p>Create system users, assign roles, control which admin modules each user can access</p></div>
+        <div class="a-card" style="margin-bottom:20px;background:var(--y5);border-color:var(--y3)">
+          <div class="a-card-body" style="font-size:13px;color:var(--y1)">
+            <strong>⚠ Access Control:</strong> Admin has full access to all modules. Other roles below can be restricted to specific sections only. Users must use the Help. login in the footer.
+          </div>
+        </div>
+        <div class="a-card" style="margin-bottom:20px">
+          <div class="a-card-hd"><h4>System Users &amp; Roles</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-sysuser')">+ Add System User</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Dept</th><th>Module Access</th><th>Status</th><th>Actions</th></tr></thead><tbody id="sysusers-tbody"></tbody></table></div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Available Roles &amp; Default Permissions</h4></div>
+          <div id="roles-list"></div>
+        </div>
+      </div>
+
+      <!-- REMOVE CART/SHOP FROM ADMIN: these placeholders ensure navigation works -->
+
+      <!-- DYK ADMIN — Did You Know food facts management -->
+      <div class="admin-section" id="asec-dykadmin">
+        <div class="page-hd">
+          <h2>Did You Know? — Food Facts</h2>
+          <p>Manage the daily food facts widget on the homepage — add, edit, reorder and remove facts with photos</p>
+        </div>
+        <div class="a-card" style="background:linear-gradient(135deg,var(--g7),#fffbeb);border-color:var(--y3);margin-bottom:20px">
+          <div class="a-card-body" style="padding:16px 20px;display:flex;align-items:center;gap:16px">
+            <div style="font-size:36px">💡</div>
+            <div>
+              <div style="font-weight:800;color:var(--g2);margin-bottom:4px">Daily Rotation — One fact per day, automatically selected</div>
+              <div style="font-size:13px;color:var(--muted)">The widget shows today's fact based on the day of the year. Customers can browse all facts using the navigation arrows. Facts with a linked product show an Add to Cart button.</div>
+            </div>
+          </div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-hd">
+            <h4>All Food Facts (<span id="dyk-admin-count">0</span>)</h4>
+            <button class="btn btn-primary btn-sm" onclick="openAddDYKFact()">+ Add Food Fact</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Title</th><th>Food / Product</th><th>Photo</th><th>Benefits</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="dyk-admin-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ═══════ STAFF PORTAL PAGE ════════════════════════════════════ -->
+<div id="page-staff" class="page">
+  <div class="staff-wrap">
+
+    <!-- Staff Sidebar -->
+    <aside class="staff-side">
+      <div class="staff-profile-block">
+        <div class="sp-avatar" id="sp-avatar">👤</div>
+        <div class="sp-name"   id="sp-name">Staff Name</div>
+        <div class="sp-title"  id="sp-title">Role · Department</div>
+        <div class="sp-empid"  id="sp-empid">EMP-000</div>
+      </div>
+      <div class="side-lbl">My Portal</div>
+      <div class="side-item active" data-ss="sp-dash"     onclick="showStaff('sp-dash')"><span class="side-icon">🏠</span> Dashboard</div>
+      <div class="side-item"        data-ss="sp-notices"  onclick="showStaff('sp-notices')"><span class="side-icon">📢</span> Notices <span id="sp-notice-badge" class="sp-badge hidden">0</span></div>
+      <div class="side-item"        data-ss="sp-inbox"    onclick="showStaff('sp-inbox')"><span class="side-icon">📬</span> HR Inbox <span id="sp-inbox-badge" class="sp-badge hidden">0</span></div>
+      <div class="side-item"        data-ss="sp-tickets"  onclick="showStaff('sp-tickets')"><span class="side-icon">🎫</span> My Tickets</div>
+      <div class="side-item"        data-ss="sp-leave"    onclick="showStaff('sp-leave')"><span class="side-icon">📅</span> Leave Application</div>
+      <div class="side-item"        data-ss="sp-req"      onclick="showStaff('sp-req')"><span class="side-icon">📋</span> Raise Requisition</div>
+      <div class="side-item"        data-ss="sp-sacco"    onclick="showStaff('sp-sacco')"><span class="side-icon">💰</span> SACCO / Loans</div>
+      <div class="side-item"        data-ss="sp-payslip"  onclick="showStaff('sp-payslip')"><span class="side-icon">🧾</span> My Payslips</div>
+      <div class="side-lbl" id="sp-hr-label" style="display:none">HR Tools</div>
+      <div class="side-item hidden"  data-ss="sp-hrmgmt" id="sp-hrmgmt-link" onclick="showStaff('sp-hrmgmt')"><span class="side-icon">👔</span> HR Management</div>
+      <div class="side-lbl" id="sp-acc-label" style="display:none">Finance Tools</div>
+      <div class="side-item hidden"  data-ss="sp-accmgmt" id="sp-accmgmt-link" onclick="showStaff('sp-accmgmt')"><span class="side-icon">📊</span> Finance Overview</div>
+      <div style="padding:20px;margin-top:auto">
+        <button class="btn btn-danger btn-full btn-sm" onclick="logout()">Sign Out</button>
+      </div>
+    </aside>
+
+    <!-- Staff Main Content -->
+    <main class="staff-main">
+
+      <!-- DASHBOARD -->
+      <div class="sp-section show" id="sp-dash">
+        <div class="page-hd"><h2 id="sp-welcome">Welcome back!</h2><p id="sp-welcome-sub">Here is your Kujaza Fresh staff overview</p></div>
+        <div class="stats-row" id="sp-dash-stats"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="a-card"><div class="a-card-hd"><h4>📢 Latest Notices</h4></div><div class="a-card-body" id="sp-dash-notices"></div></div>
+          <div class="a-card"><div class="a-card-hd"><h4>📬 Recent Messages</h4></div><div class="a-card-body" id="sp-dash-inbox"></div></div>
+        </div>
+      </div>
+
+      <!-- NOTICES -->
+      <div class="sp-section" id="sp-notices">
+        <div class="page-hd"><h2>Company Notices</h2><p>Official announcements from management</p></div>
+        <div id="notices-list"></div>
+      </div>
+
+      <!-- HR INBOX -->
+      <div class="sp-section" id="sp-inbox">
+        <div class="page-hd"><h2>HR Inbox</h2><p>Messages from HR and your supervisor</p></div>
+        <div id="inbox-list"></div>
+      </div>
+
+      <!-- MY TICKETS -->
+      <div class="sp-section" id="sp-tickets">
+        <div class="page-hd"><h2>My Assigned Tickets</h2><p>Customer queries assigned to you by supervisors</p></div>
+        <div id="sp-ticket-list"></div>
+      </div>
+
+      <!-- LEAVE APPLICATION -->
+      <div class="sp-section" id="sp-leave">
+        <div class="page-hd"><h2>Leave Application</h2><p>Apply for annual, sick, or emergency leave</p></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="a-card">
+            <div class="a-card-hd"><h4>Apply for Leave</h4></div>
+            <div class="a-card-body">
+              <div id="sp-leave-msg"></div>
+              <div class="form-group"><label>Leave Type</label><select id="sp-lv-type"><option>Annual</option><option>Sick</option><option>Maternity</option><option>Paternity</option><option>Emergency</option></select></div>
+              <div class="form-row">
+                <div class="form-group"><label>From Date</label><input id="sp-lv-from" type="date"></div>
+                <div class="form-group"><label>To Date</label><input id="sp-lv-to" type="date"></div>
+              </div>
+              <div class="form-group"><label>Reason / Notes</label><textarea id="sp-lv-reason" rows="3" placeholder="Briefly explain the reason for your leave request…"></textarea></div>
+              <button class="btn btn-primary btn-full" onclick="submitLeave()">Submit Application →</button>
+            </div>
+          </div>
+          <div class="a-card">
+            <div class="a-card-hd"><h4>My Leave History</h4></div>
+            <div class="a-card-body" id="sp-leave-history"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RAISE REQUISITION -->
+      <div class="sp-section" id="sp-req">
+        <div class="page-hd"><h2>Raise a Requisition</h2><p>Request items or resources — goes through dept head and finance approval</p></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="a-card">
+            <div class="a-card-hd"><h4>New Requisition</h4></div>
+            <div class="a-card-body">
+              <div id="sp-req-msg"></div>
+              <div class="form-group"><label>Item / Description *</label><input id="sp-rq-item" placeholder="e.g. Fuel voucher for delivery — March"></div>
+              <div class="form-row">
+                <div class="form-group"><label>Estimated Amount (UGX)</label><input id="sp-rq-amt" type="number" min="0" placeholder="50000"></div>
+                <div class="form-group"><label>Urgency</label><select id="sp-rq-urg"><option>Normal</option><option>Urgent</option><option>Low</option></select></div>
+              </div>
+              <div class="form-group"><label>Justification *</label><textarea id="sp-rq-just" rows="3" placeholder="Why is this needed? What is it for?"></textarea></div>
+              <button class="btn btn-primary btn-full" onclick="submitRequisition()">Submit Requisition →</button>
+            </div>
+          </div>
+          <div class="a-card">
+            <div class="a-card-hd"><h4>My Requisition History</h4></div>
+            <div class="a-card-body" id="sp-req-history"></div>
+          </div>
+        </div>
+        <!-- Approval flow diagram -->
+        <div class="a-card" style="margin-top:20px">
+          <div class="a-card-hd"><h4>Approval Process</h4></div>
+          <div class="a-card-body">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+              <div class="proc-step you"><div class="ps-icon">📝</div><div class="ps-lbl">You Submit</div></div>
+              <div class="proc-arrow">→</div>
+              <div class="proc-step dept"><div class="ps-icon">👔</div><div class="ps-lbl">Dept Head</div></div>
+              <div class="proc-arrow">→</div>
+              <div class="proc-step fin"><div class="ps-icon">💰</div><div class="ps-lbl">Finance</div></div>
+              <div class="proc-arrow">→</div>
+              <div class="proc-step done"><div class="ps-icon">📦</div><div class="ps-lbl">PO Generated</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SACCO / LOANS -->
+      <div class="sp-section" id="sp-sacco">
+        <div class="page-hd"><h2>SACCO & Loan Applications</h2><p>View your savings and apply for a staff loan</p></div>
+        <div id="sp-sacco-summary"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px">
+          <div class="a-card">
+            <div class="a-card-hd"><h4>Apply for a Loan</h4></div>
+            <div class="a-card-body">
+              <div id="sp-sacco-msg"></div>
+              <div class="form-group"><label>Loan Amount (UGX) *</label><input id="sp-loan-amt" type="number" min="0" placeholder="500000" max="2000000"></div>
+              <div class="form-group"><label>Repayment Period</label><select id="sp-loan-period"><option>3 months</option><option>6 months</option><option>12 months</option></select></div>
+              <div class="form-group"><label>Purpose *</label><textarea id="sp-loan-purpose" rows="3" placeholder="What will the loan be used for?"></textarea></div>
+              <div class="sacco-rule-box">📌 Maximum loan: <strong>UGX 2,000,000</strong>. Must have at least 3 months of savings. Subject to HR approval.</div>
+              <button class="btn btn-primary btn-full" style="margin-top:14px" onclick="submitLoan()">Apply for Loan →</button>
+            </div>
+          </div>
+          <div class="a-card">
+            <div class="a-card-hd"><h4>My SACCO Record</h4></div>
+            <div class="a-card-body" id="sp-sacco-record"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYSLIPS -->
+      <div class="sp-section" id="sp-payslip">
+        <div class="page-hd"><h2>My Payslips</h2><p>View and download your monthly payslips</p></div>
+        <div id="sp-payslip-list"></div>
+      </div>
+
+      <!-- HR MANAGEMENT (HR role only) -->
+      <div class="sp-section" id="sp-hrmgmt">
+        <div class="page-hd"><h2>HR Management</h2><p>Manage all staff records, leave approvals and HR communications</p></div>
+        <div class="a-card" style="margin-bottom:20px">
+          <div class="a-card-hd"><h4>Leave Applications — Pending Approval</h4></div>
+          <div class="a-card-body" id="hr-leave-pending"></div>
+        </div>
+        <div class="a-card" style="margin-bottom:20px">
+          <div class="a-card-hd"><h4>SACCO Loan Applications — Pending</h4></div>
+          <div class="a-card-body" id="hr-sacco-pending"></div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Post a Notice</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-notice')">+ Post Notice</button></div>
+          <div class="a-card-body" id="hr-notices"></div>
+        </div>
+      </div>
+
+      <!-- FINANCE OVERVIEW (Accounts role only) -->
+      <div class="sp-section" id="sp-accmgmt">
+        <div class="page-hd"><h2>Finance Overview</h2><p>Accounts department view — income, expenses and P&L</p></div>
+        <div class="stats-row" id="acc-fin-stats"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div class="a-card"><div class="a-card-hd"><h4>Income</h4></div><div class="a-card-body" id="acc-income"></div></div>
+          <div class="a-card"><div class="a-card-hd"><h4>Expenses</h4></div><div class="a-card-body" id="acc-expenses"></div></div>
+        </div>
+        <div class="a-card"><div class="a-card-hd"><h4>P&L Statement</h4></div><div class="a-card-body" id="acc-pnl"></div></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ═══ CART DRAWER ══════════════════════════════════════════════ -->
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-head"><h3>Your Cart</h3><button class="cart-close" onclick="closeCart()">✕</button></div>
+  <div class="cart-body" id="cart-items"></div>
+  <div class="cart-foot">
+    <div class="cart-tot"><span>Total</span><span id="cart-total">UGX 0</span></div>
+    <button class="checkout-btn" onclick="closeCart();showPage('page-checkout')">Checkout →</button>
+  </div>
+</div>
+
+<!-- ═══ MODALS ════════════════════════════════════════════════════ -->
+<!-- Admin Login (accessed via Help. in footer) -->
+<div class="modal-bd" id="modal-admin-login">
+  <div class="modal-box" style="max-width:460px;border-top:4px solid var(--g2)">
+    <div class="modal-hd">
+      <div>
+        <h3 style="color:var(--g2)">Staff & Admin Access</h3>
+        <p style="font-size:12px;color:var(--muted);margin-top:3px">Kujaza Fresh internal portal</p>
+      </div>
+      <button class="modal-x" onclick="closeModal('modal-admin-login')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="admin-login-banner">
+        <span class="alb-icon">⚙️</span>
+        <div>
+          <div class="alb-title">Authorised Personnel Only</div>
+          <div class="alb-sub">This login is for Kujaza Fresh staff and administrators only. Customers should use Sign In at the top of the page.</div>
+        </div>
+      </div>
+      <div id="admin-login-msg"></div>
+      <div class="form-group"><label>Staff Email</label><input id="al-email" type="email" placeholder="yourname@kujaza.com"></div>
+      <div class="form-group"><label>Password</label><input id="al-pass" type="password" placeholder="••••••••"></div>
+      <div class="admin-creds-hint">
+        <div class="acr-label">Demo credentials — select a role to try</div>
+        <div class="acr-row"><span class="acr-role acr-admin">Super Admin</span><span class="acr-val">admin@kujaza.com</span><span class="acr-sep">/</span><span class="acr-val">admin123</span></div>
+        <div class="acr-row"><span class="acr-role" style="background:var(--y5);color:var(--y1)">HR Manager</span><span class="acr-val">hr@kujaza.com</span><span class="acr-sep">/</span><span class="acr-val">hr1234</span></div>
+        <div class="acr-row"><span class="acr-role" style="background:var(--o5);color:var(--o1)">Accounts</span><span class="acr-val">accounts@kujaza.com</span><span class="acr-sep">/</span><span class="acr-val">acc1234</span></div>
+        <div class="acr-row"><span class="acr-role" style="background:var(--c4);color:var(--txt2)">Staff</span><span class="acr-val">alex@kujaza.com</span><span class="acr-sep">/</span><span class="acr-val">staff123</span></div>
+        <div class="acr-note">Admin → full dashboard &nbsp;|&nbsp; HR → staff management &nbsp;|&nbsp; Accounts → finance view &nbsp;|&nbsp; Staff → personal portal</div>
+      </div>
+      <button class="btn btn-green btn-full" style="margin-top:6px" onclick="doAdminLogin()">Access Admin Dashboard →</button>
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--muted)">
+        Are you a customer? <a onclick="closeModal('modal-admin-login');openModal('modal-login')" style="color:var(--o2);font-weight:700;cursor:pointer">Sign in here instead</a>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Signup -->
+<div class="modal-bd" id="modal-signup">
+  <div class="modal-box">
+    <div class="modal-hd"><h3>Create Account</h3><button class="modal-x" onclick="closeModal('modal-signup')">✕</button></div>
+    <div class="modal-body">
+      <div id="su-msg"></div>
+      <div class="form-row">
+        <div class="form-group"><label>First Name *</label><input id="su-fn" placeholder="Sarah"></div>
+        <div class="form-group"><label>Last Name *</label><input id="su-ln" placeholder="Nakato"></div>
+      </div>
+      <div class="form-group"><label>Email *</label><input id="su-em" type="email" placeholder="you@email.com"></div>
+      <div class="form-group"><label>Phone</label><input id="su-ph" type="tel" placeholder="+256 700 000 000"></div>
+      <div class="form-group"><label>Password * (min 6 chars)</label><input id="su-pw" type="password" placeholder="••••••••"></div>
+      <button class="btn btn-primary btn-full" onclick="doSignup()">Create Account</button>
+      <div class="modal-switch">Have an account? <a onclick="closeModal('modal-signup');openModal('modal-login')">Sign in</a></div>
+    </div>
+  </div>
+</div>
+<!-- Product modal -->
+<div class="modal-bd" id="modal-product">
+  <div class="modal-box" style="max-width:600px;border-top:4px solid var(--g2)">
+    <div class="modal-hd"><h3 id="pm-title">Add Product</h3><button class="modal-x" onclick="closeModal('modal-product')">✕</button></div>
+    <div class="modal-body">
+
+      <!-- Product Image Upload -->
+      <div class="prod-img-upload-section">
+        <div class="piu-label">Product Photo <span style="font-size:11px;color:var(--muted);font-weight:400">(optional — local file or paste URL)</span></div>
+        <div class="piu-area">
+          <div class="piu-preview" id="p-img-preview" onclick="document.getElementById('p-img-file').click()">
+            <div class="piu-placeholder">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+              <span>Click to upload photo</span>
+              <span style="font-size:11px">JPG, PNG, WEBP · Max 5MB</span>
+            </div>
+          </div>
+          <div class="piu-options">
+            <div>
+              <div class="piu-opt-title">📁 From Device</div>
+              <input type="file" id="p-img-file" accept="image/*" style="display:none" onchange="handleProductImageFile()">
+              <button class="btn btn-sm" style="width:100%;margin-top:6px" onclick="document.getElementById('p-img-file').click()">Browse Local Files</button>
+            </div>
+            <div style="text-align:center;color:var(--muted);font-size:12px;font-weight:600;padding:8px 0">— OR —</div>
+            <div>
+              <div class="piu-opt-title">🌐 From URL (Cloud)</div>
+              <input id="p-img-url" type="url" placeholder="https://example.com/image.jpg" style="font-size:12px;margin-top:6px;width:100%">
+              <button class="btn btn-sm btn-green" style="width:100%;margin-top:6px" onclick="handleProductImageURL()">Load from URL</button>
+            </div>
+            <div>
+              <div class="piu-opt-title">🖼 Or keep existing image path</div>
+              <input id="p-img-path" type="text" placeholder="images/tomatoes.jpg" style="font-size:12px;margin-top:6px;width:100%" oninput="previewProductImagePath(this.value)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group"><label>Product Name *</label><input id="p-name" placeholder="e.g. Ripe Mangoes"></div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:6px">
+            Emoji <span style="font-size:10px;font-weight:400;color:var(--muted)">(optional fallback icon)</span>
+          </label>
+          <div class="emoji-field-wrap">
+            <input id="p-emoji" placeholder="🥭" style="font-size:20px;width:64px;text-align:center">
+            <div style="font-size:10px;color:var(--muted);margin-top:3px">Used only if no photo uploaded</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Category *</label><select id="p-cat"></select></div>
+        <div class="form-group"><label>Unit</label><select id="p-unit"><option>kg</option><option>bunch</option><option>bunch (3)</option><option>piece</option><option>dozen</option><option>tray (30)</option><option>litre</option><option>bag (1kg)</option><option>bag (5kg)</option><option>bag (10kg)</option><option>bag (25kg)</option><option>jar (250g)</option><option>packet</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Price (UGX) *</label><input id="p-price" type="number" min="0" placeholder="5000"></div>
+        <div class="form-group"><label>Original Price (for discount)</label><input id="p-orig-price" type="number" min="0" placeholder="Optional"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Stock Qty *</label><input id="p-stock" type="number" min="0" placeholder="100"></div>
+        <div class="form-group"><label>Badge</label><select id="p-badge"><option value="">None</option><option>Best Seller</option><option>Fresh Today</option><option>Organic</option><option>Low Stock</option><option>New Arrival</option><option>Premium</option><option>Farm Fresh</option><option>Local</option></select></div>
+      </div>
+      <div class="form-group"><label>Product Tags</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px" id="p-tags-wrap">
+          <label class="tag-check"><input type="checkbox" value="organic" id="pt-organic"> Organic</label>
+          <label class="tag-check"><input type="checkbox" value="seasonal" id="pt-seasonal"> Seasonal</label>
+          <label class="tag-check"><input type="checkbox" value="discount" id="pt-discount"> Discount</label>
+          <label class="tag-check"><input type="checkbox" value="premium" id="pt-premium"> Premium</label>
+          <label class="tag-check"><input type="checkbox" value="fresh" id="pt-fresh"> Fresh Today</label>
+        </div>
+      </div>
+      <div class="form-group"><label>Description</label><textarea id="p-desc" rows="2" placeholder="Short description of the product…"></textarea></div>
+      <div class="form-group"><label>Status</label><select id="p-status"><option>Active</option><option>Inactive</option></select></div>
+      <button class="btn btn-green btn-full" onclick="saveProduct()" style="margin-top:8px">Save Product</button>
+    </div>
+  </div>
+</div>
+<!-- Category modal -->
+<div class="modal-bd" id="modal-cat">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-hd"><h3>Category</h3><button class="modal-x" onclick="closeModal('modal-cat')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Name *</label><input id="c-name" placeholder="e.g. Root Tubers"></div>
+        <div class="form-group"><label>Emoji</label><input id="c-emoji" placeholder="🍠" style="font-size:20px"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveCat()">Save Category</button>
+    </div>
+  </div>
+</div>
+<!-- Rider modal -->
+<div class="modal-bd" id="modal-rider">
+  <div class="modal-box">
+    <div class="modal-hd"><h3 id="rm-title">Add Rider</h3><button class="modal-x" onclick="closeModal('modal-rider')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Full Name *</label><input id="r-name" placeholder="David Kato"></div>
+        <div class="form-group"><label>Phone</label><input id="r-phone" placeholder="+256 700 000 000"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Type</label><select id="r-type"><option>Company Driver</option><option>Outsourced Rider</option></select></div>
+        <div class="form-group"><label>Zone</label><select id="r-zone"></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Plate / ID</label><input id="r-plate" placeholder="UBC 123X"></div>
+        <div class="form-group"><label>Status</label><select id="r-status"><option>Available</option><option>On Delivery</option><option>Off Duty</option></select></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveRider()">Save Rider</button>
+    </div>
+  </div>
+</div>
+<!-- Income modal -->
+<div class="modal-bd" id="modal-income">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-hd"><h3>Add Income</h3><button class="modal-x" onclick="closeModal('modal-income')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Description *</label><input id="inc-desc" placeholder="e.g. Hotel Entebbe — weekly supply"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Amount (UGX) *</label><input id="inc-amt" type="number" min="0" placeholder="500000"></div>
+        <div class="form-group"><label>Date</label><input id="inc-date" type="date"></div>
+      </div>
+      <div class="form-group"><label>Category</label><select id="inc-cat"><option>Product Sales</option><option>Delivery Fees</option><option>B2B Wholesale</option><option>Subscription</option><option>Other</option></select></div>
+      <button class="btn btn-green btn-full" onclick="saveIncome()">Add Income</button>
+    </div>
+  </div>
+</div>
+<!-- Expense modal -->
+<div class="modal-bd" id="modal-expense">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-hd"><h3>Add Expense</h3><button class="modal-x" onclick="closeModal('modal-expense')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Description *</label><input id="exp-desc" placeholder="e.g. Farmer payment — tomatoes, Wakiso"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Amount (UGX) *</label><input id="exp-amt" type="number" min="0" placeholder="200000"></div>
+        <div class="form-group"><label>Date</label><input id="exp-date" type="date"></div>
+      </div>
+      <div class="form-group"><label>Category</label><select id="exp-cat"><option>Produce (COGS)</option><option>Delivery</option><option>Packaging</option><option>Marketing</option><option>Staff/Riders</option><option>Storage</option><option>Admin</option><option>Other</option></select></div>
+      <button class="btn btn-primary btn-full" onclick="saveExpense()">Add Expense</button>
+    </div>
+  </div>
+</div>
+<!-- Ticket modal -->
+<div class="modal-bd" id="modal-ticket">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-hd"><h3>Raise a Ticket</h3><button class="modal-x" onclick="closeModal('modal-ticket')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Your Name / Order ID</label><input id="tk-name" placeholder="Sarah Nakato / KF-0042"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Category</label><select id="tk-cat"><option>Order Issue</option><option>Payment</option><option>Delivery</option><option>Product Quality</option><option>Staff Request</option><option>Other</option></select></div>
+        <div class="form-group"><label>Priority</label><select id="tk-pri"><option>Normal</option><option>Urgent</option><option>Low</option></select></div>
+      </div>
+      <div class="form-group"><label>Subject *</label><input id="tk-subj" placeholder="Brief description of your issue"></div>
+      <div class="form-group"><label>Details</label><textarea id="tk-detail" rows="3" placeholder="Describe the issue in detail…"></textarea></div>
+      <button class="btn btn-primary btn-full" onclick="saveTicket()">Submit Ticket</button>
+    </div>
+  </div>
+</div>
+<!-- Requisition modal -->
+<div class="modal-bd" id="modal-req">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-hd"><h3>New Requisition</h3><button class="modal-x" onclick="closeModal('modal-req')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Item / Description *</label><input id="rq-item" placeholder="e.g. 500kg Tomatoes from Wakiso"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Amount (UGX) *</label><input id="rq-amt" type="number" min="0" placeholder="300000"></div>
+        <div class="form-group"><label>Department</label><select id="rq-dept"><option>Operations</option><option>Procurement</option><option>Finance</option><option>HR</option><option>Marketing</option></select></div>
+      </div>
+      <div class="form-group"><label>Raised By</label><input id="rq-by" placeholder="Staff name"></div>
+      <div class="form-group"><label>Justification</label><textarea id="rq-just" rows="2" placeholder="Why is this needed?"></textarea></div>
+      <button class="btn btn-primary btn-full" onclick="saveReq()">Submit Requisition</button>
+    </div>
+  </div>
+</div>
+<!-- Vendor modal -->
+<div class="modal-bd" id="modal-vendor">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-hd"><h3>Add Vendor</h3><button class="modal-x" onclick="closeModal('modal-vendor')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Vendor / Farm Name *</label><input id="vn-name" placeholder="e.g. Wakiso Fresh Farms"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Contact Person</label><input id="vn-contact" placeholder="Name"></div>
+        <div class="form-group"><label>Phone</label><input id="vn-phone" placeholder="+256 700 000 000"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Commission %</label><input id="vn-comm" type="number" min="0" max="50" placeholder="8"></div>
+        <div class="form-group"><label>Status</label><select id="vn-status"><option>Active</option><option>Pending Review</option><option>Suspended</option></select></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveVendor()">Save Vendor</button>
+    </div>
+  </div>
+</div>
+<!-- Employee modal -->
+<div class="modal-bd" id="modal-emp">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-hd"><h3>Add Employee</h3><button class="modal-x" onclick="closeModal('modal-emp')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Full Name *</label><input id="em-name" placeholder="John Doe"></div>
+        <div class="form-group"><label>Role</label><input id="em-role" placeholder="e.g. Driver"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Department</label><select id="em-dept"><option>Operations</option><option>Finance</option><option>HR</option><option>Procurement</option><option>Marketing</option></select></div>
+        <div class="form-group"><label>Salary (UGX)</label><input id="em-sal" type="number" min="0" placeholder="600000"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveEmployee()">Save Employee</button>
+    </div>
+  </div>
+</div>
+<!-- Leave modal -->
+<div class="modal-bd" id="modal-leave">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-hd"><h3>Apply for Leave</h3><button class="modal-x" onclick="closeModal('modal-leave')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Employee Name *</label><input id="lv-name" placeholder="Staff name"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Leave Type</label><select id="lv-type"><option>Annual</option><option>Sick</option><option>Maternity</option><option>Paternity</option><option>Emergency</option></select></div>
+        <div class="form-group"><label>Days</label><input id="lv-days" type="number" min="1" placeholder="5"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>From</label><input id="lv-from" type="date"></div>
+        <div class="form-group"><label>To</label><input id="lv-to" type="date"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveLeave()">Submit Application</button>
+    </div>
+  </div>
+</div>
+<!-- SACCO modal -->
+<div class="modal-bd" id="modal-sacco">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-hd"><h3>SACCO Entry</h3><button class="modal-x" onclick="closeModal('modal-sacco')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Employee *</label><input id="sc-emp" placeholder="Employee name"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Savings (UGX)</label><input id="sc-sav" type="number" min="0" placeholder="100000"></div>
+        <div class="form-group"><label>Loan Amount (UGX)</label><input id="sc-loan" type="number" min="0" placeholder="0"></div>
+      </div>
+      <div class="form-group"><label>Notes</label><input id="sc-notes" placeholder="Monthly deduction, loan purpose, etc."></div>
+      <button class="btn btn-primary btn-full" onclick="saveSacco()">Save Entry</button>
+    </div>
+  </div>
+</div>
+<!-- Voucher modal -->
+<div class="modal-bd" id="modal-voucher">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-hd"><h3>Create Voucher</h3><button class="modal-x" onclick="closeModal('modal-voucher')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Promo Code *</label><input id="vc-code" placeholder="e.g. SAVE20" style="text-transform:uppercase"></div>
+        <div class="form-group"><label>Type</label><select id="vc-type"><option value="percent">Percentage %</option><option value="fixed">Fixed Amount (UGX)</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Value *</label><input id="vc-val" type="number" min="1" placeholder="e.g. 15 or 20000"></div>
+        <div class="form-group"><label>Min Order (UGX)</label><input id="vc-min" type="number" min="0" placeholder="20000"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Max Uses</label><input id="vc-max" type="number" min="1" placeholder="100"></div>
+        <div class="form-group"><label>Expiry Date</label><input id="vc-exp" type="date"></div>
+      </div>
+      <div class="form-group"><label>Description *</label><input id="vc-desc" placeholder="e.g. 15% off your first order"></div>
+      <button class="btn btn-primary btn-full" onclick="saveVoucher()">Create Voucher</button>
+    </div>
+  </div>
+</div>
+<!-- Notice modal (HR) -->
+<div class="modal-bd" id="modal-notice">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-hd"><h3>Post a Notice</h3><button class="modal-x" onclick="closeModal('modal-notice')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Title *</label><input id="nt-title" placeholder="e.g. April Payroll Update"></div>
+      <div class="form-group"><label>Message *</label><textarea id="nt-body" rows="4" placeholder="Write the notice content here…"></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>Target Department</label><select id="nt-dept"><option>All Staff</option><option>Operations</option><option>Finance</option><option>HR</option><option>Procurement</option></select></div>
+        <div class="form-group"><label>Priority</label><select id="nt-pri"><option value="normal">Normal</option><option value="high">High</option></select></div>
+      </div>
+      <button class="btn btn-green btn-full" onclick="postNotice()">Post Notice</button>
+    </div>
+  </div>
+</div>
+
+<!-- Quick View Modal -->
+<div class="modal-bd" id="modal-quickview">
+  <div class="modal-box" style="max-width:680px;border-top:4px solid var(--o2)">
+    <div class="modal-hd"><h3>Product Details</h3><button class="modal-x" onclick="closeModal('modal-quickview')">✕</button></div>
+    <div class="modal-body" id="qv-content"></div>
+  </div>
+</div>
+
+<!-- Customer Login Modal -->
+<div class="modal-bd" id="modal-login">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-hd"><h3>Sign In</h3><button class="modal-x" onclick="closeModal('modal-login')">✕</button></div>
+    <div class="modal-body">
+      <div id="login-msg"></div>
+      <div class="form-group"><label>Email Address</label><input id="l-email" type="email" placeholder="you@email.com"></div>
+      <div class="form-group"><label>Password</label><input id="l-pass" type="password" placeholder="••••••••"></div>
+      <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
+      <div class="modal-switch">Don't have an account? <a onclick="closeModal('modal-login');openModal('modal-signup')">Register free</a></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Employee Add/Edit Modal (Full HR) -->
+
+<!-- Info Pages Modal -->
+<div class="modal-bd" id="modal-infopage">
+  <div class="modal-box" style="max-width:700px;border-top:4px solid var(--g2)">
+    <div class="modal-hd"><h3 id="infopage-title">Page</h3><button class="modal-x" onclick="closeModal('modal-infopage')">✕</button></div>
+    <div class="modal-body" id="infopage-content" style="max-height:70vh;overflow-y:auto"></div>
+  </div>
+</div>
+
+
+<!-- B2B Client Modal -->
+<div class="modal-bd" id="modal-b2bclient">
+  <div class="modal-box" style="max-width:500px;border-top:4px solid var(--g2)">
+    <div class="modal-hd"><h3>Add B2B Client</h3><button class="modal-x" onclick="closeModal('modal-b2bclient')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Business Name *</label><input id="b2b-name" placeholder="e.g. Hotel Entebbe"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Business Type</label><select id="b2b-type"><option>Hotel</option><option>School</option><option>Restaurant</option><option>Caterer</option><option>Supermarket</option><option>Other</option></select></div>
+        <div class="form-group"><label>Contact Name *</label><input id="b2b-contact" placeholder="e.g. Chef David"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Phone *</label><input id="b2b-phone" type="tel" placeholder="07XXXXXXXX" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"></div>
+        <div class="form-group"><label>Email</label><input id="b2b-email" type="email" placeholder="chef@hotel.com"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Order Frequency</label><select id="b2b-freq"><option>Daily</option><option>Weekly</option><option>Bi-weekly</option><option>Monthly</option></select></div>
+        <div class="form-group"><label>Credit Days</label><select id="b2b-credit"><option value="0">Cash</option><option value="7">7 days</option><option value="14">14 days</option><option value="30">30 days</option></select></div>
+      </div>
+      <div class="form-group"><label>Typical Order Items</label><textarea id="b2b-items" rows="2" placeholder="e.g. Tomatoes 20kg, Onions 10kg, Leafy greens"></textarea></div>
+      <button class="btn btn-green btn-full" onclick="saveB2BClient()">Add B2B Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hub Modal -->
+<div class="modal-bd" id="modal-hub">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-hd"><h3>Add Micro Hub</h3><button class="modal-x" onclick="closeModal('modal-hub')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Hub Name *</label><input id="hub-name" placeholder="e.g. Ntinda Hub"></div>
+      <div class="form-group"><label>Zone Coverage *</label><input id="hub-zones" placeholder="e.g. Ntinda, Nakawa, Kisaasi"></div>
+      <div class="form-group"><label>Physical Address</label><input id="hub-addr" placeholder="e.g. Ntinda Trading Centre, Plot 12"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Capacity (kg)</label><input id="hub-cap" placeholder="200"></div>
+        <div class="form-group"><label>Stock Level</label><select id="hub-stock"><option>High</option><option>Medium</option><option>Low</option></select></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveHub()">Save Hub</button>
+    </div>
+  </div>
+</div>
+
+<!-- System User Modal -->
+<div class="modal-bd" id="modal-sysuser">
+  <div class="modal-box" style="max-width:520px;border-top:4px solid var(--g2)">
+    <div class="modal-hd"><h3>Add System User</h3><button class="modal-x" onclick="closeModal('modal-sysuser')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Full Name *</label><input id="su2-name" placeholder="e.g. Moses Opio"></div>
+        <div class="form-group"><label>Work Email *</label><input id="su2-email" type="email" placeholder="name@kujaza.com"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Password *</label><input id="su2-pass" type="password" placeholder="Min 6 characters"></div>
+        <div class="form-group"><label>Role</label>
+          <select id="su2-role" onchange="updateRoleModules()">
+            <option value="inventory">Inventory Officer</option>
+            <option value="cashier">Cashier</option>
+            <option value="hr">HR Officer</option>
+            <option value="accounts">Accounts Officer</option>
+            <option value="staff">General Staff</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Department</label>
+        <select id="su2-dept"><option>Operations</option><option>Finance</option><option>HR</option><option>Procurement</option><option>IT</option></select>
+      </div>
+      <div class="form-group">
+        <label>Module Access <span style="font-size:11px;color:var(--muted);font-weight:400">(tick the modules this user can access)</span></label>
+        <div id="su2-modules" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px"></div>
+      </div>
+      <button class="btn btn-green btn-full" style="margin-top:12px" onclick="saveSysUser()">Create System User</button>
+    </div>
+  </div>
+</div>
+
+<!-- DYK Fact Add/Edit Modal -->
+<div class="modal-bd" id="modal-dyk-fact">
+  <div class="modal-box" style="max-width:620px;border-top:4px solid var(--y3)">
+    <div class="modal-hd">
+      <h3 id="dyk-modal-title">Add Food Fact</h3>
+      <button class="modal-x" onclick="closeModal('modal-dyk-fact')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Fact Title *</label><input id="dyk-title" placeholder="e.g. Tomatoes Are Actually Fruits!"></div>
+        <div class="form-group"><label>Food Name *</label><input id="dyk-food" placeholder="e.g. Tomatoes"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Linked Product (for Add to Cart)</label>
+          <select id="dyk-product-id">
+            <option value="">None — no product link</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Icon Emoji</label><input id="dyk-icon" placeholder="🍅" style="font-size:20px;width:64px"></div>
+      </div>
+      <!-- Photo upload section -->
+      <div class="form-group">
+        <label>Photo <span style="font-size:11px;font-weight:400;color:var(--muted)">(upload from device or paste URL)</span></label>
+        <div style="display:grid;grid-template-columns:120px 1fr;gap:12px;margin-top:6px">
+          <div id="dyk-img-preview" style="width:120px;height:90px;border-radius:10px;border:2px dashed var(--c2);background:var(--c5);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;font-size:28px" onclick="document.getElementById('dyk-img-file').click()">📷</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <input type="file" id="dyk-img-file" accept="image/*" style="display:none" onchange="dykPreviewImg()">
+            <button class="btn btn-sm" onclick="document.getElementById('dyk-img-file').click()">📁 Browse Device</button>
+            <input id="dyk-img-url" type="url" placeholder="https://example.com/photo.jpg" style="font-size:12px">
+            <button class="btn btn-sm btn-green" onclick="dykLoadImgURL()">🌐 Load from URL</button>
+            <input id="dyk-img-path" type="text" placeholder="images/tomatoes.jpg" style="font-size:12px" oninput="dykPreviewPath(this.value)">
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Tag Line *</label><input id="dyk-tag" placeholder="e.g. A fruit disguised as a vegetable"></div>
+        <div class="form-group"><label>Origin</label><input id="dyk-origin" placeholder="🌍 Origin: South America · Uganda"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Accent Colour</label><input id="dyk-color" type="color" value="#E8621A" style="height:38px;width:60px;border-radius:6px;cursor:pointer"></div>
+        <div class="form-group"><label>Background Colour</label><input id="dyk-bgcolor" type="color" value="#FFF5F0" style="height:38px;width:60px;border-radius:6px;cursor:pointer"></div>
+      </div>
+      <div class="form-group">
+        <label>Main Fact Text * <span style="font-size:11px;font-weight:400;color:var(--muted)">(3–5 interesting sentences)</span></label>
+        <textarea id="dyk-fact" rows="4" placeholder="The main educational/interesting story about this food…"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Health Benefits <span style="font-size:11px;font-weight:400;color:var(--muted)">(one per line, max 5)</span></label>
+        <textarea id="dyk-benefits" rows="4" placeholder="Rich in Vitamin C&#10;Reduces blood pressure&#10;High in antioxidants&#10;Great for digestion"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Pro Tip</label>
+        <input id="dyk-tip" placeholder="🌟 Pro Tip: A practical kitchen or nutrition tip about this food">
+      </div>
+      <button class="btn btn-yellow btn-full" onclick="saveDYKFact()" style="margin-top:8px;background:var(--y2);color:var(--g1);font-weight:800">
+        💡 Save Food Fact
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/extended.js"></script>
+<script src="js/staff.js"></script>
+<script src="js/finance.js"></script>
+<script src="js/operations.js"></script>
+<script src="js/fixes.js"></script>
+<script src="js/dyk.js"></script>
+<script src="js/enhancements.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderShop();
+  updateCartBadge();
+});
+</script>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav" role="navigation" aria-label="Mobile navigation">
+  <button class="mbn-btn" onclick="showPage('page-shop')" aria-label="Shop">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+    <span>Shop</span>
+  </button>
+  <button class="mbn-btn" onclick="setFilter('discount',null);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})" aria-label="Offers">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+    <span>Offers</span>
+  </button>
+  <button class="mbn-btn mbn-cart" onclick="openCart()" aria-label="Cart">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+    <span id="mbn-cart-label">Cart</span>
+    <span id="mbn-cart-count" class="mbn-badge" style="display:none">0</span>
+  </button>
+  <button class="mbn-btn" onclick="showPage('page-checkout')" aria-label="Checkout">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    <span>Checkout</span>
+  </button>
+  <button class="mbn-btn" id="mbn-signin-btn" onclick="openModal('modal-login')" aria-label="Sign In">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Sign In</span>
+  </button>
+</nav>
+</body>
+</html>
