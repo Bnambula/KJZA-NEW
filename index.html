@@ -17,6 +17,9 @@
     <button id="nav-checkout" class="nav-link"        onclick="showPage('page-checkout')">Checkout</button>
     <button id="nav-admin"    class="nav-link hidden" onclick="showPage('page-admin')">Admin ⚙</button>
   </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
   <div class="nav-right">
     <button id="auth-btn" class="nav-auth" onclick="openModal('modal-login')">Sign In / Register</button>
     <div id="user-pill" class="user-pill hidden" onclick="logout()">
@@ -66,6 +69,32 @@
       <div class="fi"><div class="fi-icon t">📱</div> Pay with Mobile Money</div>
       <div class="fi"><div class="fi-icon o">🔄</div> Replace if not fresh</div>
       <div class="fi"><div class="fi-icon g">🧺</div> Basket combo deals</div>
+    </div>
+  </div>
+
+  <!-- TRUST & CTA STRIP -->
+  <div class="trust-strip">
+    <div class="trust-inner">
+      <div class="trust-item">
+        <div class="trust-icon">🌱</div>
+        <div class="trust-text"><strong>100% Farm Fresh</strong><span>Sourced daily, no cold storage</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">⚡</div>
+        <div class="trust-text"><strong>Same-Day Delivery</strong><span>Order before 12 noon</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🔄</div>
+        <div class="trust-text"><strong>Freshness Guarantee</strong><span>Replace or full refund</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">📱</div>
+        <div class="trust-text"><strong>MTN &amp; Airtel Money</strong><span>Pay the way you like</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🧺</div>
+        <div class="trust-text"><strong>Custom Baskets</strong><span>B2B, schools &amp; hotels</span></div>
+      </div>
     </div>
   </div>
 
@@ -152,6 +181,28 @@
       <div class="sec-eye g">Saving Corner</div>
       <div class="sec-title">Basket Combos & Specials</div>
       <div class="product-grid" id="combos-grid" style="margin-top:20px"></div>
+    </div>
+  </section>
+
+
+  <!-- B2B CTA SECTION -->
+  <section class="b2b-sec">
+    <div class="b2b-inner">
+      <div class="b2b-left">
+        <div class="sec-eye o">For Hotels, Schools &amp; Restaurants</div>
+        <h2 style="font-family:var(--font-h);font-size:32px;color:var(--g2);margin-bottom:12px">Bulk &amp; B2B Orders</h2>
+        <p style="color:var(--muted);font-size:15px;margin-bottom:20px">Weekly standing orders, custom quantity packs, invoicing, credit terms and dedicated account management — tailored for your business.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-lg" onclick="openInfoPage('b2b')">Get a B2B Quote →</button>
+          <button class="btn btn-ghost btn-lg" onclick="openInfoPage('vendor')">Become a Vendor Partner</button>
+        </div>
+      </div>
+      <div class="b2b-stats">
+        <div class="b2b-stat"><div class="b2b-num">50+</div><div class="b2b-lbl">Business Clients</div></div>
+        <div class="b2b-stat"><div class="b2b-num">13</div><div class="b2b-lbl">Delivery Zones</div></div>
+        <div class="b2b-stat"><div class="b2b-num">48hr</div><div class="b2b-lbl">Standing Order Setup</div></div>
+        <div class="b2b-stat"><div class="b2b-num">100%</div><div class="b2b-lbl">Freshness Guaranteed</div></div>
+      </div>
     </div>
   </section>
 
@@ -420,19 +471,30 @@
       </div>
       <div class="f-col">
         <h5>Company</h5>
-        <a href="#">About Us</a>
-        <a href="#">Our Farmers</a>
-        <a href="#">Quality Promise</a>
-        <a href="#">Careers</a>
-        <a href="#">Vendor Partner</a>
+        <a href="#" onclick="openInfoPage('about')">About Kujaza Fresh</a>
+        <a href="#" onclick="openInfoPage('farmers')">Our Farmers</a>
+        <a href="#" onclick="openInfoPage('quality')">Quality Promise</a>
+        <a href="#" onclick="openInfoPage('careers')">Careers</a>
+        <a href="#" onclick="openInfoPage('vendor')">Become a Vendor</a>
+        <a href="#" onclick="openInfoPage('b2b')">B2B / Bulk Orders</a>
       </div>
       <div class="f-col">
-        <button class="help-trigger" onclick="openModal('modal-admin-login')" style="background:none;border:none;padding:0;font-family:inherit;font-size:inherit;font-weight:700;color:rgba(255,255,255,.8);cursor:pointer">Help<span class="help-dot">.</span></button>
-        <a href="#">Delivery Zones</a>
-        <a href="#">Track Order</a>
-        <a href="#">Returns Policy</a>
-        <a href="#" onclick="openModal('modal-ticket')">Raise a Ticket</a>
-        <a href="#">Contact Us</a>
+        <h5>Help &amp; Support</h5>
+        <a href="#" onclick="openInfoPage('delivery')">Delivery Zones &amp; Fees</a>
+        <a href="#" onclick="openInfoPage('track')">Track Your Order</a>
+        <a href="#" onclick="openInfoPage('returns')">Returns &amp; Refunds</a>
+        <a href="#" onclick="openModal('modal-ticket')">Raise a Support Ticket</a>
+        <a href="#" onclick="openInfoPage('faq')">FAQs</a>
+        <a href="#" onclick="openInfoPage('contact')">Contact Us</a>
+      </div>
+      <div class="f-col">
+        <h5>Legal</h5>
+        <a href="#" onclick="openInfoPage('terms')">Terms of Use</a>
+        <a href="#" onclick="openInfoPage('privacy')">Privacy Policy</a>
+        <a href="#" onclick="openInfoPage('cookies')">Cookie Policy</a>
+        <a href="#" onclick="openInfoPage('refund')">Refund Policy</a>
+        <a href="#" onclick="openInfoPage('compliance')">Regulatory Compliance</a>
+        <button class="help-trigger" onclick="openModal('modal-admin-login')" style="background:none;border:none;padding:0;font-family:inherit;font-size:inherit;font-weight:700;color:rgba(255,255,255,.5);cursor:pointer;font-size:12px;margin-top:4px;display:block">Staff &amp; Admin<span class="help-dot">.</span></button>
       </div>
     </div>
     <div class="f-divider"></div>
@@ -526,11 +588,15 @@
       <div class="side-item" data-sec="riders"     onclick="showSec('riders')"><span class="side-icon">🏍️</span> Riders / Fleet</div>
       <div class="side-item" data-sec="delivery"   onclick="showSec('delivery')"><span class="side-icon">📍</span> Delivery Allocation</div>
       <div class="side-item" data-sec="vendors"    onclick="showSec('vendors')"><span class="side-icon">🤝</span> Vendors</div>
-      <div class="side-lbl">Finance & HR</div>
-      <div class="side-item" data-sec="finance"    onclick="showSec('finance')"><span class="side-icon">💰</span> Finance</div>
-      <div class="side-item" data-sec="procurement" onclick="showSec('procurement')"><span class="side-icon">📋</span> Procurement</div>
-      <div class="side-item" data-sec="hr"         onclick="showSec('hr')"><span class="side-icon">👔</span> HR & Payroll</div>
-      <div class="side-item" data-sec="reports"    onclick="showSec('reports')"><span class="side-icon">📈</span> Reports</div>
+      <div class="side-lbl">Finance</div>
+      <div class="side-item" data-sec="finance"      onclick="showSec('finance')"><span class="side-icon">💰</span> Ledger / P&amp;L</div>
+      <div class="side-item" data-sec="finstatements" onclick="showSec('finstatements')"><span class="side-icon">📄</span> Financial Statements</div>
+      <div class="side-item" data-sec="taxreturns"   onclick="showSec('taxreturns')"><span class="side-icon">🏛️</span> Tax &amp; URA Returns</div>
+      <div class="side-item" data-sec="procurement"  onclick="showSec('procurement')"><span class="side-icon">📋</span> Procurement</div>
+      <div class="side-lbl">HR &amp; People</div>
+      <div class="side-item" data-sec="hr"           onclick="showSec('hr')"><span class="side-icon">👔</span> Employees</div>
+      <div class="side-item" data-sec="payroll"      onclick="showSec('payroll')"><span class="side-icon">💵</span> Payroll</div>
+      <div class="side-item" data-sec="reports"      onclick="showSec('reports')"><span class="side-icon">📈</span> Reports</div>
       <div class="side-lbl">People</div>
       <div class="side-item" data-sec="customers"  onclick="showSec('customers')"><span class="side-icon">👥</span> Customers</div>
       <div class="side-item" data-sec="feedback"   onclick="showSec('feedback')"><span class="side-icon">⭐</span> Feedback</div>
@@ -671,22 +737,34 @@
         </div>
       </div>
 
-      <!-- HR -->
+      <!-- HR EMPLOYEES -->
       <div class="admin-section" id="asec-hr">
-        <div class="page-hd"><h2>HR & Payroll</h2><p>Employee records, payroll, leave & SACCO</p></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
-          <div class="a-card">
-            <div class="a-card-hd"><h4>Employees</h4><button class="btn btn-primary btn-sm" onclick="openModal('modal-emp')">+ Add Employee</button></div>
-            <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Dept</th><th>Salary</th><th>Status</th></tr></thead><tbody id="emp-tbody"></tbody></table></div>
+        <div class="page-hd"><h2>Employee Management</h2><p>Full HR records — auto-generated employee numbers, ID cards, leave, NSSF &amp; SACCO</p></div>
+        <div class="stats-row" id="hr-stats"></div>
+        <div class="a-card" style="margin-bottom:20px">
+          <div class="a-card-hd">
+            <h4>All Employees</h4>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-primary btn-sm" onclick="openAddEmployee()">+ Add Employee</button>
+              <button class="btn btn-sm btn-green" onclick="exportEmployeeCSV()">📊 Export</button>
+            </div>
           </div>
-          <div class="a-card">
-            <div class="a-card-hd"><h4>Leave Applications</h4><button class="btn btn-green btn-sm" onclick="openModal('modal-leave')">+ Apply Leave</button></div>
-            <div class="tbl-wrap"><table><thead><tr><th>Employee</th><th>Type</th><th>From</th><th>To</th><th>Status</th></tr></thead><tbody id="leave-tbody"></tbody></table></div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>EMP #</th><th>Photo</th><th>Full Name</th><th>Title / Role</th><th>Dept</th><th>Basic Salary</th><th>Contract</th><th>Start Date</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="emp-tbody"></tbody>
+            </table>
           </div>
         </div>
-        <div class="a-card">
-          <div class="a-card-hd"><h4>SACCO — Savings & Loans</h4><button class="btn btn-yellow btn-sm" onclick="openModal('modal-sacco')">+ New Entry</button></div>
-          <div class="tbl-wrap"><table><thead><tr><th>Employee</th><th>Savings (UGX)</th><th>Loan Amount</th><th>Repaid</th><th>Balance</th><th>Status</th></tr></thead><tbody id="sacco-tbody"></tbody></table></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div class="a-card">
+            <div class="a-card-hd"><h4>Leave Applications</h4><button class="btn btn-green btn-sm" onclick="openModal('modal-leave')">+ Apply Leave</button></div>
+            <div class="tbl-wrap"><table><thead><tr><th>Employee</th><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Status</th><th>Action</th></tr></thead><tbody id="leave-tbody"></tbody></table></div>
+          </div>
+          <div class="a-card">
+            <div class="a-card-hd"><h4>SACCO — Savings &amp; Loans</h4><button class="btn btn-yellow btn-sm" onclick="openModal('modal-sacco')">+ Entry</button></div>
+            <div class="tbl-wrap"><table><thead><tr><th>Employee</th><th>Savings</th><th>Loan</th><th>Repaid</th><th>Balance</th><th>Status</th></tr></thead><tbody id="sacco-tbody"></tbody></table></div>
+          </div>
         </div>
       </div>
 
@@ -777,6 +855,99 @@
             💡 Slides auto-rotate every 5 seconds on the homepage. You can upload a photo or set a gradient background colour. Changes apply immediately.
           </div>
           <div class="tbl-wrap"><table><thead><tr><th>#</th><th>Heading</th><th>Subtitle</th><th>Photo</th><th>Actions</th></tr></thead><tbody id="hero-slides-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+
+      <!-- FINANCIAL STATEMENTS -->
+      <div class="admin-section" id="asec-finstatements">
+        <div class="page-hd">
+          <h2>Financial Statements</h2>
+          <p>GAAP &amp; IASB-compliant financial reports — Statement of Financial Position, Comprehensive Income, Cash Flows, Changes in Equity</p>
+        </div>
+        <div class="fin-stmt-toolbar a-card" style="margin-bottom:20px">
+          <div class="a-card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto auto;gap:12px;align-items:end;flex-wrap:wrap">
+              <div class="form-group" style="margin:0"><label>Statement Type</label>
+                <select id="stmt-type" style="width:100%">
+                  <option value="income">Statement of Comprehensive Income</option>
+                  <option value="position">Statement of Financial Position (Balance Sheet)</option>
+                  <option value="cashflow">Statement of Cash Flows</option>
+                  <option value="equity">Statement of Changes in Equity</option>
+                  <option value="payroll">Payroll Summary Statement</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin:0"><label>Period Type</label>
+                <select id="stmt-period" onchange="updateStmtDates()">
+                  <option value="monthly">Monthly</option>
+                  <option value="quarterly">Quarterly</option>
+                  <option value="annual">Annual</option>
+                  <option value="custom">Custom Range</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin:0"><label>From Date</label><input type="date" id="stmt-from"></div>
+              <div class="form-group" style="margin:0"><label>To Date</label><input type="date" id="stmt-to"></div>
+              <button class="btn btn-primary" onclick="generateFinStatement()" style="white-space:nowrap;height:42px">Generate →</button>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+              <button class="btn btn-sm btn-green" onclick="printStatement()">🖨 Print</button>
+              <button class="btn btn-sm" style="background:var(--o5);color:var(--o1);border:1.5px solid var(--o3)" onclick="exportStatementCSV()">📊 Export CSV</button>
+              <span style="font-size:12px;color:var(--muted);padding:6px 0;font-weight:600">Compliant with GAAP · IASB · IAS 1 · URA Requirements</span>
+            </div>
+          </div>
+        </div>
+        <div id="fin-stmt-output"></div>
+      </div>
+
+      <!-- TAX & URA RETURNS -->
+      <div class="admin-section" id="asec-taxreturns">
+        <div class="page-hd"><h2>Tax &amp; URA Returns</h2><p>Uganda Revenue Authority compliance — VAT, PAYE, Corporate Tax, WHT calculations</p></div>
+        <div class="stats-row" id="tax-stats"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div class="a-card">
+            <div class="a-card-hd"><h4>📊 VAT Computation (18%)</h4></div>
+            <div class="a-card-body" id="vat-computation"></div>
+          </div>
+          <div class="a-card">
+            <div class="a-card-hd"><h4>👔 PAYE Summary</h4></div>
+            <div class="a-card-body" id="paye-computation"></div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div class="a-card">
+            <div class="a-card-hd"><h4>🏛️ Corporate Income Tax (30%)</h4></div>
+            <div class="a-card-body" id="cit-computation"></div>
+          </div>
+          <div class="a-card">
+            <div class="a-card-hd"><h4>📋 Withholding Tax (WHT)</h4></div>
+            <div class="a-card-body" id="wht-computation"></div>
+          </div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>URA Return Summary — Ready to File</h4><button class="btn btn-primary btn-sm" onclick="printStatement()">🖨 Print URA Return</button></div>
+          <div class="a-card-body" id="ura-return-summary"></div>
+        </div>
+      </div>
+
+      <!-- PAYROLL MODULE -->
+      <div class="admin-section" id="asec-payroll">
+        <div class="page-hd"><h2>Payroll Processing</h2><p>Run payroll, compute net pay, PAYE, NSSF, LST for all employees. GAAP and URA compliant.</p></div>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
+          <div class="form-group" style="margin:0"><label>Payroll Month</label><input type="month" id="payroll-month" style="font-size:14px;padding:8px 12px;border-radius:8px;border:1.5px solid var(--c3)"></div>
+          <button class="btn btn-primary" onclick="runPayroll()">▶ Run Payroll</button>
+          <button class="btn btn-green btn-sm" onclick="exportPayrollCSV()">📊 Export CSV</button>
+          <button class="btn btn-sm" style="background:var(--y5);color:var(--y1);border:1.5px solid var(--y3)" onclick="printPayroll()">🖨 Print Payslips</button>
+        </div>
+        <div class="stats-row" id="payroll-stats"></div>
+        <div class="a-card">
+          <div class="a-card-hd"><h4>Payroll Register</h4></div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>EMP #</th><th>Employee</th><th>Department</th><th>Basic</th><th>Allowances</th><th>Gross</th><th>NSSF (10%)</th><th>PAYE</th><th>LST</th><th>Other</th><th>Net Pay</th><th>Status</th></tr></thead>
+              <tbody id="payroll-tbody"></tbody>
+            </table>
+          </div>
+          <div class="a-card-body" id="payroll-totals" style="border-top:2px solid var(--border2);padding-top:16px"></div>
         </div>
       </div>
 
@@ -1282,6 +1453,78 @@
   </div>
 </div>
 
+
+<!-- Employee Add/Edit Modal (Full HR) -->
+<div class="modal-bd" id="modal-emp">
+  <div class="modal-box" style="max-width:680px;border-top:4px solid var(--g2)">
+    <div class="modal-hd"><h3 id="emp-modal-title">Add Employee</h3><button class="modal-x" onclick="closeModal('modal-emp')">✕</button></div>
+    <div class="modal-body">
+      <div class="emp-id-banner" id="emp-id-banner" style="display:none">
+        <div class="emp-id-label">Auto-Generated Employee Number</div>
+        <div class="emp-id-val" id="emp-id-display">EMP-000</div>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr;gap:20px;align-items:start;margin-bottom:18px">
+        <div>
+          <label style="font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:6px">Employee Photo</label>
+          <div id="emp-photo-preview" style="width:100px;height:100px;border-radius:12px;background:var(--c4);border:2px dashed var(--c2);display:flex;align-items:center;justify-content:center;font-size:36px;cursor:pointer;overflow:hidden" onclick="document.getElementById('emp-photo-file').click()">👤</div>
+          <input type="file" id="emp-photo-file" accept="image/*" style="display:none" onchange="previewEmpPhoto()">
+          <div style="font-size:10px;color:var(--muted);margin-top:4px;text-align:center">Click to upload</div>
+        </div>
+        <div>
+          <div class="form-row">
+            <div class="form-group"><label>First Name *</label><input id="em-fn" placeholder="e.g. Sarah"></div>
+            <div class="form-group"><label>Last Name *</label><input id="em-ln" placeholder="e.g. Nakato"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Job Title *</label><input id="em-role" placeholder="e.g. Senior Driver"></div>
+            <div class="form-group"><label>Department</label>
+              <select id="em-dept"><option>Operations</option><option>Finance</option><option>HR</option><option>Procurement</option><option>Management</option><option>IT</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>National ID (NIN)</label><input id="em-nin" placeholder="CM9000000XXXXXX"></div>
+        <div class="form-group"><label>TIN Number</label><input id="em-tin" placeholder="Tax Identification Number"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Phone Number *</label><input id="em-phone" type="tel" placeholder="+256 700 000 000"></div>
+        <div class="form-group"><label>Personal Email</label><input id="em-email" type="email" placeholder="personal@email.com"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Work Email</label><input id="em-work-email" placeholder="name@kujaza.com"></div>
+        <div class="form-group"><label>Date of Birth</label><input id="em-dob" type="date"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Contract Type</label>
+          <select id="em-contract"><option>Permanent</option><option>Fixed-Term</option><option>Probation</option><option>Casual</option><option>Intern</option></select>
+        </div>
+        <div class="form-group"><label>Start Date *</label><input id="em-start" type="date"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Basic Salary (UGX) *</label><input id="em-sal" type="number" min="0" placeholder="850000"></div>
+        <div class="form-group"><label>Transport Allowance</label><input id="em-transport" type="number" min="0" placeholder="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Housing Allowance</label><input id="em-housing" type="number" min="0" placeholder="0"></div>
+        <div class="form-group"><label>Other Allowances</label><input id="em-other-allow" type="number" min="0" placeholder="0"></div>
+      </div>
+      <div class="form-group"><label>Next of Kin (Name &amp; Phone)</label><input id="em-kin" placeholder="e.g. John Nakato — +256 700 111 222"></div>
+      <div class="form-group"><label>Bank / Mobile Money Account</label><input id="em-bank" placeholder="e.g. Stanbic Bank — 9040012345678"></div>
+      <div class="form-group"><label>NSSF Number</label><input id="em-nssf" placeholder="NSSF registration number"></div>
+      <button class="btn btn-green btn-full" style="margin-top:8px" onclick="saveEmployee()">Save Employee &amp; Generate ID</button>
+    </div>
+  </div>
+</div>
+
+<!-- Info Pages Modal -->
+<div class="modal-bd" id="modal-infopage">
+  <div class="modal-box" style="max-width:700px;border-top:4px solid var(--g2)">
+    <div class="modal-hd"><h3 id="infopage-title">Page</h3><button class="modal-x" onclick="closeModal('modal-infopage')">✕</button></div>
+    <div class="modal-body" id="infopage-content" style="max-height:70vh;overflow-y:auto"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="js/data.js"></script>
@@ -1289,6 +1532,7 @@
 <script src="js/admin.js"></script>
 <script src="js/extended.js"></script>
 <script src="js/staff.js"></script>
+<script src="js/finance.js"></script>
 <script src="js/fixes.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -1296,5 +1540,30 @@ document.addEventListener('DOMContentLoaded', function() {
   updateCartBadge();
 });
 </script>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav" role="navigation" aria-label="Mobile navigation">
+  <button class="mbn-btn" onclick="showPage('page-shop')" aria-label="Shop">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+    <span>Shop</span>
+  </button>
+  <button class="mbn-btn" onclick="setFilter('discount',null);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})" aria-label="Offers">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+    <span>Offers</span>
+  </button>
+  <button class="mbn-btn mbn-cart" onclick="openCart()" aria-label="Cart">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+    <span id="mbn-cart-label">Cart</span>
+    <span id="mbn-cart-count" class="mbn-badge" style="display:none">0</span>
+  </button>
+  <button class="mbn-btn" onclick="showPage('page-checkout')" aria-label="Checkout">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    <span>Checkout</span>
+  </button>
+  <button class="mbn-btn" id="mbn-signin-btn" onclick="openModal('modal-login')" aria-label="Sign In">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Sign In</span>
+  </button>
+</nav>
 </body>
 </html>

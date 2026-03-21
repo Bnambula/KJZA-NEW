@@ -340,7 +340,11 @@ function showSec(id) {
     dashboard: renderDashboard, products: renderProducts, categories: renderCategories,
     inventory: renderInventory, orders: renderOrders, tickets: renderTickets,
     riders: renderRiders, delivery: renderDelivery, vendors: renderVendors,
-    finance: renderFinance, procurement: renderProcurement, hr: renderHR,
+    finance: renderFinance, procurement: renderProcurement,
+    hr: typeof renderHR==='function' ? renderHR : null,
+    payroll: function(){ if(typeof runPayroll==='function'){var m=document.getElementById('payroll-month');if(m&&!m.value){var now=new Date();m.value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');}runPayroll();}},
+    finstatements: function(){ if(typeof updateStmtDates==='function') updateStmtDates(); },
+    taxreturns: typeof renderTaxReturns==='function' ? renderTaxReturns : null,
     reports: function(){ renderReport(KF.state.activeReport||'sales'); },
     customers: renderCustomers, feedback: renderAdminFeedback,
     vouchers: renderVouchers, loyalty: renderLoyalty, newsletter: renderNewsletterAdmin,
@@ -351,3 +355,25 @@ function showSec(id) {
 
 // Alias for backward compatibility
 var updateCartUI = typeof updateCartBadge === 'function' ? updateCartBadge : function(){};
+
+// ─── MOBILE MENU TOGGLE ──────────────────────────────────────
+function toggleMobileMenu() {
+  var menu = document.getElementById('hamburger');
+  var nav  = document.querySelector('.nav-center');
+  if (nav) {
+    nav.classList.toggle('open');
+    if (menu) {
+      var isOpen = nav.classList.contains('open');
+      menu.setAttribute('aria-expanded', isOpen);
+    }
+  }
+}
+// Close mobile menu when a page link is clicked
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.nav-link').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var nav = document.querySelector('.nav-center');
+      if (nav) nav.classList.remove('open');
+    });
+  });
+});
