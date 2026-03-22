@@ -500,3 +500,37 @@ function applyPriceChip(max, el) {
   if (el) el.classList.add('active');
   updateFsbCount();
 }
+
+// ─── HERO TAB SWITCHER ───────────────────────────────────────
+function switchHeroTab(tab, btn) {
+  // Update tab buttons
+  document.querySelectorAll('.htab').forEach(function(t){ t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+  if (btn) { btn.classList.add('active'); btn.setAttribute('aria-selected','true'); }
+  // Update panels
+  document.querySelectorAll('.hero-panel').forEach(function(p){ p.classList.remove('active'); });
+  var panel = document.getElementById('hpanel-' + tab);
+  if (panel) {
+    panel.classList.add('active');
+  }
+}
+
+// ─── ENHANCED COUNTDOWN ──────────────────────────────────────
+(function() {
+  var s = 9953;
+  setInterval(function() {
+    s = s > 0 ? s - 1 : 86399;
+    var h   = Math.floor(s / 3600);
+    var m   = Math.floor((s % 3600) / 60);
+    var sec = s % 60;
+    var pad = function(n){ return String(n).padStart(2,'0'); };
+    var eh  = document.getElementById('cd-h');
+    var em  = document.getElementById('cd-m');
+    var es  = document.getElementById('cd-s');
+    if (eh) eh.textContent = pad(h);
+    if (em) em.textContent = pad(m);
+    if (es) es.textContent = pad(sec);
+    // Also keep old countdown element if still in DOM
+    var old = document.getElementById('countdown');
+    if (old) old.textContent = pad(h)+':'+pad(m)+':'+pad(sec);
+  }, 1000);
+})();

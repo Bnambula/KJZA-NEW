@@ -122,94 +122,291 @@
 <!-- ═══════ SHOP PAGE ════════════════════════════════════════════ -->
 <div id="page-shop" class="page show">
 
-  <!-- HERO — deep forest green bg -->
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="hero-left">
-        <div class="hero-eyebrow">🍎 Uganda's Freshest Delivery Platform</div>
-        <h1>Fresh Fruits &amp; Vegetables<br><em>Delivered Fast in Kampala</em></h1>
-        <p>Healthy eating made easy — fresh produce delivered to your doorstep in 30–60 minutes. Quality you can trust, prices you can afford.</p>
-        <div class="hero-delivery-badge">
-          <span class="hdb-pill hdb-express">⚡ Express: 15–25 min</span>
-          <span class="hdb-pill hdb-std">🚚 Delivery from UGX 3,000</span>
-          <span class="hdb-pill hdb-wa">📱 WhatsApp: 0766026401</span>
+  <!-- ═══ HERO — Full-screen tabbed professional redesign ════════ -->
+  <section class="hero-v2" id="hero-v2">
+
+    <!-- ── HERO TAB SWITCHER ── -->
+    <div class="hero-tabs" role="tablist">
+      <button class="htab active" id="htab-grocery" role="tab" aria-selected="true"
+        onclick="switchHeroTab('grocery',this)">
+        <span class="htab-icon">🛒</span>
+        <span class="htab-label">Grocery Delivery</span>
+      </button>
+      <button class="htab" id="htab-office" role="tab" aria-selected="false"
+        onclick="switchHeroTab('office',this)">
+        <span class="htab-icon">🍍</span>
+        <span class="htab-label"><span class="htab-new">NEW</span> Office Fruit</span>
+      </button>
+      <button class="htab" id="htab-basket" role="tab" aria-selected="false"
+        onclick="switchHeroTab('basket',this)">
+        <span class="htab-icon">🧺</span>
+        <span class="htab-label">Build a Basket</span>
+      </button>
+    </div>
+
+    <!-- ── PANEL 1: GROCERY DELIVERY ── -->
+    <div class="hero-panel active" id="hpanel-grocery">
+      <div class="hero-panel-inner">
+        <div class="hp-content">
+          <div class="hp-eyebrow">
+            <span class="hp-dot"></span>
+            Uganda's Farm-Fresh Marketplace
+          </div>
+          <h1 class="hp-headline">
+            Fresh Groceries<br>
+            <em class="hp-em">Delivered in Minutes</em>
+          </h1>
+          <p class="hp-sub">Fruits, vegetables, grains &amp; tubers — sourced direct from Ugandan farms. Doorstep delivery in 30–60 minutes across Kampala.</p>
+
+          <div class="hp-badges">
+            <div class="hp-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+              <span>⚡ Express 15–25 min</span>
+            </div>
+            <div class="hp-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <span>From UGX 3,000</span>
+            </div>
+            <div class="hp-badge hp-badge-wa">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+              <span>0766 026 401</span>
+            </div>
+          </div>
+
+          <div class="hp-ctas">
+            <button class="hp-cta-primary" onclick="document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">
+              Shop Now
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <a href="https://wa.me/256766026401" target="_blank" class="hp-cta-wa">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+              Order on WhatsApp
+            </a>
+          </div>
+
+          <!-- Quick price chips -->
+          <div class="hp-chips">
+            <span class="hp-chips-label">Quick shop:</span>
+            <button class="hp-chip" onclick="filterByMaxPrice(15000)">Under 15K</button>
+            <button class="hp-chip" onclick="filterByMaxPrice(25000)">15K–25K</button>
+            <button class="hp-chip" onclick="setCat(1);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">🍎 Fruits</button>
+            <button class="hp-chip" onclick="setCat(2);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">🥬 Veg</button>
+          </div>
         </div>
-        <div class="hero-btns">
-          <button class="btn-hero-p" onclick="document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">🛒 Shop Now</button>
-          <button class="btn-hero-o" onclick="document.getElementById('build-basket-sec').scrollIntoView({behavior:'smooth'})">🧺 Build Your Basket</button>
+
+        <!-- Right: stats cards -->
+        <div class="hp-visual">
+          <div class="hp-stats-grid">
+            <div class="hp-stat hps-green">
+              <div class="hps-num">47+</div>
+              <div class="hps-lbl">Fresh Products</div>
+              <div class="hps-icon">🥬</div>
+            </div>
+            <div class="hp-stat hps-orange">
+              <div class="hps-num">25 min</div>
+              <div class="hps-lbl">Express Delivery</div>
+              <div class="hps-icon">⚡</div>
+            </div>
+            <div class="hp-stat hps-yellow">
+              <div class="hps-num">13</div>
+              <div class="hps-lbl">Delivery Zones</div>
+              <div class="hps-icon">📍</div>
+            </div>
+            <div class="hp-stat hps-dark">
+              <div class="hps-num">2,400+</div>
+              <div class="hps-lbl">Happy Customers</div>
+              <div class="hps-icon">😊</div>
+            </div>
+          </div>
+          <!-- Slideshow dots -->
+          <div class="hero-slideshow-ctrl" style="justify-content:center;margin-top:16px">
+            <button class="hero-arrow" onclick="heroPrev();resetHeroTimer()">&#8592;</button>
+            <div id="hero-dots" class="hero-dots"></div>
+            <button class="hero-arrow" onclick="heroNext();resetHeroTimer()">&#8594;</button>
+          </div>
         </div>
-        <!-- Price quick-filter chips in hero -->
-        <div class="hero-price-chips">
-          <span class="hpc-label">Quick shop:</span>
-          <button class="hpc-btn" onclick="filterByMaxPrice(15000)">Under 15K</button>
-          <button class="hpc-btn" onclick="filterByMaxPrice(25000)">15K–25K</button>
-          <button class="hpc-btn" onclick="filterByMaxPrice(40000)">25K–40K</button>
-          <button class="hpc-btn" onclick="setCat(1);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">🍎 Fruits</button>
-          <button class="hpc-btn" onclick="setCat(2);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">🥬 Veg</button>
-        </div>
-        <div class="hero-slideshow-ctrl">
-          <button class="hero-arrow" onclick="heroPrev();resetHeroTimer()">&#8592;</button>
-          <div id="hero-dots" class="hero-dots"></div>
-          <button class="hero-arrow" onclick="heroNext();resetHeroTimer()">&#8594;</button>
-        </div>
-      </div>
-      <div class="hero-right">
-        <div class="hsc yc"><div class="hsc-icon">📍</div><div class="hsc-num">13</div><div class="hsc-lbl">Zones Covered</div></div>
-        <div class="hsc"><div class="hsc-icon">📱</div><div class="hsc-num">MTN/Airtel</div><div class="hsc-lbl">Mobile Money</div></div>
       </div>
     </div>
+
+    <!-- ── PANEL 2: OFFICE FRUIT DELIVERY ── -->
+    <div class="hero-panel" id="hpanel-office">
+      <div class="hero-panel-inner hero-panel-office">
+        <div class="hp-content">
+          <div class="hp-eyebrow hp-eyebrow-new">
+            <span class="hp-new-badge">✨ NEW OFFERING</span>
+          </div>
+          <h1 class="hp-headline">
+            Office Fruit<br>
+            <em class="hp-em">Delivery 🍍</em>
+          </h1>
+          <p class="hp-sub">Keep your team energised, healthy and productive. Fresh fruit boxes for businesses across Kampala — weekly or on-demand.</p>
+
+          <!-- How it works — 4 simple steps -->
+          <div class="office-steps">
+            <div class="ostep">
+              <div class="ostep-num">1</div>
+              <div class="ostep-text">
+                <strong>Choose your box</strong>
+                <span>Classic, Standard, Premium or Executive — or build your own</span>
+              </div>
+            </div>
+            <div class="ostep">
+              <div class="ostep-num">2</div>
+              <div class="ostep-text">
+                <strong>Set your schedule</strong>
+                <span>Weekly, twice-weekly or monthly — no contract, cancel anytime</span>
+              </div>
+            </div>
+            <div class="ostep">
+              <div class="ostep-num">3</div>
+              <div class="ostep-text">
+                <strong>We deliver to your office</strong>
+                <span>Fresh produce picked and delivered directly to your workplace</span>
+              </div>
+            </div>
+            <div class="ostep">
+              <div class="ostep-num">4</div>
+              <div class="ostep-text">
+                <strong>Team enjoys fresh fruit</strong>
+                <span>Ready-to-eat, no prep needed — boost morale and wellness</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pricing preview -->
+          <div class="office-hero-prices">
+            <div class="ohp-item">
+              <span class="ohp-tier">🟢 Classic</span>
+              <span class="ohp-price">From UGX 30,000/wk</span>
+              <span class="ohp-feeds">5–10 people</span>
+            </div>
+            <div class="ohp-item">
+              <span class="ohp-tier">🔵 Premium</span>
+              <span class="ohp-price">From UGX 65,000/wk</span>
+              <span class="ohp-feeds">15–25 people</span>
+            </div>
+          </div>
+
+          <div class="hp-ctas">
+            <button class="hp-cta-primary" onclick="document.getElementById('office-fruit-sec').scrollIntoView({behavior:'smooth'})">
+              See All Boxes
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <a href="https://wa.me/256766026401?text=Hi%20Kujaza%20Freshi!%20I%27m%20interested%20in%20Office%20Fruit%20Delivery%20for%20my%20business." target="_blank" class="hp-cta-wa">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+              WhatsApp Us Now
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Office visual with fruit image -->
+        <div class="hp-visual hp-office-visual">
+          <div class="office-hero-img-wrap">
+            <img src="images/market.jpg" alt="Fresh office fruit delivery" class="office-hero-img"
+              onerror="this.parentElement.classList.add('office-img-fallback')">
+            <div class="office-hero-img-overlay">
+              <div class="ohio-badge">🏢 For Business</div>
+              <div class="ohio-fruit-row">🍎 🍊 🍌 🍍 🥭</div>
+              <div class="ohio-tagline">Fresh Every Week</div>
+            </div>
+          </div>
+          <div class="office-perks">
+            <div class="operk"><span>✓</span> No contract</div>
+            <div class="operk"><span>✓</span> Pause anytime</div>
+            <div class="operk"><span>✓</span> Custom boxes</div>
+            <div class="operk"><span>✓</span> Priority delivery</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL 3: BUILD A BASKET ── -->
+    <div class="hero-panel" id="hpanel-basket">
+      <div class="hero-panel-inner">
+        <div class="hp-content">
+          <div class="hp-eyebrow">
+            <span class="hp-dot"></span>
+            Create Your Perfect Order
+          </div>
+          <h1 class="hp-headline">
+            Build Your<br>
+            <em class="hp-em">Own Basket 🧺</em>
+          </h1>
+          <p class="hp-sub">Pick exactly what you need — mix fruits, vegetables, grains and snacks into your personalised delivery box. Total updates live as you add.</p>
+          <div class="hp-ctas">
+            <button class="hp-cta-primary" onclick="document.getElementById('build-basket-sec').scrollIntoView({behavior:'smooth'})">
+              Start Building
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <button class="hp-cta-secondary" onclick="document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">
+              Browse All Products
+            </button>
+          </div>
+          <div class="basket-hero-items">
+            <div class="bhi-tag">🍌 Bananas +10K</div>
+            <div class="bhi-tag">🍊 Oranges +5K</div>
+            <div class="bhi-tag">🍍 Pineapple +12K</div>
+            <div class="bhi-tag">🥭 Mangoes +8K</div>
+            <div class="bhi-tag">🥬 Spinach +2.5K</div>
+            <div class="bhi-tag">🍅 Tomatoes +4K</div>
+          </div>
+        </div>
+        <div class="hp-visual">
+          <div class="basket-hero-visual">
+            <div class="bhv-circle">
+              <div class="bhv-emoji">🧺</div>
+            </div>
+            <div class="bhv-orbit">
+              <div class="bhv-fruit" style="--i:0">🍌</div>
+              <div class="bhv-fruit" style="--i:1">🍊</div>
+              <div class="bhv-fruit" style="--i:2">🍍</div>
+              <div class="bhv-fruit" style="--i:3">🥭</div>
+              <div class="bhv-fruit" style="--i:4">🍅</div>
+              <div class="bhv-fruit" style="--i:5">🥬</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </section>
 
-  <!-- FEATURES — cream linen bg -->
-  <div class="features">
-    <div class="features-inner">
-      <div class="fi"><div class="fi-icon o">⚡</div> Fast &amp; reliable delivery</div>
-      <div class="fi"><div class="fi-icon g">🌱</div> Fresh from local farmers</div>
-      <div class="fi"><div class="fi-icon y">💰</div> Transparent fair pricing</div>
-      <div class="fi"><div class="fi-icon t">📱</div> MTN &amp; Airtel Money</div>
-      <div class="fi"><div class="fi-icon o">🔄</div> Freshness guaranteed</div>
-      <div class="fi"><div class="fi-icon g">🧺</div> Build your own basket</div>
-    </div>
-  </div>
-
-  <!-- TRUST & CTA STRIP -->
-  <div class="trust-strip">
-    <div class="trust-inner">
-      <div class="trust-item">
-        <div class="trust-icon">🌱</div>
-        <div class="trust-text"><strong>100% Farm Fresh</strong><span>Sourced daily, no cold storage</span></div>
+  <!-- ═══ ENHANCED FLASH SALE BAR ══════════════════════════════ -->
+  <div class="flash-bar-v2" id="flash-bar">
+    <div class="fbv2-inner">
+      <div class="fbv2-left">
+        <div class="fbv2-fire">🔥</div>
+        <div class="fbv2-text">
+          <span class="fbv2-main">Flash Deal — Use code <strong>FRESHI10</strong> for 10% off!</span>
+          <span class="fbv2-sub">First-order discount · Expires in</span>
+        </div>
+        <div class="fbv2-timer">
+          <div class="fbv2-unit"><span id="cd-h">02</span><small>HRS</small></div>
+          <div class="fbv2-colon">:</div>
+          <div class="fbv2-unit"><span id="cd-m">47</span><small>MIN</small></div>
+          <div class="fbv2-colon">:</div>
+          <div class="fbv2-unit"><span id="cd-s">33</span><small>SEC</small></div>
+        </div>
       </div>
-      <div class="trust-item">
-        <div class="trust-icon">⚡</div>
-        <div class="trust-text"><strong>Delivered in Minutes</strong><span>⚡ Express 15–25 min</span></div>
-      </div>
-      <div class="trust-item">
-        <div class="trust-icon">🔄</div>
-        <div class="trust-text"><strong>Freshness Guarantee</strong><span>Replace or full refund</span></div>
-      </div>
-      <div class="trust-item">
-        <div class="trust-icon">📱</div>
-        <div class="trust-text"><strong>MTN &amp; Airtel Money</strong><span>Pay the way you like</span></div>
-      </div>
-      <div class="trust-item">
-        <div class="trust-icon">🧺</div>
-        <div class="trust-text"><strong>Custom Baskets</strong><span>B2B, schools &amp; hotels</span></div>
+      <div class="fbv2-right">
+        <button class="fbv2-cta" onclick="document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">
+          Shop Deals ⚡
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- FLASH SALE BAR — banana yellow bg -->
-  <div class="flash-bar" id="flash-bar">
-    🎉 Welcome to Kujaza Freshi — Groceries delivered to your door in <strong>15–25 minutes!</strong>
-    <span class="flash-countdown" id="countdown">02:47:33</span>
-    &nbsp;·&nbsp; Use code <strong>FRESHI10</strong> for 10% off your first order!
-  </div>
 
-  <!-- CATEGORIES — pale orange bg (warm welcome) -->
-  <div class="cat-strip" id="shop-anchor">
-    <div class="cat-inner">
-      <div class="sec-eye o">Browse by category</div>
-      <div class="sec-title">What are you looking for?</div>
+
+
+
+
+
+  <!-- SHOP ANCHOR — categories now in compact toolbar below flash bar -->
+  <div class="shop-cat-anchor" id="shop-anchor"></div>
+  <div class="cat-row-compact">
+    <div class="crc-inner">
+      <div class="crc-label">Browse:</div>
       <div class="cat-row" id="cat-pills"></div>
     </div>
   </div>
