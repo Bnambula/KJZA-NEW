@@ -4721,3 +4721,387 @@ html { scroll-behavior: smooth; }
 /* Remove old cat-strip from affecting layout if any remnant CSS applies */
 .cat-strip { display: none !important; }
 .cat-row-compact { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   FORTUNE 500 FONT STACK
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --font-display: 'Playfair Display', 'Georgia', serif;
+  --font-body:    'DM Sans', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Override all heading font references */
+.hp-headline, .sec-title, .pf-headline,
+h1, h2, h3.modal-h3,
+.ocb-left h3, .dyk-title, .snf-title,
+.office-extra-card h4, .obox-name,
+.reco-name, .hp-stat .hps-num {
+  font-family: var(--font-display) !important;
+}
+
+/* Body text — DM Sans everywhere */
+body, button, input, select, textarea, .nav-icon-lbl,
+.hp-sub, .hp-badge, .hp-chip, .hp-cta-primary, .hp-cta-wa,
+.hp-cta-secondary, .snl, .htab, .fchip, .fsb-cat-btn,
+.snf-sub, .snf-chip, .obox-desc, .obox-items, .ostep-text {
+  font-family: var(--font-body) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO IMAGE SLIDESHOW
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Hero container */
+.hero-v2 {
+  position: relative;
+  min-height: 600px;
+  overflow: hidden;
+  /* No background — slides cover it */
+  background: #0A1F0B;
+}
+
+/* Slide backgrounds — Ken Burns zoom effect */
+.hero-slides {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.hslide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.hslide.active {
+  opacity: 1;
+  z-index: 1;
+}
+.hslide.prev {
+  opacity: 0;
+  z-index: 0;
+}
+.hslide-bg {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1.08);
+  transition: transform 6s ease;
+  will-change: transform;
+}
+.hslide.active .hslide-bg {
+  transform: scale(1);
+}
+
+/* Dark gradient overlay — ensures text readability */
+.hslide-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(8,18,9,.82) 0%,
+    rgba(10,25,12,.65) 45%,
+    rgba(8,18,9,.4) 75%,
+    rgba(8,18,9,.2) 100%
+  );
+  z-index: 1;
+}
+
+/* Slide caption — bottom right corner */
+.hslide-caption {
+  position: absolute;
+  bottom: 100px;
+  right: 40px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .6s .8s ease, transform .6s .8s ease;
+}
+.hslide.active .hslide-caption {
+  opacity: 1;
+  transform: translateY(0);
+}
+.hsc-tag {
+  background: rgba(245,200,66,.92);
+  color: #0A1F0B;
+  font-family: var(--font-body) !important;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 12px;
+  border-radius: 50px;
+  letter-spacing: .4px;
+}
+.hsc-text {
+  font-family: var(--font-body) !important;
+  font-size: 12px;
+  color: rgba(255,255,255,.75);
+  font-weight: 500;
+}
+
+/* Progress bar */
+.hero-progress {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: rgba(255,255,255,.15);
+  z-index: 20;
+}
+.hero-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--y3);
+  transition: width 5s linear;
+}
+
+/* Slide nav dots */
+.hero-slide-nav {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 20;
+}
+.hsn-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.35);
+  border: none;
+  cursor: pointer;
+  transition: all .25s;
+  padding: 0;
+}
+.hsn-dot.active {
+  background: var(--y3);
+  transform: scale(1.35);
+  width: 24px;
+  border-radius: 4px;
+}
+.hsn-dot:hover { background: rgba(255,255,255,.7); }
+.hsn-dot:focus-visible { outline: 2px solid var(--y3); outline-offset: 3px; }
+
+/* All panel content sits above slides */
+.hero-tabs, .hero-panel, .hero-slide-nav, .hero-progress { position: relative; z-index: 10; }
+.hero-tabs { position: relative; z-index: 15; }
+
+/* ═══════════════════════════════════════════════════════════════
+   BACK TO TOP BUTTON
+   ═══════════════════════════════════════════════════════════════ */
+.back-to-top {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--g2);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,.25);
+  opacity: 0;
+  transform: translateY(16px) scale(0.85);
+  transition: opacity .3s, transform .3s, background .2s;
+  z-index: 999;
+  pointer-events: none;
+}
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+.back-to-top:hover { background: var(--g3); transform: translateY(-2px) scale(1.07); }
+.back-to-top:active { transform: scale(0.95); }
+.back-to-top:focus-visible { outline: 3px solid var(--y3); outline-offset: 3px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCESSIBILITY ENHANCEMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Focus rings — visible and styled */
+*:focus-visible {
+  outline: 2.5px solid var(--y3);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+button:focus-visible, a:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible {
+  outline: 2.5px solid var(--y3);
+  outline-offset: 2px;
+}
+
+/* Skip-to-content link */
+.skip-link {
+  position: absolute;
+  top: -48px;
+  left: 0;
+  background: var(--g2);
+  color: #fff;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  z-index: 9999;
+  text-decoration: none;
+  border-radius: 0 0 8px 0;
+  transition: top .2s;
+}
+.skip-link:focus { top: 0; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .hslide-bg { transform: none !important; }
+  .back-to-top { transition: opacity .1s !important; }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .hp-badge { border: 2px solid #fff; }
+  .hp-cta-primary { border: 2px solid var(--y3); }
+  .filter-trigger-btn { border: 2px solid var(--ink); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE FRIENDLINESS — comprehensive overhaul
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Touch targets — minimum 44×44px everywhere */
+button, a, [role="button"], .nav-icon-btn,
+.htab, .fchip, .cat-pill, .snf-chip, .hp-chip {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Exception: very small inline chips can be smaller */
+.fsb-price-chip, .hpc-btn, .hp-chip, .fchip,
+.snf-chip, .bhi-tag { min-height: 36px; min-width: unset; }
+
+@media(max-width: 768px) {
+  /* Top bar — stack on mobile */
+  .top-bar-inner { flex-direction: column; gap: 4px; align-items: flex-start; }
+  .tb-item { font-size: 11px; }
+
+  /* Navbar — tighter */
+  .navbar { padding: 8px 14px !important; gap: 8px; }
+  .nav-logo-img { height: 38px; }
+  .nav-search-wrap { max-width: none !important; min-width: 0 !important; }
+  .ns-search-btn { padding: 0 14px !important; }
+  .ns-search-btn span { display: none; } /* hide "Search" text on mobile */
+
+  /* Hero */
+  .hero-v2 { min-height: 500px; }
+  .hero-tabs { padding: 16px 12px 0; gap: 2px; }
+  .htab { padding: 10px 12px; font-size: 11px; }
+  .htab-label { display: none; }
+  .htab-icon { font-size: 22px; }
+  .hero-panel-inner { padding: 28px 16px 56px; }
+  .hp-headline { font-size: 32px !important; letter-spacing: -.5px; }
+  .hp-sub { font-size: 14px; }
+  .hp-visual { display: none; }
+  .hp-ctas { flex-direction: column; gap: 10px; }
+  .hp-cta-primary, .hp-cta-wa, .hp-cta-secondary { justify-content: center; width: 100%; }
+  .hslide-caption { right: 12px; bottom: 60px; }
+
+  /* Flash bar */
+  .fbv2-inner { padding: 10px 14px; flex-wrap: nowrap; }
+  .fbv2-main  { font-size: 11px; }
+  .fbv2-fire  { font-size: 18px; }
+  .fbv2-unit span { font-size: 15px; }
+
+  /* Shop toolbar */
+  .shop-toolbar-inner { padding: 8px 14px; }
+  .st-sort label { display: none; }
+
+  /* Product grid */
+  .product-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+
+  /* Recommendations */
+  .reco-inner { padding: 0 14px; }
+  .reco-card { width: 150px; }
+
+  /* How it works */
+  .how-steps { flex-direction: column; align-items: center; gap: 20px; }
+  .how-arrow { transform: rotate(90deg); }
+
+  /* Basket builder */
+  .bb-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+
+  /* Plastic free */
+  .plastic-free-inner { grid-template-columns: 1fr; gap: 24px; }
+  .pf-headline { font-size: 40px !important; }
+
+  /* Office section */
+  .office-boxes { grid-template-columns: 1fr; }
+  .office-extras { grid-template-columns: 1fr; }
+  .office-cta-banner { flex-direction: column; text-align: center; }
+
+  /* Seasonal */
+  .seasonal-inner { grid-template-columns: 1fr; }
+
+  /* Back to top */
+  .back-to-top { bottom: 76px; right: 14px; width: 40px; height: 40px; }
+
+  /* DYK widget */
+  .dyk-widget { bottom: 72px; }
+  .dyk-card { width: 88vw; }
+
+  /* Section padding */
+  .how-sec, .seasonal-sec, .plastic-free-sec, .build-basket-sec { padding: 36px 16px; }
+
+  /* Stats strip */
+  .stats-strip { padding: 24px 14px; }
+  .ss-num { font-size: 28px; }
+  .ss-divider { display: none; }
+}
+
+@media(max-width: 480px) {
+  .hp-headline { font-size: 26px !important; }
+  .product-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+  .reco-card { width: 140px; }
+  .hp-chips { flex-wrap: wrap; gap: 5px; }
+  .office-hero-prices { flex-direction: column; }
+  .fbv2-timer { display: none; }
+}
+
+/* Large screens */
+@media(min-width: 1400px) {
+  .hero-panel-inner { max-width: 1300px; padding: 60px 60px 80px; }
+  .hp-headline { font-size: 72px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CATEGORY STRIP — NUCLEAR REMOVAL
+   ═══════════════════════════════════════════════════════════════ */
+.cat-strip,
+.cat-row-compact,
+.crc-inner,
+.crc-label,
+#cat-pills,
+.shop-cat-anchor,
+[class*="cat-strip"],
+[class*="cat-row-compact"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+/* Smooth scroll for the whole page */
+html { scroll-behavior: smooth; }
+
+/* Selection colour */
+::selection { background: rgba(232,98,26,.3); color: var(--ink); }
