@@ -2440,11 +2440,13 @@ html { scroll-behavior: smooth; }
   position: fixed;
   right: 0;
   bottom: 160px;
-  z-index: 1000;
+  z-index: 10000;
   display: flex;
   align-items: flex-end;
   flex-direction: row-reverse;
   pointer-events: none;
+  /* Allow card to expand without clipping */
+  overflow: visible;
 }
 .dyk-widget > * { pointer-events: all; }
 
@@ -2506,19 +2508,20 @@ html { scroll-behavior: smooth; }
 
 /* ── EXPANDED CARD ───────────────────────────────────────────── */
 .dyk-card {
-  width: 380px;
-  max-width: 90vw;
-  max-height: calc(100vh - 200px);
+  width: 390px;
+  max-width: 92vw;
+  max-height: 80vh;
   background: #fff;
   border-radius: 16px 0 0 16px;
-  box-shadow: -8px 0 48px rgba(0,0,0,.2);
-  transform: translateX(100%);
+  box-shadow: -12px 0 48px rgba(0,0,0,.22);
+  transform: translateX(calc(100% + 60px));
   opacity: 0;
-  transition: transform .35s cubic-bezier(.4,0,.2,1), opacity .25s ease;
+  transition: transform .38s cubic-bezier(.4,0,.2,1), opacity .28s ease;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   border-left: 4px solid var(--g2);
+  position: relative;
 }
 .dyk-card.open {
   transform: translateX(0);
@@ -3598,4 +3601,403 @@ html { scroll-behavior: smooth; }
   .build-basket-sec { padding: 40px 16px; }
   .bb-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .bb-total-bar { flex-direction: column; text-align: center; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FILTER PANEL — properly anchored inside hover zone
+   ═══════════════════════════════════════════════════════════════ */
+
+/* The hover zone must be position:relative to anchor the panel */
+.filter-hover-zone {
+  position: relative;
+  display: inline-flex;
+  z-index: 600;
+}
+
+/* Filter trigger button */
+.filter-trigger-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff;
+  border: 2px solid var(--c2);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--font-b);
+  transition: all .18s;
+  white-space: nowrap;
+  position: relative;
+  z-index: 2;
+}
+.filter-trigger-btn:hover,
+.filter-trigger-btn.active {
+  border-color: var(--g3);
+  background: var(--g7);
+  color: var(--g2);
+  box-shadow: 0 2px 10px rgba(15,41,16,.1);
+}
+.filter-chevron {
+  transition: transform .2s;
+}
+.filter-trigger-btn.active .filter-chevron {
+  transform: rotate(180deg);
+}
+
+/* THE FILTER PANEL — drops down from the button */
+.filter-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 340px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 16px 48px rgba(0,0,0,.18), 0 2px 8px rgba(0,0,0,.08);
+  border: 2px solid var(--c3);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px) scale(0.985);
+  transition: opacity .2s ease, transform .22s cubic-bezier(.4,0,.2,1);
+  z-index: 5000;
+}
+.filter-panel.open {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0) scale(1);
+}
+
+/* Arrow caret pointing up from panel to button */
+.filter-panel::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 22px;
+  width: 14px; height: 14px;
+  background: #fff;
+  border-left: 2px solid var(--c3);
+  border-top: 2px solid var(--c3);
+  transform: rotate(45deg);
+  border-radius: 3px 0 0 0;
+  z-index: 1;
+}
+
+/* Price chips inside filter */
+.fsb-price-wrap { padding: 0 2px; }
+.fsb-price-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.fsb-price-chip {
+  padding: 5px 12px;
+  border-radius: 50px;
+  border: 1.5px solid var(--c2);
+  background: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: var(--font-b);
+  transition: all .16s;
+}
+.fsb-price-chip:hover { border-color: var(--o2); color: var(--o2); }
+.fsb-price-chip.active { background: var(--o2); border-color: var(--o2); color: #fff; }
+
+.fsb-price-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OFFICE FRUIT DELIVERY SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.office-sec {
+  background: linear-gradient(160deg, #0F2910 0%, #1A3F1C 40%, #2D6A30 100%);
+  padding: 72px 28px;
+  position: relative;
+  overflow: hidden;
+}
+.office-sec::before {
+  content: '🍎🍍🍌🍊🥭';
+  position: absolute;
+  top: -20px; right: -20px;
+  font-size: 120px;
+  opacity: .04;
+  line-height: 1;
+  letter-spacing: 10px;
+  pointer-events: none;
+}
+
+.office-inner { max-width: 1200px; margin: 0 auto; }
+
+.office-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.office-subtitle {
+  color: rgba(255,255,255,.75);
+  font-size: 16px;
+  max-width: 600px;
+  margin: 12px auto 20px;
+  line-height: 1.65;
+}
+.office-badges {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.ob-badge {
+  background: rgba(255,255,255,.12);
+  border: 1.5px solid rgba(255,255,255,.25);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 18px;
+  border-radius: 50px;
+}
+
+/* Box cards grid */
+.office-boxes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.obox {
+  background: rgba(255,255,255,.08);
+  border: 1.5px solid rgba(255,255,255,.15);
+  border-radius: 18px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all .25s;
+  position: relative;
+}
+.obox:hover {
+  background: rgba(255,255,255,.14);
+  border-color: rgba(255,255,255,.3);
+  transform: translateY(-4px);
+}
+.obox-featured {
+  background: rgba(255,255,255,.15);
+  border-color: var(--y3);
+  border-width: 2px;
+  box-shadow: 0 0 0 1px var(--y3), 0 12px 40px rgba(0,0,0,.3);
+}
+.obox-popular-tag {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--y3);
+  color: var(--g1);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 14px;
+  border-radius: 50px;
+  white-space: nowrap;
+}
+.obox-tier-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: rgba(255,255,255,.6);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.obox-name {
+  font-family: var(--font-h);
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+}
+.obox-price {
+  font-size: 14px;
+  color: var(--y3);
+  font-weight: 600;
+}
+.obox-price strong { font-size: 18px; font-family: var(--font-h); }
+.obox-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,.6);
+  line-height: 1.5;
+}
+.obox-items {
+  list-style: none;
+  padding: 0; margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+.obox-items li {
+  font-size: 13px;
+  color: rgba(255,255,255,.85);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.obox-feeds {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,.5);
+  background: rgba(255,255,255,.08);
+  border-radius: 6px;
+  padding: 5px 10px;
+  text-align: center;
+}
+.obox-cta {
+  width: 100%;
+  background: rgba(255,255,255,.15);
+  border: 1.5px solid rgba(255,255,255,.3);
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-b);
+  cursor: pointer;
+  transition: all .2s;
+  margin-top: 4px;
+}
+.obox-cta:hover { background: rgba(255,255,255,.25); transform: scale(1.02); }
+.obox-cta-featured {
+  background: var(--y3);
+  border-color: var(--y3);
+  color: var(--g1);
+}
+.obox-cta-featured:hover { background: var(--y2); }
+
+/* Extra cards row */
+.office-extras {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 36px;
+}
+.office-extra-card {
+  background: rgba(255,255,255,.08);
+  border: 1.5px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  padding: 24px;
+}
+.oec-icon { font-size: 32px; margin-bottom: 10px; }
+.office-extra-card h4 {
+  font-family: var(--font-h);
+  font-size: 17px;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.office-extra-card p {
+  font-size: 13px;
+  color: rgba(255,255,255,.65);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+.oec-schedule { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.oec-sched-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(255,255,255,.8);
+}
+.oec-check {
+  color: var(--y3);
+  font-weight: 800;
+  font-size: 14px;
+}
+.oec-note {
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+  font-style: italic;
+  margin-top: 8px;
+}
+
+/* CTA Banner */
+.office-cta-banner {
+  background: rgba(255,255,255,.1);
+  border: 2px solid rgba(255,255,255,.2);
+  border-radius: 18px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.ocb-left h3 {
+  font-family: var(--font-h);
+  font-size: 22px;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.ocb-left p {
+  font-size: 14px;
+  color: rgba(255,255,255,.7);
+  max-width: 480px;
+}
+.ocb-right {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.ocb-wa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #25D366;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-b);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all .2s;
+  box-shadow: 0 4px 16px rgba(37,211,102,.35);
+}
+.ocb-wa-btn:hover { background: #1da851; transform: scale(1.03); }
+.ocb-order-btn {
+  background: var(--o2);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-b);
+  cursor: pointer;
+  transition: all .2s;
+}
+.ocb-order-btn:hover { background: var(--o1); transform: scale(1.03); }
+
+/* Mobile responsive */
+@media(max-width:1024px) {
+  .office-boxes { grid-template-columns: 1fr 1fr; }
+  .office-extras { grid-template-columns: 1fr; gap: 12px; }
+}
+@media(max-width:768px) {
+  .office-sec { padding: 40px 16px; }
+  .office-boxes { grid-template-columns: 1fr; gap: 12px; }
+  .office-cta-banner { flex-direction: column; text-align: center; }
+  .ocb-right { justify-content: center; }
+  .filter-panel { width: 92vw; max-width: 340px; }
 }

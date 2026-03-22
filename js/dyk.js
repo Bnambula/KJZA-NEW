@@ -403,13 +403,20 @@ function toggleDYK() {
   DYK.open = !DYK.open;
   var card = document.getElementById('dyk-card');
   var tab  = document.getElementById('dyk-tab');
-  if (!card) return;
-  card.classList.toggle('open', DYK.open);
-  if (tab) tab.classList.toggle('active', DYK.open);
+  if (!card) { console.warn('DYK card element not found'); return; }
+  
   if (DYK.open) {
+    // Render BEFORE opening so content is visible on animation
     renderDYKFact(DYK.current);
+    // Small delay then open to allow render
+    requestAnimationFrame(function() {
+      card.classList.add('open');
+      if (tab) tab.classList.add('active');
+    });
     startDYKRotate();
   } else {
+    card.classList.remove('open');
+    if (tab) tab.classList.remove('active');
     stopDYKRotate();
   }
 }
@@ -527,6 +534,13 @@ function dykAddToCart(pid) {
 document.addEventListener('DOMContentLoaded', function() {
   // Start on today's fact
   DYK.current = DYK.getDailyIndex();
+
+  // Pre-render the body so it's ready when opened
+  var body = document.getElementById('dyk-body');
+  if (body && DYK.facts[DYK.current]) {
+    // Set a loading state so user sees something immediately on open
+    body.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">&#128161;</div><div style="font-size:13px">Tap the bulb to explore today&#39;s food fact!</div></div>';
+  }
 
   // Pulse the tab after 3 seconds to attract attention
   setTimeout(function() {

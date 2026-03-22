@@ -104,6 +104,9 @@
       <button class="snl" onclick="openInfoPage('about')">
         <span class="snl-icon">🌱</span> About Us
       </button>
+      <button class="snl" onclick="document.getElementById('office-fruit-sec').scrollIntoView({behavior:'smooth'})">
+        <span class="snl-icon">🍍</span> Office Fruit
+      </button>
     </div>
     <div class="sec-nav-right">
       <button class="snl offer-btn" onclick="setFilter('discount',null);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">
@@ -211,27 +214,81 @@
     </div>
   </div>
 
-  <!-- SHOP TOOLBAR — hover-triggered filter panel -->
+  <!-- SHOP TOOLBAR — filter is anchored INSIDE hover zone for correct absolute positioning -->
   <div class="shop-toolbar">
     <div class="shop-toolbar-inner">
       <div class="st-left">
-        <!-- Hover zone: entering this area opens the filter panel -->
+        <!-- Filter hover zone — position:relative so dropdown anchors to it -->
         <div class="filter-hover-zone" id="filter-hover-zone"
           onmouseenter="openFilterSidebar()"
-          onmouseleave="scheduleFilterClose()"
-          onclick="openFilterSidebar()">
-          <button class="filter-trigger-btn" id="filter-trigger-btn" aria-haspopup="true">
+          onmouseleave="scheduleFilterClose()">
+          <button class="filter-trigger-btn" id="filter-trigger-btn"
+            onclick="toggleFilterSidebar()" aria-haspopup="true" aria-expanded="false">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg>
-            Filters &amp; Sort
+            Filters
             <span id="filter-active-count" class="filter-active-count" style="display:none">1</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:2px;opacity:.5"><polyline points="6,9 12,15 18,9"/></svg>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="filter-chevron"><polyline points="6,9 12,15 18,9"/></svg>
           </button>
+
+          <!-- FILTER PANEL — anchored here, below its parent button -->
+          <div class="filter-panel" id="filter-sidebar"
+            onmouseenter="cancelFilterClose()"
+            onmouseleave="scheduleFilterClose()">
+            <div class="fsb-header">
+              <h3>Filter Products</h3>
+              <button onclick="resetFilters()" class="fsb-reset">Reset all</button>
+            </div>
+
+            <div class="fsb-section">
+              <div class="fsb-sec-title">Quick Filters</div>
+              <div class="fsb-chips">
+                <button class="fchip active" data-filter="all" onclick="setFilter('all',this);updateFilterCount()">All</button>
+                <button class="fchip" data-filter="discount" onclick="setFilter('discount',this);updateFilterCount()">🏷 On Sale</button>
+                <button class="fchip" data-filter="organic" onclick="setFilter('organic',this);updateFilterCount()">🌱 Organic</button>
+                <button class="fchip" data-filter="fresh" onclick="setFilter('fresh',this);updateFilterCount()">⚡ Fresh Today</button>
+                <button class="fchip" data-filter="seasonal" onclick="setFilter('seasonal',this);updateFilterCount()">🌿 Seasonal</button>
+                <button class="fchip" data-filter="premium" onclick="setFilter('premium',this);updateFilterCount()">⭐ Premium</button>
+                <button class="fchip" data-filter="instock" onclick="setFilter('instock',this);updateFilterCount()">✅ In Stock</button>
+              </div>
+            </div>
+
+            <div class="fsb-section">
+              <div class="fsb-sec-title">Price Range</div>
+              <div class="fsb-price-wrap">
+                <div class="fsb-price-chips">
+                  <button class="fsb-price-chip" onclick="applyPriceChip(15000,this)">Under 15K</button>
+                  <button class="fsb-price-chip" onclick="applyPriceChip(25000,this)">15K–25K</button>
+                  <button class="fsb-price-chip" onclick="applyPriceChip(40000,this)">25K–40K</button>
+                  <button class="fsb-price-chip" onclick="applyPriceChip(55000,this)">Any price</button>
+                </div>
+                <input type="range" min="1000" max="55000" step="1000" value="55000" id="price-range"
+                  oninput="setPriceFilter(this.value)" style="width:100%;accent-color:var(--o2);margin-top:10px">
+                <div class="fsb-price-labels">
+                  <span>UGX 1,000</span>
+                  <span id="price-label" style="font-weight:800;color:var(--o1)">Any price</span>
+                  <span>UGX 55,000+</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="fsb-section">
+              <div class="fsb-sec-title">Category</div>
+              <div id="fsb-cat-list" class="fsb-cat-list"></div>
+            </div>
+
+            <div class="fsb-apply">
+              <button class="btn btn-primary btn-full" onclick="closeFilterSidebar()">
+                View <span id="fsb-result-count">—</span> products →
+              </button>
+            </div>
+          </div>
         </div>
-        <span id="filter-count" class="st-count">Loading…</span>
+        <span id="filter-count" class="st-count"></span>
       </div>
+
       <div class="st-right">
         <div class="st-sort">
-          <label>Sort by:</label>
+          <label>Sort:</label>
           <select onchange="setSort(this.value)">
             <option value="default">Recommended</option>
             <option value="price-low">Price: Low → High</option>
@@ -249,51 +306,6 @@
           </button>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- FILTER DROPDOWN PANEL — appears below filter button on hover -->
-  <div class="filter-dropdown" id="filter-sidebar"
-    onmouseenter="cancelFilterClose()"
-    onmouseleave="scheduleFilterClose()">
-    <div class="fsb-header">
-      <h3>🔍 Filter Products</h3>
-      <button onclick="resetFilters()" class="fsb-reset">Reset all</button>
-    </div>
-
-    <div class="fsb-section">
-      <div class="fsb-sec-title">Quick Filters</div>
-      <div class="fsb-chips">
-        <button class="fchip active" data-filter="all" onclick="setFilter('all',this);updateFilterCount()">All Products</button>
-        <button class="fchip" data-filter="discount" onclick="setFilter('discount',this);updateFilterCount()">🏷 On Sale</button>
-        <button class="fchip" data-filter="organic" onclick="setFilter('organic',this);updateFilterCount()">🌱 Organic</button>
-        <button class="fchip" data-filter="fresh" onclick="setFilter('fresh',this);updateFilterCount()">⚡ Fresh Today</button>
-        <button class="fchip" data-filter="seasonal" onclick="setFilter('seasonal',this);updateFilterCount()">🌿 Seasonal</button>
-        <button class="fchip" data-filter="premium" onclick="setFilter('premium',this);updateFilterCount()">⭐ Premium</button>
-        <button class="fchip" data-filter="instock" onclick="setFilter('instock',this);updateFilterCount()">✅ In Stock</button>
-      </div>
-    </div>
-
-    <div class="fsb-section">
-      <div class="fsb-sec-title">Max Price</div>
-      <div style="padding:0 4px">
-        <input type="range" min="1000" max="55000" step="1000" value="55000" id="price-range"
-          oninput="setPriceFilter(this.value)" style="width:100%;accent-color:var(--o2)">
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px">
-          <span>UGX 1,000</span>
-          <span id="price-label" style="font-weight:800;color:var(--o1)">Any price</span>
-          <span>UGX 55,000+</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="fsb-section">
-      <div class="fsb-sec-title">Category</div>
-      <div id="fsb-cat-list" class="fsb-cat-list"></div>
-    </div>
-
-    <div class="fsb-apply">
-      <button class="btn btn-primary btn-full" onclick="closeFilterSidebar()">View <span id="fsb-result-count">—</span> products →</button>
     </div>
   </div>
 
@@ -497,6 +509,141 @@
           Shop Eco-Friendly →
         </button>
       </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ OFFICE FRUIT DELIVERY ══════════════════════════════════ -->
+  <section class="office-sec" id="office-fruit-sec">
+    <div class="office-inner">
+      <!-- Header -->
+      <div class="office-header">
+        <div class="sec-eye y">For Businesses</div>
+        <h2 class="sec-title" style="color:#fff">Office Fruit Delivery 🍍</h2>
+        <p class="office-subtitle">Keep your team energized, healthy and productive — fresh fruit boxes designed for businesses across Kampala.</p>
+        <div class="office-badges">
+          <span class="ob-badge">⚡ Flexible</span>
+          <span class="ob-badge">💰 Affordable</span>
+          <span class="ob-badge">🔄 Reliable</span>
+        </div>
+      </div>
+
+      <!-- Box tiers grid -->
+      <div class="office-boxes">
+
+        <div class="obox obox-classic">
+          <div class="obox-tier-badge">🟢 Classic</div>
+          <div class="obox-name">Classic Office Box</div>
+          <div class="obox-price">From <strong>UGX 30,000</strong> / week</div>
+          <div class="obox-desc">Perfect for small teams and everyday wellness.</div>
+          <ul class="obox-items">
+            <li>🍌 Bananas</li>
+            <li>🍊 Oranges</li>
+            <li>🍍 Pineapple</li>
+            <li>🍉 Seasonal fruit (watermelon / pawpaw)</li>
+          </ul>
+          <div class="obox-feeds">Feeds 5–10 people</div>
+          <button class="obox-cta" onclick="orderOfficeBox('Classic',30000)">Order Now →</button>
+        </div>
+
+        <div class="obox obox-standard">
+          <div class="obox-tier-badge">🟡 Standard</div>
+          <div class="obox-name">Standard Office Box</div>
+          <div class="obox-price">From <strong>UGX 45,000</strong> / week</div>
+          <div class="obox-desc">A balanced mix with added variety.</div>
+          <ul class="obox-items">
+            <li>🍌 Bananas</li>
+            <li>🍊 Oranges</li>
+            <li>🍍 Pineapple</li>
+            <li>🍎 Apples</li>
+            <li>🥭 Mangoes / Passion fruits</li>
+          </ul>
+          <div class="obox-feeds">Feeds 8–15 people</div>
+          <button class="obox-cta" onclick="orderOfficeBox('Standard',45000)">Order Now →</button>
+        </div>
+
+        <div class="obox obox-premium obox-featured">
+          <div class="obox-popular-tag">⭐ Most Popular</div>
+          <div class="obox-tier-badge">🔵 Premium</div>
+          <div class="obox-name">Premium Office Box</div>
+          <div class="obox-price">From <strong>UGX 65,000</strong> / week</div>
+          <div class="obox-desc">Enhanced selection for growing teams.</div>
+          <ul class="obox-items">
+            <li>🍌 Bananas</li>
+            <li>🍎 Apples</li>
+            <li>🍊 Oranges</li>
+            <li>🍍 Pineapple</li>
+            <li>🥭 Seasonal fruits</li>
+            <li>🍇 Grapes (when available)</li>
+          </ul>
+          <div class="obox-feeds">Feeds 15–25 people</div>
+          <button class="obox-cta obox-cta-featured" onclick="orderOfficeBox('Premium',65000)">Order Now →</button>
+        </div>
+
+        <div class="obox obox-executive">
+          <div class="obox-tier-badge">🟣 Executive</div>
+          <div class="obox-name">Executive Office Box</div>
+          <div class="obox-price">From <strong>UGX 90,000+</strong> / week</div>
+          <div class="obox-desc">Top-tier fruit experience for corporates.</div>
+          <ul class="obox-items">
+            <li>🍎 Full premium fruit mix</li>
+            <li>🍇 Grapes / rare fruits</li>
+            <li>🫐 Optional berries</li>
+            <li>⚡ Priority delivery</li>
+            <li>🔧 Custom selection</li>
+          </ul>
+          <div class="obox-feeds">Feeds 20–35+ people</div>
+          <button class="obox-cta" onclick="orderOfficeBox('Executive',90000)">Order Now →</button>
+        </div>
+
+      </div>
+
+      <!-- Build your own + delivery options -->
+      <div class="office-extras">
+        <div class="office-extra-card">
+          <div class="oec-icon">🛠️</div>
+          <h4>Build Your Own Office Box</h4>
+          <p>Want something different? Choose your fruits, quantities, snacks (groundnuts, simsim 🥜) and fresh juice 🧃. Your box, your team, your choice.</p>
+          <button class="btn btn-primary" onclick="document.getElementById('build-basket-sec').scrollIntoView({behavior:'smooth'})">Customise My Box →</button>
+        </div>
+        <div class="office-extra-card">
+          <div class="oec-icon">🔄</div>
+          <h4>Delivery Schedules</h4>
+          <div class="oec-schedule">
+            <div class="oec-sched-item"><span class="oec-check">✓</span> Weekly delivery (most popular)</div>
+            <div class="oec-sched-item"><span class="oec-check">✓</span> Twice per week</div>
+            <div class="oec-sched-item"><span class="oec-check">✓</span> Monthly supply</div>
+            <div class="oec-sched-item"><span class="oec-check">✓</span> One-time orders</div>
+          </div>
+          <div class="oec-note">No contracts. Pause or cancel anytime.</div>
+        </div>
+        <div class="office-extra-card">
+          <div class="oec-icon">💼</div>
+          <h4>Perfect For</h4>
+          <div class="oec-schedule">
+            <div class="oec-sched-item"><span class="oec-check">✓</span> Offices &amp; corporates</div>
+            <div class="oec-sched-item"><span class="oec-check">✓</span> Banks &amp; financial institutions</div>
+            <div class="oec-sched-item"><span class="oec-check">✓</span> Startups &amp; SMEs</div>
+            <div class="oec-sched-item"><span class="oec-check">✓</span> NGOs &amp; organisations</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA Banner -->
+      <div class="office-cta-banner">
+        <div class="ocb-left">
+          <h3>Upgrade Your Office Today 🍊</h3>
+          <p>Start your weekly fruit delivery with Kujaza Freshi. Order now or message us on WhatsApp to get started.</p>
+        </div>
+        <div class="ocb-right">
+          <a href="https://wa.me/256766026401?text=Hi%20Kujaza%20Freshi!%20I%27d%20like%20to%20order%20an%20office%20fruit%20box." target="_blank" class="ocb-wa-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            WhatsApp Order
+          </a>
+          <button class="ocb-order-btn" onclick="openModal('modal-ticket')">Get a Quote →</button>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -865,6 +1012,7 @@
         <a href="#" onclick="setCat(3);document.getElementById('shop-anchor').scrollIntoView({behavior:'smooth'})">Dried Grains</a>
         <a href="#" onclick="setFilter('discount',null)">On Sale</a>
         <a href="#" onclick="document.querySelector('.specials').scrollIntoView({behavior:'smooth'})">Basket Combos</a>
+        <a href="#" onclick="document.getElementById('office-fruit-sec').scrollIntoView({behavior:'smooth'})">Office Fruit Delivery</a>
       </div>
       <div class="f-col">
         <h5>Company</h5>

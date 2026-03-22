@@ -4,21 +4,27 @@
 // ─── HOVER FILTER ────────────────────────────────────────────
 var _filterCloseTimer = null;
 
+function _getFilterPanel() {
+  // New structure: .filter-panel inside .filter-hover-zone
+  return document.querySelector('.filter-panel') || document.getElementById('filter-sidebar');
+}
+
 function openFilterSidebar() {
   cancelFilterClose();
-  var sb = document.getElementById('filter-sidebar');
+  var sb = _getFilterPanel();
   if (!sb) return;
   sb.classList.add('open');
-  document.getElementById('filter-trigger-btn') && document.getElementById('filter-trigger-btn').classList.add('active');
+  var btn = document.getElementById('filter-trigger-btn');
+  if (btn) { btn.classList.add('active'); btn.setAttribute('aria-expanded','true'); }
   populateFsbCategories();
   updateFsbCount();
 }
 
 function closeFilterSidebar() {
-  var sb = document.getElementById('filter-sidebar');
+  var sb = _getFilterPanel();
   if (sb) sb.classList.remove('open');
   var btn = document.getElementById('filter-trigger-btn');
-  if (btn) btn.classList.remove('active');
+  if (btn) { btn.classList.remove('active'); btn.setAttribute('aria-expanded','false'); }
   cancelFilterClose();
 }
 
@@ -473,3 +479,24 @@ function checkoutBasket() {
 document.addEventListener('DOMContentLoaded', function() {
   renderBuildBasket();
 });
+
+// ─── OFFICE FRUIT DELIVERY ───────────────────────────────────
+function orderOfficeBox(tier, price) {
+  var msg = 'Hi Kujaza Freshi! I would like to order the ' + tier + ' Office Box (UGX ' + price.toLocaleString() + '/week). Please get back to me with more details.';
+  var waUrl = 'https://wa.me/256766026401?text=' + encodeURIComponent(msg);
+  window.open(waUrl, '_blank');
+  toast('Opening WhatsApp to order ' + tier + ' Office Box 🍍', '✅');
+}
+
+// ─── PRICE CHIP FILTER ───────────────────────────────────────
+function applyPriceChip(max, el) {
+  // Update slider
+  var pr = document.getElementById('price-range');
+  if (pr) pr.value = max;
+  // Call the main price filter
+  if (typeof setPriceFilter === 'function') setPriceFilter(max);
+  // Update chip active state
+  document.querySelectorAll('.fsb-price-chip').forEach(function(c){ c.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  updateFsbCount();
+}
